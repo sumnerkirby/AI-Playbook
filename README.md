@@ -18,12 +18,29 @@ The steps quote, word for word, the NIST AI Risk Management Framework (AI RMF 1.
 
 ## Fonts
 
-Archivo, IBM Plex Mono and Source Serif 4, under the SIL Open Font License. The licence files are in `fonts/`.
+Archivo, IBM Plex Mono and Source Serif 4, under the SIL Open Font License. The license files are in `fonts/`.
 
 ## Tests
 
 The rules are tested. Open `tests/run_tests.html` on the site to run the tests in your browser.
 
-## Licence
+## License
 
-Not yet chosen. Check with an advisor before choosing one, in particular for how the OWASP passages under CC BY-SA 4.0 are used (flag last reviewed September 29, 2026).
+Copyright 2026 The AI Playbook Project, University of Oklahoma Cybersecurity Clinic. Different parts of the site are under different terms:
+
+| What | License |
+|---|---|
+| Code: the JavaScript, CSS, page markup and tests | [MIT](LICENSE) |
+| Writing: the playbook, guides and other text on the site | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): reuse and adapt it, with credit to the AI Playbook Project |
+| Templates: the policy templates (`policy-*.html`), the starter acceptable use policy in the AI policy guide, and the policy text the AI policy tool writes | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): copy them into your own documents with no credit needed |
+| Passages from the OWASP Top 10 for LLM Applications 2026, including the condensed page `owasp-llm-top-10-2026.html` | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), from the OWASP Foundation, as credited on each page |
+| Passages from NIST publications, including the condensed NIST pages | US government works, not covered by the licenses above |
+| Fonts | SIL Open Font License (see `fonts/`) |
+
+Documents you make with the site's tools, such as your policy or your record, are yours.
+
+Check with the Clinic and an advisor that these terms fit the University of Oklahoma's policies (flag last reviewed September 30, 2026).
+
+## Contact
+
+To report a problem, suggest a correction or ask a question, [open an issue](https://github.com/sumnerkirby/AI-Playbook/issues) on GitHub. Issues are public, so do not include anything about your business that you would not want others to read.
