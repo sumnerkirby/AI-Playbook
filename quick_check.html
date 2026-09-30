@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick AI check</title>
+<meta name="description" content="A five-minute check for small businesses: six red-flag questions, then tap the everyday jobs where AI is involved to see what's fine, what to check and what to stop. Nothing you enter leaves your browser.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="quick_check.css">
+</head>
+<body>
+<div class="wrap qc" id="qc">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html" aria-current="page">Quick check</a>
+    <a href="profile.html">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">Quick check &middot; about 5 minutes &middot; prototype</p>
+    <h1>Quick AI check<span>for small businesses</span></h1>
+    <p class="lede">Two short parts. First, six yes-or-no questions about the situations most likely to cause serious harm. Then tap the everyday jobs where AI is involved, even a little, and see which are fine, which need a check, and which to stop.</p>
+  </header>
+
+  <main id="main">
+    <noscript>
+      <div class="callout"><p>The quick check runs in your browser and needs JavaScript. Everything else on this site works without it: start with <a href="playbook.html#step-2">step 2 of the playbook, finding the AI you already use</a>.</p></div>
+    </noscript>
+  </main>
+
+  <p class="visually-hidden" id="announce" aria-live="polite"></p>
+
+  <footer>
+    Prototype. Rules version <span id="rules-version"></span>, last reviewed <span id="rules-reviewed"></span>, not yet verified for publication.
+    A quick check, not a full review, and not legal advice. Items marked get advice are for a professional to confirm.<br>
+    Nothing you enter is sent anywhere. Your answers live in this page&rsquo;s address, after the #, which browsers never send to a server, and in this browser if you choose to save.
+    <a href="tests/run_tests.html">How these rules are tested</a>
+  </footer>
+</div>
+
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="data/questions.js"></script>
+<script src="data/rules.js"></script>
+<script src="quick_engine.js"></script>
+<script src="progress_bar.js"></script>
+<script src="quick_check.js"></script>
+<script src="profile_bar.js"></script>
+</body>
+</html>

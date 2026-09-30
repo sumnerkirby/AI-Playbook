@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick check rule tests</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../site.css">
+<style>
+  .t{background:var(--card);border:1px solid var(--rule2);border-left:3px solid #2E6B45;border-radius:2px;padding:9px 14px;margin:0 0 5px}
+  .t.fail{border-left-color:#B42318}
+  .t b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;margin-right:10px}
+  .t.fail b{color:#B42318}
+  .t ul{margin:6px 0 0;padding-left:20px;font-family:var(--mono);font-size:12px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Prototype &middot; <a href="../quick_check.html">Quick check</a></p>
+    <h1>Rule tests<span id="summary"></span></h1>
+    <p class="lede">The same tests as <code>tests/run_tests.sh</code>, run in this browser against the data files the quick check uses. Each worked example says: given this business and these answers, expect this result.</p>
+  </header>
+  <main id="out"></main>
+</div>
+<script src="../data/profile_options.js"></script>
+<script src="../data/questions.js"></script>
+<script src="../data/rules.js"></script>
+<script src="../quick_engine.js"></script>
+<script src="../data/policy_questions.js"></script>
+<script src="../policy_engine.js"></script>
+<script src="../data/pulse_questions.js"></script>
+<script src="../pulse_engine.js"></script>
+<script src="../data/profile_effects.js"></script>
+<script src="../profile_engine.js"></script>
+<script src="../data/tool_questions.js"></script>
+<script src="../data/tool_rules.js"></script>
+<script src="../tool_engine.js"></script>
+<script src="../data/risk_matrix.js"></script>
+<script src="../risk_engine.js"></script>
+<script src="../data/done_when.js"></script>
+<script src="../answers_engine.js"></script>
+<script src="../data/record.js"></script>
+<script src="../record_engine.js"></script>
+<script src="quick_rules_test.js"></script>
+<script src="quick_policy_test.js"></script>
+<script src="quick_pulse_test.js"></script>
+<script src="profile_test.js"></script>
+<script src="tool_check_test.js"></script>
+<script src="risk_test.js"></script>
+<script src="answers_test.js"></script>
+<script src="record_test.js"></script>
+<script>
+  const runs = [TestRun, PolicyTestRun, PulseTestRun, ProfileTestRun, ToolTestRun, RiskTestRun, AnswersTestRun, RecordTestRun];
+  document.getElementById('summary').textContent = runs.map(r => r.summary).join(' \u00b7 ');
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'})[c]);
+  document.getElementById('out').innerHTML = runs.flatMap(x => x.results).map(r =>
+    `<div class="t${r.fails.length ? ' fail' : ''}"><b>${r.fails.length ? 'FAIL' : 'OK'}</b>${esc(r.name)}` +
+    (r.fails.length ? `<ul>${r.fails.slice(0, 12).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : '') + `</div>`).join('');
+</script>
+</body>
+</html>

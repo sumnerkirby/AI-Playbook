@@ -1,0 +1,93 @@
+/* The full tool check and the AI list. Builds on site.css and quick_check.css. */
+
+.bigresult{
+  display:flex;flex-direction:column;gap:6px;padding:16px 20px 18px;margin:0 0 16px;max-width:78ch;border-radius:3px;
+  background:var(--t,var(--card));border:1px solid var(--l,var(--rule));border-left:5px solid var(--c,var(--ink3))
+}
+.bigresult.red{--c:var(--stop);--t:var(--stop-tint);--l:var(--stop-line)}
+.bigresult.amber{--c:var(--check);--t:var(--check-tint);--l:var(--check-line)}
+.bigresult.green{--c:var(--go);--t:var(--go-tint);--l:var(--go-line)}
+.bigresult .light{font-size:13px}
+.bigresult .light svg{width:24px;height:24px}
+.bigresult h2{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:clamp(22px,3.6vw,28px)}
+.bigresult .sub{margin:0;color:var(--ink2);font-size:15.5px}
+.bigresult .allowed{margin:6px 0 0;padding:8px 12px;background:rgba(255,255,255,.7);border-radius:3px;font-size:15.5px}
+.bigresult .allowed b{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
+
+.todos-list{list-style:none;margin:0;padding:0;max-width:78ch}
+.todo{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;margin-bottom:5px;background:var(--card);border:1px solid var(--rule2);border-left:3px solid var(--check);border-radius:2px}
+.todo.done{border-left-color:var(--go);background:#F6FAF7}
+.todo input{width:20px;height:20px;margin:2px 0 0;flex:0 0 auto;accent-color:var(--go)}
+.todo .body{flex:1 1 auto;min-width:0;font-size:15px}
+.todo .body p{margin:0 0 5px}
+.todo .body > :last-child{margin-bottom:0}
+.todo.done .task{text-decoration:line-through;text-decoration-color:var(--ink3);color:var(--ink2)}
+.todo .why{color:var(--ink2);font-size:14px}
+.todo .who{margin-left:0}
+.todo a{color:var(--ink);text-decoration-color:var(--ink3);text-underline-offset:3px}
+.todo a:hover{text-decoration-color:var(--ink)}
+.callout a{color:var(--ink);text-decoration-color:var(--ink3);text-underline-offset:3px}
+.callout a:hover{text-decoration-color:var(--ink)}
+.todo details{margin-top:6px;font-size:14px}
+.todo details ul{margin:4px 0 0;padding-left:20px}
+.todo .find{padding:4px 0}
+.standing{list-style:none;margin:0;padding:0;max-width:78ch}
+.standing li{padding:8px 13px;margin-bottom:4px;background:var(--go-tint);border:1px solid var(--go-line);border-radius:2px;font-size:15px}
+
+.lines{list-style:none;margin:0;padding:0}
+.line{
+  display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:center;padding:11px 14px;margin-bottom:5px;
+  background:var(--card);border:1px solid var(--rule2);border-radius:2px
+}
+.line .n{font-family:var(--display);font-weight:600;font-size:16px}
+.line .m{grid-column:2;font-size:14px;color:var(--ink2)}
+.line .badges{grid-column:2;display:flex;flex-wrap:wrap;gap:5px}
+.line .btn{grid-row:1 / span 3;grid-column:3}
+.badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:2px 8px;border:1px solid var(--rule);color:var(--ink2);background:var(--paper)}
+.badge.due{border-color:var(--check-line);background:var(--check-tint);color:var(--check)}
+.badge.wait{border-color:#C9D6E2;background:#EEF3F8;color:#2D5F8B}
+.counts-row{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:0 0 16px;font-family:var(--display);font-weight:600}
+
+.q-item{display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap;padding:10px 14px;margin-bottom:5px;background:var(--card);border:1px dashed var(--rule);border-radius:2px}
+.q-item .n{flex:1 1 220px;font-size:15px}
+.q-item .n b{font-family:var(--display);font-weight:600}
+.q-item .n small{display:block;color:var(--ink3);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;margin-top:2px}
+
+.evidence{margin:16px 0 0;max-width:560px}
+.evidence label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.evidence input,.textin{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;background:var(--card);color:var(--ink)}
+.evidence input:focus-visible,.textin:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.lookhelp{margin:14px 0 0;max-width:62ch}
+.lookhelp ul{margin:4px 0 0;padding-left:20px}
+.multi .answer{position:relative;padding-right:44px}
+.multi .answer[aria-pressed=true]{padding-right:43px}
+.multi .answer[aria-pressed=true]::after{content:"\2713";position:absolute;right:16px;top:14px;font-size:16px}
+
+.life{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px 28px;align-items:start}
+.life .panelbox{background:var(--card);border:1px solid var(--rule2);border-radius:3px;padding:12px 15px 14px}
+.life h4{margin:0 0 8px;font-family:var(--display);font-weight:600;font-size:16px}
+.life .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.life select,.life input[type=date],.life input[type=text]{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule);border-radius:3px;background:var(--card);max-width:100%}
+.checklist{list-style:none;margin:0;padding:0}
+.checklist li{margin-bottom:6px;font-size:14.5px}
+.checklist label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checklist input{margin-top:3px;width:17px;height:17px;flex:0 0 auto}
+.events{list-style:none;margin:8px 0 0;padding:0;font-size:14px}
+.events li{padding:4px 0;border-top:1px solid var(--rule2)}
+.whybox{margin:0 0 14px;max-width:78ch}
+
+.printlist{display:none}
+.printlist table{width:100%;border-collapse:collapse;font-size:12px}
+.printlist th,.printlist td{border:1px solid #999;padding:5px 7px;text-align:left;vertical-align:top}
+
+@media (max-width:640px){
+  /* one column: the light on its own line, so the name and details get the full width */
+  .line{grid-template-columns:1fr;justify-items:start}
+  .line .m,.line .badges{grid-column:1}
+  .line .btn{grid-row:auto;grid-column:1;justify-self:start}
+}
+@media print{
+  body.printing *{visibility:hidden}
+  body.printing .print-target,body.printing .print-target *{visibility:visible}
+  body.printing .print-target{display:block !important;position:absolute;left:0;top:0;width:100%}
+}

@@ -1,0 +1,110 @@
+/* The AI use and risk record. Builds on site.css and quick_check.css.
+   On screen: a panel for making copies, then the document as a card.
+   In print: the document alone, with a line at the foot of every page and a
+   Draft watermark until the record has what it needs. */
+
+:root{--act:#FDECEA;--act-ink:#8F1D14;--plan:#FFF4DB;--plan-ink:#6B4500;--watch:#EEF3EF;--watch-ink:#2E5B3C}
+
+/* ---------- the panel ---------- */
+.rec-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:6px 0 26px}
+.rec-panel > div{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:16px 18px;min-width:0}
+.rec-panel h2{margin:0 0 8px;font-family:var(--display);font-size:17px;font-weight:600;line-height:1.3}
+.rec-panel p{margin:0 0 10px;font-size:15px}
+.rec-panel a{color:var(--ink);text-decoration-color:var(--ink3);text-underline-offset:3px}
+.rec-panel a:hover{text-decoration-color:var(--ink)}
+.rec-panel p.small-note{font-family:var(--body);font-size:14px;letter-spacing:0;color:var(--ink2)}
+.rec-status.draft{border-left:3px solid var(--check)}
+.rec-status.ready{border-left:3px solid var(--go)}
+.rec-need{list-style:none;margin:0 0 8px;padding:0;font-size:15px}
+.rec-need li{display:flex;gap:8px;padding:3px 0}
+.rec-need li span{width:16px;flex:0 0 auto;color:var(--ink3)}
+.rec-need li.done span{color:var(--go)}
+.rec-business label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+.textin{width:100%;font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--rule);border-radius:3px;background:var(--card);color:var(--ink)}
+.textin:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.rec-copies,.rec-sign{grid-column:1 / -1}
+.rec-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.rec-signrow{display:flex;gap:8px;align-items:center;max-width:520px}
+.rec-signrow .textin{flex:1 1 auto}
+.rec-import{margin-top:12px}
+
+/* ---------- the document ---------- */
+.rec-doc{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:30px 36px 36px;max-width:860px}
+.rec-head{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:10px}
+.rec-kicker{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.rec-head h1{margin:4px 0 6px;font-family:var(--display);font-size:30px;line-height:1.15;font-weight:700}
+.rec-meta{margin:0;font-family:var(--mono);font-size:12px;color:var(--ink2)}
+.rec-draft{margin-top:14px;padding:12px 16px;background:var(--check-tint);border:1px solid var(--check-line);border-left:3px solid var(--check);border-radius:3px}
+.rec-draft p,.rec-draft ul{margin:0 0 4px}
+.rec-changes{margin-top:14px;padding:10px 16px;background:#F2F6F9;border:1px solid var(--rule2);border-radius:3px}
+.rec-changes h3{margin:0 0 4px;font-size:15px}
+.rec-changes ul,.rec-changes p{margin:0;font-size:15px}
+.rec-sec{padding-top:6px}
+.rec-sec h2{margin:26px 0 10px;font-family:var(--display);font-size:21px;font-weight:600;line-height:1.25;border-bottom:1px solid var(--rule);padding-bottom:5px}
+.rec-sec h3{margin:18px 0 6px;font-family:var(--display);font-size:16px;font-weight:600}
+.rec-sec p,.rec-sec li{font-size:15.5px}
+.rec-gap{color:var(--check);font-size:15px}
+.rec-gap strong{color:var(--check)}
+.rec-limit{font-style:italic;color:var(--ink2)}
+.rec-flag{font-size:14px;color:var(--ink2);border-left:3px solid var(--rule);padding-left:10px}
+.rec-legend{font-size:14px;color:var(--ink2)}
+.rec-legend span{display:block}
+.rec-qa{padding-left:20px}
+.rec-qa .q{display:block;font-size:14px;color:var(--ink2)}
+.rec-quote{border-left:3px solid var(--rule);padding-left:16px;margin:10px 0}
+.rec-quote h3:first-child{margin-top:4px}
+.rec-control{border-top:1px solid var(--rule2);padding-top:2px}
+.rec-level{display:inline-block;margin-left:6px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:2px 9px;border:1px solid var(--rule);color:var(--ink2);vertical-align:2px}
+.rec-level.recorded{border-color:#B9C6D2;color:#2D5F8B}
+.rec-level.supported{border-color:#C3DDCB;color:var(--go)}
+.rec-level.confirmed{background:var(--go);border-color:var(--go);color:#fff}
+.rec-light{font-weight:600}
+.rec-light.go{color:var(--go)} .rec-light.check{color:var(--check)} .rec-light.stop{color:var(--stop)}
+
+.rec-table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:14.5px;line-height:1.45}
+.rec-table th,.rec-table td{border:1px solid var(--rule);padding:7px 9px;text-align:left;vertical-align:top}
+.rec-table thead th{background:var(--paper);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.rec-table caption{caption-side:top;text-align:left;font-size:13.5px;color:var(--ink2);padding-bottom:4px}
+.rec-grid td{width:28%}
+.rec-grid .zl{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.rec-grid .z-act{background:var(--act)} .rec-grid .z-act .zl{color:var(--act-ink)}
+.rec-grid .z-plan{background:var(--plan)} .rec-grid .z-plan .zl{color:var(--plan-ink)}
+.rec-grid .z-watch{background:var(--watch)} .rec-grid .z-watch .zl{color:var(--watch-ink)}
+
+.rec-running,.rec-watermark{display:none}
+
+@media (max-width:640px){
+  .rec-panel{grid-template-columns:1fr}
+  .rec-doc{padding:18px 14px 22px}
+  .rec-head h1{font-size:24px}
+  /* tables become one card per row, each value labelled with its column;
+     the risk grid stays a grid. Print and Word keep the tables. */
+  .rec-sec{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .rec-table:not(.rec-grid){border:0}
+  .rec-table:not(.rec-grid) thead{display:none}
+  .rec-table:not(.rec-grid),.rec-table:not(.rec-grid) tbody,.rec-table:not(.rec-grid) tr,.rec-table:not(.rec-grid) td{display:block;width:100%}
+  .rec-table:not(.rec-grid) tr{border:1px solid var(--rule);border-radius:2px;margin-bottom:8px;padding:5px 0}
+  .rec-table:not(.rec-grid) td{border:0;padding:4px 12px}
+  .rec-table:not(.rec-grid) td:not(:first-child)::before{
+    content:attr(data-label);display:block;font-family:var(--mono);font-size:10px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:1px
+  }
+  .rec-grid{table-layout:fixed;width:100%;font-size:12px}
+  .rec-grid th,.rec-grid td{padding:5px 4px;overflow-wrap:anywhere}
+  .rec-grid thead th{font-size:9px;letter-spacing:.04em}
+  .rec-signrow{flex-wrap:wrap}
+}
+
+@media print{
+  @page{margin:16mm 14mm 20mm}
+  .sitebar,.mast,.rec-panel,footer,.no-print,#announce{display:none !important}
+  .wrap{max-width:none;padding:0}
+  .rec-doc{border:0;padding:0;max-width:none}
+  .rec-sec h2{break-after:avoid}
+  .rec-table tr,.rec-control{break-inside:avoid}
+  .page-break{break-before:page}
+  a{color:inherit;text-decoration:none}
+  .rec-running{display:block;position:fixed;bottom:0;left:0;right:0;font-family:var(--mono);font-size:8.5pt;color:#4C5A68;border-top:1px solid #CFD7DF;padding-top:4px;background:#fff}
+  .rec-watermark:not([hidden]){display:block;position:fixed;top:40%;left:0;right:0;text-align:center;transform:rotate(-30deg);
+    font-family:var(--display);font-size:120pt;font-weight:700;color:rgba(174,102,54,.12);pointer-events:none;z-index:-1}
+}

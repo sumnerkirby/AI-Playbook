@@ -1,0 +1,546 @@
+/* Quick check page: A (red-flag screener) then B (tap what you do).
+   All decisions come from quick_engine.js and the data files; this script
+   only draws screens and moves between them.
+
+   Where state lives: the answers are in the address after the #, so the
+   browser's back button undoes an answer, a reload resumes, and a result can
+   be bookmarked or shared. Browsers never send the part after # to a server.
+   Free text ("something else") never goes in the address; it stays in this
+   tab, and in this browser only if the owner presses Save. */
+(function(){
+  const E = QuickEngine;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const main = $('#main'), root = $('#qc');
+
+  const SAVE_KEY = 'sb-ai-playbook:quick';
+  const OTHER_KEY = 'sb-ai-playbook:quick-other';
+
+  /* storage can be missing or blocked; the page must work without it */
+  const sget = (area, k) => { try { return window[area].getItem(k); } catch (e) { return null; } };
+  const sset = (area, k, v) => { try { window[area].setItem(k, v); return true; } catch (e) { return false; } };
+  const sdel = (area, k) => { try { window[area].removeItem(k); } catch (e) {} };
+
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]);
+  const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const today = () => new Date().toLocaleDateString('en-CA');
+  const fmtDate = iso => {
+    const [y, m, d] = String(iso).split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+  };
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : (many || one + 's')}`;
+
+  $('#rules-version').textContent = RULES.version;
+  $('#rules-reviewed').textContent = fmtDate(RULES.last_reviewed);
+
+  /* ---------- lights: shape + word, never colour alone ---------- */
+  const ICON = {
+    go: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M5.6 10.4l2.9 2.9 5.9-6.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    check: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.2l9.2 17H.8z" fill="currentColor"/><path d="M10 7.2v5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="10" cy="15.1" r="1.3" fill="#fff"/></svg>',
+    stop: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 1h7.4L19 6.3v7.4L13.7 19H6.3L1 13.7V6.3z" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  };
+  const LABEL = {go: 'Go', check: 'Check', stop: 'Stop'};
+  const light = (l, text) => `<span class="light ${l}">${ICON[l]}${esc(text || LABEL[l])}</span>`;
+  const WHO = {
+    you: 'You can do this',
+    it_provider: 'You or your IT provider',
+    supplier: 'Ask your supplier',
+    advisor: 'Ask your advisor or compliance consultant',
+  };
+
+  /* ---------- state ---------- */
+  let state = null;      // {industry, screener, cards, none} from the engine
+  let extra = {};        // page-only: s (screen hint), o (something else)
+  let otherText = sget('sessionStorage', OTHER_KEY) || '';
+  let firstRender = true;
+
+  function readHash(){
+    const h = location.hash.replace(/^#/, '');
+    state = E.decode(h);
+    extra = {};
+    h.split('&').forEach(kv => {
+      const [k, v] = kv.split('=');
+      if (k === 's' && ['tap', 'result'].includes(v)) extra.s = v;
+      if (k === 'o' && v === '1') extra.o = true;
+    });
+  }
+  function hashFor(s){
+    if (!state) return location.pathname.split('/').pop() || 'quick_check.html';
+    return '#' + E.encode(state) + (extra.o ? '&o=1' : '') + (s ? '&s=' + s : '');
+  }
+  function depth(){ return (history.state && history.state.qc) || 0; }
+  /* move to the next screen; push makes the browser's back button undo it */
+  function go(s, push = true){
+    extra.s = s;
+    if (push) history.pushState({qc: depth() + 1}, '', hashFor(s));
+    else history.replaceState({qc: depth()}, '', hashFor(s));
+    render();
+  }
+  const ctx = () => ({industry: state.industry});
+
+  /* ---------- timing, for trying this with owners ----------
+     Kept in memory: only a run started on this page is timed, never a
+     result opened from a link. */
+  const times = {};
+  function mark(k){ if (times.start && !times[k]) times[k] = Date.now(); }
+  function took(k){
+    const a = times.start, b = times[k];
+    if (!a || !b) return '';
+    const s = Math.round((b - a) / 1000);
+    return s < 60 ? `${s} seconds` : `${Math.floor(s / 60)} min ${s % 60} s`;
+  }
+
+  /* ---------- routing: the state decides the screen ---------- */
+  function render(){
+    root.classList.toggle('started', !!state);
+    if (!state) return showIntro();
+    const c = ctx();
+    if (!E.screenerComplete(c, state.screener)) return showScreenerQuestion();
+    if (extra.s === 'tap') return showTap();
+    const hasB = state.cards.length || state.none || extra.o;
+    if (!hasB) return extra.s === 'result' ? showResult() : showFlags();
+    const next = state.cards.find(cd => !E.cardComplete(cd.id, cd.answers));
+    if (next) return showCardQuestion(next);
+    showResult();
+  }
+
+  function screen(html){
+    main.innerHTML = `<section class="screen">${html}</section>`;
+    const h = $('h2', main);
+    if (!firstRender){
+      window.scrollTo(0, 0);
+      if (h){ h.tabIndex = -1; h.focus({preventScroll: true}); }
+    }
+    firstRender = false;
+  }
+  const backRow = () => `<div class="backrow">${depth() > 0 ? '<button class="btn quiet" type="button" data-act="back">&larr; Back</button>' : ''}<button class="btn quiet" type="button" data-act="restart">Start again</button></div>`;
+
+  /* ---------- intro ---------- */
+  function loadSaved(){
+    try { const s = JSON.parse(sget('localStorage', SAVE_KEY) || 'null'); return s && s.hash ? s : null; }
+    catch (e) { return null; }
+  }
+  /* start from the business profile's industry, if there is one */
+  const profileTools = (() => {
+    try { return ProfileEngine.forTools(ProfileEngine.clean(JSON.parse(localStorage.getItem('sb-ai-playbook:profile') || 'null'))); }
+    catch (e) { return {industry: null, policy_team: null}; }
+  })();
+  let chosenIndustry = profileTools.industry;
+  /* does this industry get a question or card of its own? */
+  const industryHasExtras = id => SCREENER.questions.concat(CARDS.cards)
+    .some(x => x.applies_to && [].concat(x.applies_to.industry || []).includes(id));
+  function industryExamples(){
+    const o = PROFILE_OPTIONS.industry.options.find(x => x.id === chosenIndustry);
+    return o && o.examples ? 'Includes: ' + esc(o.examples) : '';
+  }
+  function showIntro(){
+    const saved = loadSaved();
+    const opts = PROFILE_OPTIONS.industry.options;
+    screen(`
+      ${saved ? `<div class="callout resume"><span class="k">Saved in this browser</span>
+        <p>You saved a quick check on ${esc(fmtDate(saved.saved_on))}.${saved.rules_version !== RULES.version ? ' Our rules have changed since then, so it will be checked again against the current ones.' : ''}</p>
+        <p><button class="btn" type="button" data-act="resume">Open it</button> <button class="btn quiet" type="button" data-act="forget">Delete it</button></p></div>` : ''}
+      <div class="parts">
+        <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 90 seconds</span><span class="t">Red flags</span><p>Six yes, no or not sure questions about the situations that cause the most harm.</p></div>
+        <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 3 to 5 minutes</span><span class="t">Tap what you do</span><p>Tap the jobs where AI is involved, answer one or two questions on each, and see which are fine.</p></div>
+      </div>
+      <fieldset class="chips">
+        <legend>${esc(PROFILE_OPTIONS.industry.label)} <span class="small-note">Optional</span></legend>
+        <p class="why">${esc(PROFILE_OPTIONS.industry.why)}</p>
+        <div class="chiprow">${opts.map(o => `<button type="button" class="chip" data-ind="${o.id}" aria-pressed="${o.id === chosenIndustry}">${esc(o.label)}</button>`).join('')}</div>
+        <p class="small-note ind-examples" aria-live="polite">${industryExamples()}</p>
+      </fieldset>
+      <div class="go-row"><button class="btn primary" type="button" data-act="start">Start part 1</button><span class="small-note">No sign-up. No email.</span></div>
+      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> No accounts, no tracking, no uploads. Your answers are kept in this page&rsquo;s address so you can bookmark the result, and saved in this browser only if you choose.</span></p>
+    `);
+  }
+
+  /* ---------- one question per screen ---------- */
+  let onAnswer = null;
+  function ask(o){
+    const q = o.q;
+    onAnswer = o.onAnswer;
+    screen(`
+      ${progressBar({left: o.left, n: o.n, total: o.total})}
+      <div class="qhead">${o.about ? `<p class="about">${esc(o.about)}</p>` : ''}<h2>${o.about ? `<span class="visually-hidden">${esc(o.about)}: </span>` : ''}${fmt(q.text)}</h2></div>
+      ${q.example ? `<p class="example"><b>For example</b>${esc(q.example)}</p>` : ''}
+      ${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
+      <div class="answers" role="group" aria-label="Answers">
+        ${q.answers.map(a => `<button type="button" class="answer${a.id === 'not_sure' ? ' unsure' : ''}" data-answer="${a.id}">${esc(a.label)}${a.detail ? `<small>${esc(a.detail)}</small>` : ''}</button>`).join('')}
+      </div>
+      ${backRow()}
+    `);
+  }
+
+  function showScreenerQuestion(){
+    const c = ctx();
+    const qs = E.screenerQuestions(c, state.screener);
+    const i = qs.findIndex(q => state.screener[q.id] === undefined);
+    const q = qs[i];
+    ask({
+      q,
+      left: `<b>Part 1 of 2</b> &middot; Red flags`,
+      n: i + 1, total: qs.length,
+      onAnswer: id => {
+        state.screener[q.id] = id;
+        state.screener = E.pruneScreener(c, state.screener);
+        if (E.screenerComplete(c, state.screener)) mark('a');
+        go();
+      },
+    });
+  }
+
+  function showCardQuestion(cd){
+    const def = E.card(cd.id);
+    const qs = E.cardQuestions(cd.id, cd.answers);
+    const i = qs.findIndex(q => cd.answers[q.id] === undefined);
+    const n = state.cards.indexOf(cd);
+    /* every question on every tapped card, recounted as answers open or close follow-ups */
+    const counts = state.cards.map(c => E.cardQuestions(c.id, c.answers).length);
+    const before = counts.slice(0, n).reduce((x, y) => x + y, 0);
+    ask({
+      q: qs[i],
+      about: def.label,
+      left: `<b>Part 2 of 2</b> &middot; Activity ${n + 1} of ${state.cards.length}`,
+      n: before + i + 1, total: counts.reduce((x, y) => x + y, 0),
+      onAnswer: id => {
+        cd.answers[qs[i].id] = id;
+        cd.answers = E.pruneCard(cd.id, cd.answers);
+        go();
+      },
+    });
+  }
+
+  /* ---------- findings ---------- */
+  function basis(rule){
+    const s = (rule.sources || []).map(id => RULE_SOURCES[id]).filter(Boolean);
+    if (!s.length) return '';
+    return `<p class="basis">Based on: ${s.map(x => x.href ? `<a href="${x.href}">${esc(x.title)}</a>` : esc(x.title)).join('; ')}</p>`;
+  }
+  function advice(rule){
+    if (rule.flag !== 'get_advice') return '';
+    return `<p class="advice"><b>Get advice</b>${esc(rule.flag_text || 'Check this with a professional before relying on it.')}</p>`;
+  }
+  /* compact: the summary repeats what to do, not why (already read in part 1) */
+  function screenerFinding(h, compact){
+    const stop = h.outcome === 'stop';
+    return `<div class="finding ${h.outcome}">
+      ${light(h.outcome, stop ? 'Stop now' : 'Worth finding out')}
+      <h3>${esc(h.title)}</h3>
+      ${compact ? '' : `<p>${stop ? '<b>Why it matters:</b> ' : ''}${esc(h.reason)}</p>`}
+      <p class="fix"><b>${stop ? 'Fix today:' : 'How to check (about 5 minutes):'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
+      ${advice(h)}
+      <p><a href="${h.how.href}">${esc(h.how.label)}</a></p>
+      ${compact ? '' : basis(h)}
+    </div>`;
+  }
+  function screenerFindings(r, compact){
+    if (!r.hits.length) return `<div class="okbox">${light('go', 'No red flags')}
+      <h3>No red flags found in this quick check.</h3>
+      <p>This looked at the situations most likely to cause serious harm. It didn&rsquo;t look at which AI tools you use, what their suppliers do with your information, or whether AI output is checked before it goes out.</p></div>`;
+    return r.hits.map(h => screenerFinding(h, compact)).join('');
+  }
+
+  /* ---------- A result ---------- */
+  function showFlags(){
+    const r = E.evaluateScreener(ctx(), state.screener);
+    const stops = r.hits.filter(h => h.outcome === 'stop').length;
+    const checks = r.hits.length - stops;
+    const t = took('a');
+    screen(`
+      <p class="step-label"><b>Part 1 of 2 &middot; Result</b></p>
+      <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? 'No red flags yet, but some things to find out' : 'No red flags found'}</h2>
+      <p class="honest">Quick check, not a full review</p>
+      ${t ? `<p class="timing">Part 1 took ${t}.</p>` : ''}
+      ${screenerFindings(r)}
+      <div class="go-row" style="margin-top:24px">
+        <button class="btn primary" type="button" data-act="to-tap">Next: see what AI you&rsquo;re using (3 to 5 minutes)</button>
+        <button class="btn quiet" type="button" data-act="stop-here">Stop here and see the summary</button>
+      </div>
+      ${backRow()}
+    `);
+  }
+
+  /* ---------- B: tap what you do ---------- */
+  /* industry cards first: they're the most likely to apply */
+  function tapOrder(){
+    const cards = E.cardsFor(ctx());
+    return cards.filter(c => c.applies_to).concat(cards.filter(c => !c.applies_to));
+  }
+  function showTap(){
+    const on = id => state.cards.some(x => x.id === id);
+    const btn = c => `<button type="button" class="tapcard${c.applies_to ? ' industry' : ''}" data-card="${c.id}" aria-pressed="${on(c.id)}">
+        <span class="t">${esc(c.label)}</span><span class="h">${esc(c.hint)}</span><span class="box" aria-hidden="true"></span></button>`;
+    const nudge = CARDS.none_nudge;
+    screen(`
+      <p class="step-label"><b>Part 2 of 2 &middot; Tap what you do</b></p>
+      <h2>Which of these involve AI in your business, even a little?</h2>
+      <p class="example">Tap every job where anyone uses AI. The small print on each card says where AI often hides.</p>
+      <div class="tapgrid" role="group" aria-label="Activities">${tapOrder().map(btn).join('')}</div>
+      <div class="tapextra">
+        <button type="button" class="tapcard" data-other aria-pressed="${!!extra.o}"><span class="t">Something else</span><span class="h">Anything not listed</span><span class="box" aria-hidden="true"></span></button>
+        <button type="button" class="tapcard" data-none aria-pressed="false"><span class="t">None of these</span><span class="h">We don&rsquo;t use AI for any of these</span></button>
+      </div>
+      <div class="othertext"${extra.o ? '' : ' hidden'}>
+        <label for="other-in">What else? (optional, never leaves this browser)</label>
+        <input id="other-in" type="text" maxlength="120" autocomplete="off" value="${esc(otherText)}">
+      </div>
+      <div class="callout nudge" hidden>
+        <span class="k">Before you move on</span>
+        <p>${esc(nudge.text)}</p>
+        <ul>${nudge.places.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+        <p><button class="btn" type="button" data-act="look-again">Look again</button> <button class="btn quiet" type="button" data-act="none-confirm">None of these, really</button></p>
+      </div>
+      <div class="sticky-go">
+        <button class="btn primary" type="button" data-act="tap-continue"></button>
+        ${depth() > 0 ? '<button class="btn quiet" type="button" data-act="back">&larr; Back</button>' : ''}
+      </div>
+    `);
+    syncTap();
+  }
+  function syncTap(){
+    const n = state.cards.length + (extra.o ? 1 : 0);
+    const b = $('[data-act="tap-continue"]', main);
+    b.textContent = n ? `Continue with ${plural(n, 'activity', 'activities')}` : 'Tap at least one, or None of these';
+    b.disabled = !n;
+  }
+  /* taps update in place, so the grid doesn't jump back to the top */
+  function toggleCard(id){
+    const order = tapOrder().map(c => c.id);
+    const on = !state.cards.some(c => c.id === id);
+    if (on) state.cards.push({id, answers: {}});
+    else state.cards = state.cards.filter(c => c.id !== id);
+    state.cards.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    state.none = false;
+    history.replaceState({qc: depth()}, '', hashFor('tap'));
+    $(`[data-card="${id}"]`, main).setAttribute('aria-pressed', on);
+    syncTap();
+  }
+  function toggleOther(){
+    extra.o = !extra.o;
+    state.none = false;
+    history.replaceState({qc: depth()}, '', hashFor('tap'));
+    $('[data-other]', main).setAttribute('aria-pressed', !!extra.o);
+    $('.othertext', main).hidden = !extra.o;
+    if (extra.o) $('#other-in').focus();
+    syncTap();
+  }
+
+  /* ---------- the result ---------- */
+  function cardFinding(x){
+    const {cd, def, r} = x;
+    const answerText = E.cardQuestions(cd.id, cd.answers)
+      .map(q => `${esc(q.short)}: <b>${esc(q.answers.find(a => a.id === cd.answers[q.id]).label)}</b>`).join(' &middot; ');
+    const reasons = r.light === 'go'
+      ? `<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: this quick version doesn&rsquo;t ask what the supplier does with your information.</p>`
+      : `<ul class="reasons">${r.hits.map(h => `<li>
+          ${h.outcome !== r.light ? light(h.outcome) + ' ' : ''}${esc(h.reason)}
+          <p class="fix"><b>${h.outcome === 'stop' ? 'Fix:' : 'Next:'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
+          ${advice(h)}
+          <p><a href="${h.how.href}">${esc(h.how.label)}</a></p>
+        </li>`).join('')}</ul>`;
+    return `<div class="finding ${r.light}" id="r-${cd.id}">
+      <div class="top">${light(r.light)}<button class="btn quiet change" type="button" data-change="${cd.id}">Change answers</button></div>
+      <h3 tabindex="-1">${esc(def.label)}</h3>
+      <p class="said">You said: ${answerText}</p>
+      ${reasons}
+    </div>`;
+  }
+
+  function showResult(){
+    mark('end');
+    const c = ctx();
+    const A = E.evaluateScreener(c, state.screener);
+    const rank = {stop: 0, check: 1, go: 2};
+    const cards = state.cards.map(cd => ({cd, def: E.card(cd.id), r: E.evaluateCard(cd.id, cd.answers, c)}));
+    const t = E.tally(cards.map(x => x.r));
+    const sorted = cards.slice().sort((a, b) => rank[a.r.light] - rank[b.r.light]);
+    const stops = A.hits.filter(h => h.outcome === 'stop').length + t.stop;
+    const checks = A.hits.filter(h => h.outcome === 'check').length + t.check;
+    const ind = PROFILE_OPTIONS.industry.options.find(o => o.id === state.industry);
+    const time = took('end');
+    const didB = state.cards.length || state.none || extra.o;
+
+    let partB;
+    if (!didB) partB = `<p>You stopped after part 1.</p><p><button class="btn" type="button" data-act="to-tap">Do part 2 now (3 to 5 minutes)</button></p>`;
+    else if (state.none) partB = `<div class="finding"><h3>No activities tapped</h3>
+      <p>That&rsquo;s possible, but AI often arrives without anyone choosing it: inside email, video calls, browser add-ons and the software you already pay for. A short look through <a href="playbook.html#step-2">step 2 of the playbook</a> is the best way to be sure.</p></div>`;
+    else {
+      const n = cards.length + (extra.o ? 1 : 0);
+      partB = `
+        <p class="counts"><span>${plural(n, 'activity', 'activities')} with AI:</span>
+          ${light('go', t.go + ' go')} ${light('check', t.check + ' check')} ${light('stop', t.stop + ' stop')}</p>
+        <div class="resultgrid">${sorted.map(x => `<button type="button" class="resultcell ${x.r.light}" data-jump="r-${x.cd.id}">${light(x.r.light)}<span class="t">${esc(x.def.label)}</span></button>`).join('')}</div>
+        ${sorted.map(cardFinding).join('')}
+        ${extra.o ? `<div class="finding"><span class="light none">Not checked</span><h3>Something else${otherText ? ': ' + esc(otherText) : ''}</h3><p>Not checked here. Add it when you do the full check of your AI tools.</p></div>` : ''}`;
+    }
+
+    screen(`
+      <p class="step-label"><b>Your quick check</b><span>${esc(fmtDate(today()))}</span>${ind ? `<span>${esc(ind.label)}</span>` : ''}</p>
+      <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in what this asked about'}</h2>
+      <p class="honest">Quick check, not a full review</p>
+      ${time ? `<p class="timing">This took ${time}.</p>` : ''}
+      ${ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
+
+      ${didB
+        ? `<h3 class="subhead">Part 2: what you use AI for</h3>${partB}<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A, true)}`
+        : `<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A)}<h3 class="subhead">Part 2: what you use AI for</h3>${partB}`}
+
+      <h3 class="subhead">What this didn&rsquo;t look at</h3>
+      <ul class="notlooked">
+        <li>Which tools and plans you use, by name. One job can involve more than one tool.</li>
+        <li>What suppliers do with your information: whether they train on it, whether you can delete it, and data agreements.</li>
+        <li>AI nobody thought of. Browser add-ons and features inside specialist software are easy to miss.</li>
+        <li>Whether AI output is checked before it goes out.</li>
+        <li>Anything you set up or built yourself, beyond the question about public assistants.</li>
+      </ul>
+
+      <h3 class="subhead">Next</h3>
+      ${nextSteps(t)}
+
+      <h3 class="subhead">Keep this</h3>
+      <div class="actions">
+        <button class="btn" type="button" data-act="print">Print or save as PDF</button>
+        <button class="btn" type="button" data-act="copy">Copy link</button>
+        <button class="btn" type="button" data-act="save">Save in this browser</button>
+        <button class="btn" type="button" data-act="download">Download for the full check</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+      ${backRow()}
+    `);
+  }
+
+  /* ---------- next: one step picked from the result, the rest as a list ---------- */
+  function nextSteps(t){
+    const toList = t.stop + t.check > 0;
+    const policyHref = `quick_policy.html#${E.encode(state)}`;
+    const first = toList
+      ? `<div class="start next-card" style="--c:var(--part2)"><span class="k">Do this next &middot; 5 to 15 minutes a tool</span>
+          <h4>Check the stop and check cards properly</h4>
+          <p>Your activities go onto your AI list, worst first. This saves the result in this browser so the list can pick it up.</p>
+          <button class="start-btn" type="button" data-act="save-go">Save and open my AI list</button></div>`
+      : `<div class="start next-card" style="--c:var(--part3);--btn:#9A5A2F"><span class="k">Do this next &middot; 8 to 10 minutes</span>
+          <h4>Turn this into your AI policy</h4>
+          <p>About twelve questions, some already answered from this check. You leave with a one-page policy.</p>
+          <a class="start-btn" href="${policyHref}">Start my AI policy</a></div>`;
+    const also = [
+      toList ? `<a href="${policyHref}">Turn this into your AI policy</a><span>8 to 10 minutes</span>`
+             : `<button class="linkish" type="button" data-act="save-go">Check each tool properly on your AI list</button><span>5 to 15 minutes a tool; saves this result first</span>`,
+      `<a href="playbook.html#step-2">Find all the AI you use</a><span>Playbook step 2, the places this check can&rsquo;t reach</span>`,
+      `<a href="quick_pulse.html">Keep it current</a><span>1 minute a month, with a calendar reminder</span>`,
+      `<a href="policy-supplier-questions.html">Questions to ask a supplier</a><span>Template, for anything marked check</span>`,
+    ];
+    return `${first}
+      <p class="status" id="next-status" role="status"></p>
+      <h4 class="also-head">Also useful</h4>
+      <ul class="also">${also.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  }
+  function saveAndGo(){
+    if (sset('localStorage', SAVE_KEY, JSON.stringify(record()))) return void (location.href = 'tool_check.html');
+    $('#next-status').textContent = 'This browser is blocking storage, so nothing was saved. Use Copy link or Download instead.';
+  }
+
+  /* ---------- keep: save, copy, download ---------- */
+  function say(msg){ const s = $('#status'); if (s) s.textContent = msg; }
+  function record(){
+    return Object.assign(E.carryOver(state, today()), {hash: hashFor(), other: extra.o ? otherText : null});
+  }
+  function save(){
+    const ok = sset('localStorage', SAVE_KEY, JSON.stringify(record()));
+    say(ok ? 'Saved in this browser only. Clearing your browser data deletes it.' : 'This browser is blocking storage, so nothing was saved. Use Copy link or Download instead.');
+  }
+  function download(){
+    const blob = new Blob([JSON.stringify(record(), null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `quick_ai_check_${today()}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    say('Downloaded. The full check will be able to read this file, so you won’t answer anything twice.');
+  }
+  async function copyLink(){
+    try {
+      await navigator.clipboard.writeText(location.href);
+      say('Link copied. Anyone with it sees your answers, but not anything you typed.');
+    } catch (e) {
+      say('Copy the address from your browser’s address bar. Anyone with it sees your answers, but not anything you typed.');
+    }
+  }
+
+  /* ---------- events ---------- */
+  main.addEventListener('click', e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.answer && onAnswer) return onAnswer(t.dataset.answer);
+    if (t.dataset.ind){
+      chosenIndustry = chosenIndustry === t.dataset.ind ? null : t.dataset.ind;
+      $$('[data-ind]', main).forEach(b => b.setAttribute('aria-pressed', b.dataset.ind === chosenIndustry));
+      $('.ind-examples', main).innerHTML = industryExamples();
+      return;
+    }
+    if (t.dataset.card) return toggleCard(t.dataset.card);
+    if (t.hasAttribute('data-other')) return toggleOther();
+    if (t.hasAttribute('data-none')){
+      const n = $('.nudge', main);
+      n.hidden = false;
+      n.scrollIntoView({block: 'nearest'});
+      $('button', n).focus({preventScroll: true});
+      return;
+    }
+    if (t.dataset.jump){
+      const el = document.getElementById(t.dataset.jump);
+      el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+      $('h3', el).focus({preventScroll: true});
+      return;
+    }
+    if (t.dataset.change){
+      const cd = state.cards.find(c => c.id === t.dataset.change);
+      cd.answers = {};
+      return go();
+    }
+    switch (t.dataset.act){
+      case 'start':
+        state = {industry: chosenIndustry, screener: {}, cards: [], none: false};
+        extra = {};
+        Object.keys(times).forEach(k => delete times[k]);
+        times.start = Date.now();
+        return go();
+      case 'resume': {
+        const saved = loadSaved();
+        otherText = saved.other || '';
+        history.pushState({qc: depth() + 1}, '', saved.hash);
+        readHash();
+        return render();
+      }
+      case 'forget': sdel('localStorage', SAVE_KEY); return render();
+      case 'back': return history.back();
+      case 'restart':
+        state = null; extra = {}; otherText = '';
+        sdel('sessionStorage', OTHER_KEY);
+        history.pushState({qc: depth() + 1}, '', hashFor());
+        return render();
+      case 'to-tap': return go('tap');
+      case 'stop-here': return go('result');
+      case 'look-again': $('.nudge', main).hidden = true; return $('.tapgrid button', main).focus();
+      case 'none-confirm':
+        state.cards = []; state.none = true; extra.o = false;
+        return go();
+      case 'tap-continue': return go();
+      case 'print': return window.print();
+      case 'copy': return copyLink();
+      case 'save': return save();
+      case 'save-go': return saveAndGo();
+      case 'download': return download();
+    }
+  });
+  main.addEventListener('input', e => {
+    if (e.target.id !== 'other-in') return;
+    otherText = e.target.value;
+    sset('sessionStorage', OTHER_KEY, otherText);
+  });
+  window.addEventListener('popstate', () => { readHash(); render(); });
+
+  readHash();
+  render();
+})();

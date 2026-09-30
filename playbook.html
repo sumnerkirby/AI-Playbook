@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Playbook for small businesses</title>
+<meta name="description" content="Nine practical steps for small businesses to secure and govern their use of AI, based on the NIST AI Risk Management Framework and the OWASP Top 10 for LLM Applications.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html" aria-current="page">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html">Quick check</a>
+    <a href="profile.html">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">The playbook &middot; Nine steps</p>
+    <h1>AI Playbook<span>for small businesses</span></h1>
+    <p class="lede">Work through the steps in order. The first three matter most. Each step says why it matters, what to do, and the questions you should be able to answer once it&rsquo;s done.</p>
+  </header>
+
+  <section class="atlas" id="atlas" aria-label="Jump to a step">
+    <p class="atlas-note">Mark each step done as you finish it. Your progress is saved in this browser only. <button class="btn quiet" id="reset" type="button" hidden>Clear progress</button></p>
+  </section>
+
+  <details class="fold intro-fold">
+    <summary>Before you start: why these steps, and where they come from</summary>
+    <div class="in">
+    <section class="prose" aria-label="Before you start">
+      <p>Your staff are almost certainly using AI already. Some of it they&rsquo;ve chosen, like a chat assistant for drafting emails or summarising documents, and some of it has quietly arrived inside software you already pay for. None of that is a problem in itself. The trouble starts when nobody knows what&rsquo;s being used, what information is going into it, or who would notice if it went wrong.</p>
+      <p>This playbook walks through the handful of things that fix that. Work through the steps in order. The first three matter most, and if you only get that far you&rsquo;ll be in better shape than most businesses your size. Each step explains why it matters, what to do, and the questions you should be able to answer once it&rsquo;s done. Three of the steps have a longer guide if you want more detail.</p>
+      <p>The steps are based on two public sources: the AI Risk Management Framework from the US National Institute of Standards and Technology (NIST), and the OWASP Top 10 for LLM Applications, a widely used list of security risks in AI systems. Both are written mainly for large organisations and specialists, and NIST itself acknowledges that smaller organisations are in a different position:</p>
+    </section>
+    <figure class="quote" style="max-width:78ch;margin-top:4px">
+      <figcaption><span>AI RMF 1.0 &middot; <b>Section 1.2.4</b></span><a href="ai-rmf-1-0.html#s-1-2-4">Read in context</a></figcaption>
+      <blockquote>In addition, small to medium-sized organizations managing AI risks or implementing the AI RMF may face different challenges than large organizations, depending on their capabilities and resources.</blockquote>
+    </figure>
+    <div class="prose" style="margin-top:14px">
+      <p>Each step shows you the passages it draws on, quoted word for word and linked to the full text in the <a href="#library">library</a>, so you can check how we&rsquo;ve read them. If you want to see how the steps line up with the four functions of the NIST framework, there&rsquo;s <a href="#framework">a table near the end</a>.</p>
+    </div>
+
+    </div>
+  </details>
+
+  <div class="controls">
+    <div class="tally-wrap">
+      <p class="tally" id="tally" aria-live="polite"></p>
+      <div class="pbar-track" id="tally-bar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><i style="width:0"></i></div>
+    </div>
+    <button class="btn" id="toggle" type="button">Expand all</button>
+  </div>
+
+  <main id="steps">
+
+    <!-- ================================================= PART 1 -->
+    <div class="fn-head" id="part-1" data-part="1" data-label="Get organised" style="--c:var(--part1)">
+      <h2>Get organised</h2><p>Steps 1&ndash;3 &middot; start here</p>
+    </div>
+
+    <article class="item" id="step-1" data-step="1" data-part="1" style="--c:var(--part1)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-1-panel">
+        <span class="tag">Step 1</span>
+        <span class="title">Put one person in charge<small>Someone needs to own this, even if it only takes an hour a month.</small></span>
+        <span class="meta">About 30 min</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-1-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>In a large company, AI governance means committees and job titles. In a business of ten or twenty people it usually means nobody, so decisions get made by whoever signs up for a tool first. You don&rsquo;t need a committee. You need one person whose job it is to keep track of how AI is used, decide on new tools, and be the one people ask when they&rsquo;re not sure.</p>
+              <p>It works best if that person has the authority to say no, or clearly has the owner&rsquo;s backing. And if you own the business, the responsibility stays with you even when you hand the day-to-day work to someone else.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Choose the person. Whoever already looks after IT, data protection or operations is often a natural fit. In a very small business it may be you.</li>
+              <li>Tell the team, in writing, who it is and what they&rsquo;re responsible for.</li>
+              <li>Give them some time for it. An hour a month is enough to start with.</li>
+              <li>Agree what they can decide on their own, such as approving a low-risk tool, and what comes back to you: anything involving customer data, anything customers will see, and anything that costs more than an agreed amount.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>Who decides whether a new AI tool can be used?</li>
+              <li>If someone isn&rsquo;t sure whether something is allowed, who do they ask?</li>
+              <li>Who would you call if an AI tool caused a problem on a Saturday?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 2.3</b></span><a href="ai-rmf-playbook.html#i-GOVERN-2-3">Read in context</a></figcaption>
+                <blockquote>Executive leadership of the organization takes responsibility for decisions about risks associated with AI system development and deployment.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 2.3</b></span><a href="ai-rmf-playbook.html#i-GOVERN-2-3">Read in context</a></figcaption>
+                <blockquote>Accountability ensures that a specific team and individual is responsible for AI risk management efforts.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 1 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-2" data-step="2" data-part="1" style="--c:var(--part1)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-2-panel">
+        <span class="tag">Step 2</span>
+        <span class="title">Find out what AI you&rsquo;re already using<small>Make one list of every AI tool and feature in use, including the ones people signed up for themselves.</small></span>
+        <span class="meta">1&ndash;2 hours</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-2-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>You can&rsquo;t set sensible rules for tools you don&rsquo;t know about, and most businesses find more than they expected when they look. There are the assistants people have signed up for themselves, often on free personal accounts. There are also AI features that have appeared inside the email, documents, accounting, customer-management and meeting software you already pay for, and many of them were switched on without anyone deciding to.</p>
+              <p>Each of these may be sending your information somewhere. The list you make in this step is what every later step builds on.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Ask everyone which AI tools they use for work, including free ones, browser extensions and phone apps. Make it clear nobody is in trouble. You want an honest answer, not a tidy one.</li>
+              <li>Go through the software the business pays for and check which products have added AI features, and whether they&rsquo;re turned on.</li>
+              <li>Put everything on one list: the tool, who uses it, what for, what information goes into it, and whether it&rsquo;s a business account or someone&rsquo;s personal one.</li>
+              <li>Keep the list somewhere the person from step 1 can update it, and mark anything that receives information about customers or staff.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>How many AI tools are in use, and which of them are on personal accounts?</li>
+              <li>Which ones receive information about customers or staff?</li>
+              <li>Which AI features are switched on in software you already pay for?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 1.6</b></span><a href="ai-rmf-playbook.html#i-GOVERN-1-6">Read in context</a></figcaption>
+                <blockquote>Mechanisms are in place to inventory AI systems and are resourced according to organizational risk priorities.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 1.6</b></span><a href="ai-rmf-playbook.html#i-GOVERN-1-6">Read in context</a></figcaption>
+                <blockquote>Typically inventories capture all organizational models or systems, as partial inventories may not provide the value of a full inventory.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>Generative AI Profile &middot; <b>GOVERN 1.6</b></span><a href="ai-rmf-genai-profile.html#s-GOVERN-1-6">Read in context</a></figcaption>
+                <blockquote>Define any inventory exemptions in organizational policies for GAI systems embedded into application software.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MAP 1.1</b></span><a href="ai-rmf-playbook.html#i-MAP-1-1">Read in context</a></figcaption>
+                <blockquote>Intended purpose, potentially beneficial uses, context-specific laws, norms and expectations, and prospective settings in which the AI system will be deployed are understood and documented.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <a class="guidelink" href="guide-ai-inventory.html"><span>Guide</span><b>Making a list of the AI your business uses</b></a>
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 2 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-3" data-step="3" data-part="1" style="--c:var(--part1)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-3-panel">
+        <span class="tag">Step 3</span>
+        <span class="title">Write down the rules<small>A short AI policy tells your team what&rsquo;s allowed, so they don&rsquo;t each have to guess.</small></span>
+        <span class="meta">Half a day</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-3-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>Your team will use AI whether or not you have a policy. Without one, each person decides for themselves what&rsquo;s safe to paste into a chat window, and they&rsquo;ll decide differently. A written policy gives everyone the same answer, and it gives you something to show a customer, insurer or auditor who asks how you handle AI.</p>
+              <p>It doesn&rsquo;t need to be long. Two pages that people actually read are worth far more than twenty that nobody opens.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>List the tools staff may use, and explain how to ask for a new one to be approved.</li>
+              <li>Say plainly what must never go into an AI tool. <a href="#step-4">Step 4</a> helps you decide this.</li>
+              <li>Say which work has to be checked by a person before it goes out. <a href="#step-6">Step 6</a> covers this.</li>
+              <li>Decide whether, and how, you tell customers when you&rsquo;ve used AI.</li>
+              <li>Go through the policy with the team, answer their questions, and ask everyone to confirm they&rsquo;ve read it. Do the same with new starters.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>Could a new employee find out in five minutes which AI tools they can use, and what they must not put into them?</li>
+              <li>Has everyone read the current version?</li>
+              <li>When was it last updated?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 1.4</b></span><a href="ai-rmf-playbook.html#i-GOVERN-1-4">Read in context</a></figcaption>
+                <blockquote>The risk management process and its outcomes are established through transparent policies, procedures, and other controls based on organizational risk priorities.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 2.2</b></span><a href="ai-rmf-playbook.html#i-GOVERN-2-2">Read in context</a></figcaption>
+                <blockquote>The organization’s personnel and partners receive AI risk management training to enable them to perform their duties and responsibilities consistent with related policies, procedures, and agreements.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <a class="guidelink" href="guide-ai-policy.html"><span>Guide</span><b>Writing an AI policy your team will read</b></a>
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 3 done</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ================================================= PART 2 -->
+    <div class="fn-head" id="part-2" data-part="2" data-label="Use AI safely" style="--c:var(--part2)">
+      <h2>Use AI safely</h2><p>Steps 4&ndash;6 &middot; data, suppliers and output</p>
+    </div>
+
+    <article class="item" id="step-4" data-step="4" data-part="2" style="--c:var(--part2)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-4-panel">
+        <span class="tag">Step 4</span>
+        <span class="title">Keep sensitive information out<small>Decide what must never go into an AI tool, and check what each tool does with what it&rsquo;s given.</small></span>
+        <span class="meta">1&ndash;2 hours</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-4-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>The most common AI mistake in a small business isn&rsquo;t dramatic. Someone pastes a customer list, a contract or a colleague&rsquo;s sick note into a chat assistant to save ten minutes. Depending on the tool and the plan you&rsquo;re on, that information may be stored, seen by the provider&rsquo;s staff, or used to train future versions of the model.</p>
+              <p>You may also have obligations about where that information can go, under privacy law, professional confidentiality rules or your contracts with customers. An AI tool is one more place your data is sent, and it deserves the same care as any other.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Sort your information into three groups: what must never go into an AI tool, what may go only into approved business tools, and what&rsquo;s fine anywhere.</li>
+              <li>For each tool on your list, check whether what you type is used for training, how long it&rsquo;s kept, and whether you can turn those off.</li>
+              <li>If staff need AI for work involving customer information, pay for a business plan whose terms say your data won&rsquo;t be used for training, and make sure that work isn&rsquo;t done on personal accounts.</li>
+              <li>Turn on the privacy settings that are available, and write down what you chose so you can check it later.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>For each tool that receives customer information, do you know whether it&rsquo;s used for training, and where the terms say so?</li>
+              <li>Does everyone know what must never be pasted into an AI tool?</li>
+              <li>If someone left tomorrow, would their AI conversations about customers leave with them?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>Generative AI Profile &middot; <b>2.4 Data Privacy</b></span><a href="ai-rmf-genai-profile.html#s-2-4">Read in context</a></figcaption>
+                <blockquote>Models may leak, generate, or correctly infer sensitive information about individuals.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>OWASP Top 10 &middot; <b>LLM02:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM02-2026">Read in context</a></figcaption>
+                <blockquote>Sensitive information disclosure occurs when an LLM-integrated system exposes confidential, regulated, privileged, or proprietary data through a channel the data subject, controller, or system owner did not authorize.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <a class="guidelink" href="guide-data.html"><span>Guide</span><b>Keeping sensitive information out of AI tools</b></a>
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 4 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-5" data-step="5" data-part="2" style="--c:var(--part2)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-5-panel">
+        <span class="tag">Step 5</span>
+        <span class="title">Check your AI suppliers<small>Ask a few straightforward questions before you rely on any AI product.</small></span>
+        <span class="meta">About an hour each</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-5-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>Nearly all the AI a small business uses is someone else&rsquo;s product, and many of those products are built on a model from yet another company. You can&rsquo;t inspect how they work, but you can ask questions, read the terms, and decline to rely on a supplier who won&rsquo;t give you straight answers.</p>
+              <p>Treat an AI supplier the way you&rsquo;d treat anyone else you hand customer information to, such as your payroll provider or your accountant.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Before adopting any AI tool that will handle customer data or do customer-facing work, ask the supplier what happens to your data, whether it&rsquo;s used for training, where it&rsquo;s stored, who can see it, what happens if they&rsquo;re breached, and whether you can export and delete it when you leave.</li>
+              <li>Read the terms for how they use your data and what they accept responsibility for. Be wary of terms that let them change how they use your data without telling you.</li>
+              <li>Prefer suppliers who publish clear security and privacy information over those who don&rsquo;t.</li>
+              <li>Record the answers next to the tool on your list from <a href="#step-2">step 2</a>.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>For each important tool, could you show someone the supplier&rsquo;s answers?</li>
+              <li>What would you do if the supplier shut down, or changed its terms, tomorrow?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 6.1</b></span><a href="ai-rmf-playbook.html#i-GOVERN-6-1">Read in context</a></figcaption>
+                <blockquote>Organizations can apply governance approaches to third-party AI systems and data as they would for internal resources — including open source software, publicly available data, and commercially available models.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>Generative AI Profile &middot; <b>2.12 Value Chain and Component Integration</b></span><a href="ai-rmf-genai-profile.html#s-2-12">Read in context</a></figcaption>
+                <blockquote>As GAI systems often involve many distinct third-party components and data sources, it may be difficult to attribute issues in a system’s behavior to any one of these sources.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MAP 4.1</b></span><a href="ai-rmf-playbook.html#i-MAP-4-1">Read in context</a></figcaption>
+                <blockquote>Approaches for mapping AI technology and legal risks of its components &ndash; including the use of third-party data or software &ndash; are in place, followed, and documented, as are risks of infringement of a third-party&rsquo;s intellectual property or other rights.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 5 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-6" data-step="6" data-part="2" style="--c:var(--part2)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-6-panel">
+        <span class="tag">Step 6</span>
+        <span class="title">Check AI&rsquo;s work before it goes out<small>AI writes confidently and is sometimes wrong. Decide what always gets a human check.</small></span>
+        <span class="meta">1 hour, then ongoing</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-6-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>AI tools produce fluent, confident text, and some of it is wrong: invented facts, figures that don&rsquo;t add up, references that don&rsquo;t exist, or a policy detail that sounds right but isn&rsquo;t yours. Mistakes like these are manageable when someone catches them. Trouble comes when people gradually trust the tool enough to stop checking.</p>
+              <p>This matters most where AI output reaches customers or affects people. As far as a customer is concerned, a made-up answer from your website chatbot, or an AI-drafted quote with the wrong price, is your business&rsquo;s answer.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Decide which work always gets checked by a person before it goes out. A sensible starting point is anything sent to a customer, anything with figures in it, anything legal, medical or financial, and anything published under the business&rsquo;s name.</li>
+              <li>Make the person who sends something responsible for it, exactly as if they&rsquo;d written it themselves.</li>
+              <li>Take particular care where AI is involved in decisions about people, such as hiring, pricing, credit or who gets a service. Keep a person making the actual decision. In some places the law requires it.</li>
+              <li>If you have a customer-facing chatbot, limit what it&rsquo;s allowed to promise, and make it easy for customers to reach a person.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>Which kinds of work always get a human check, and does everyone know?</li>
+              <li>Is AI involved in any decision about a customer or an employee? If so, who makes the final call?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>Generative AI Profile &middot; <b>2.2 Confabulation</b></span><a href="ai-rmf-genai-profile.html#s-2-2">Read in context</a></figcaption>
+                <blockquote>“Confabulation” refers to a phenomenon in which GAI systems generate and confidently present erroneous or false content in response to prompts.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>Generative AI Profile &middot; <b>2.7 Human-AI Configuration</b></span><a href="ai-rmf-genai-profile.html#s-2-7">Read in context</a></figcaption>
+                <blockquote>Conversely, due to the complexity and increasing reliability of GAI technology, over time, humans may over-rely on GAI systems or may unjustifiably perceive GAI content to be of higher quality than that produced by other sources.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>OWASP Top 10 &middot; <b>LLM07:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM07-2026">Read in context</a></figcaption>
+                <blockquote>The core risk is that the incorrect output is trusted and acted upon.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MAP 3.5</b></span><a href="ai-rmf-playbook.html#i-MAP-3-5">Read in context</a></figcaption>
+                <blockquote>Processes for human oversight are defined, assessed, and documented in accordance with organizational policies from GOVERN function.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 6 done</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ================================================= PART 3 -->
+    <div class="fn-head" id="part-3" data-part="3" data-label="Stay in control" style="--c:var(--part3)">
+      <h2>Stay in control</h2><p>Steps 7&ndash;9 &middot; access, incidents and upkeep</p>
+    </div>
+
+    <article class="item" id="step-7" data-step="7" data-part="3" style="--c:var(--part3)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-7-panel">
+        <span class="tag">Step 7</span>
+        <span class="title">Limit what AI can do on its own<small>If you connect AI to email, files, accounts or payments, give it only the access the job needs.</small></span>
+        <span class="meta">About an hour</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-7-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>A chat assistant that only answers questions can, at worst, give you a bad answer. An assistant connected to your email, calendar, files or accounts can send, delete, book and pay, and the newer &ldquo;agent&rdquo; features are designed to do exactly that without asking each time.</p>
+              <p>That changes the risk. Instructions can be hidden in an email, a document or a web page that the assistant reads, and the assistant may follow them as if they came from you. This is called prompt injection. There&rsquo;s currently no reliable way to prevent it entirely, so the practical defence is to limit what the assistant is able to do.</p>
+              <p>If none of your AI tools can act on their own, you can mark this step done once you&rsquo;ve confirmed that.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Give each AI assistant the least access that does the job: read-only where that&rsquo;s enough, and only the folders, mailboxes or accounts it actually needs.</li>
+              <li>Require a person to approve anything that sends messages, makes payments, deletes things or changes records.</li>
+              <li>Set spending limits on any AI service that bills by usage, with an alert before you reach them.</li>
+              <li>Be cautious about plugins, add-ons and connectors from developers you haven&rsquo;t checked (see <a href="#step-5">step 5</a>).</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>Which AI tools can act on your behalf rather than just answer, and what can each one reach?</li>
+              <li>What&rsquo;s the most an AI tool could spend, or send, without a person approving it?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>OWASP Top 10 &middot; <b>LLM01:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM01-2026">Read in context</a></figcaption>
+                <blockquote>LLMs make no architectural distinction between "instructions" and "data" (both are tokens on the same stream), so there is no clean equivalent to parameterized queries (NCSC, 2025).</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>OWASP Top 10 &middot; <b>LLM03:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM03-2026">Read in context</a></figcaption>
+                <blockquote>Excessive Agency is the vulnerability that enables damaging actions to be performed in response to unexpected, ambiguous or manipulated outputs from an LLM, regardless of what is causing the LLM to malfunction.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>OWASP Top 10 &middot; <b>LLM06:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM06-2026">Read in context</a></figcaption>
+                <blockquote>Attackers can trigger disproportionately expensive computation at negligible cost to themselves, whether through crafted prompts, stolen credentials, or manipulated workflows.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 7 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-8" data-step="8" data-part="3" style="--c:var(--part3)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-8-panel">
+        <span class="tag">Step 8</span>
+        <span class="title">Be ready for when something goes wrong<small>Decide in advance how problems get reported, who can switch a tool off, and who you&rsquo;d need to tell.</small></span>
+        <span class="meta">About an hour</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-8-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>Sooner or later something will go wrong. Confidential information will go into the wrong tool, a chatbot will tell a customer something untrue, or a supplier will have a breach. A small business doesn&rsquo;t need a thick incident plan, but it helps enormously to have made a few decisions beforehand, because nobody thinks clearly in the middle of a problem.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Tell staff how to report an AI problem, and make clear that honest reporting won&rsquo;t get anyone into trouble. You want to hear about near misses too.</li>
+              <li>For each important tool, know how to switch it off or remove its access, and who is able to do it.</li>
+              <li>Keep a simple log of problems and near misses: what happened, what you did, and what you changed afterwards.</li>
+              <li>Find out whether your insurer, your contracts or privacy law require you to tell anyone about certain incidents, and how quickly.</li>
+              <li>After anything goes wrong, update your list, your policy or your settings so the same thing is less likely to happen again.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>If someone pasted customer data into the wrong tool this afternoon, what would they do next?</li>
+              <li>Who can switch off each important tool, and do they know how?</li>
+              <li>Who would you have to notify, and by when?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 1.5</b></span><a href="ai-rmf-playbook.html#i-GOVERN-1-5">Read in context</a></figcaption>
+                <blockquote>Smaller organizations which may not have fulsome governance programs, can utilize incident response plans for addressing system failures, abuse or misuse.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MANAGE 2.4</b></span><a href="ai-rmf-playbook.html#i-MANAGE-2-4">Read in context</a></figcaption>
+                <blockquote>Mechanisms are in place and applied, responsibilities are assigned and understood to supersede, disengage, or deactivate AI systems that demonstrate performance or outcomes inconsistent with intended use.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MANAGE 4.3</b></span><a href="ai-rmf-playbook.html#i-MANAGE-4-3">Read in context</a></figcaption>
+                <blockquote>Maintain a database of reported errors, near-misses, incidents and negative impacts including date reported, number of reports, assessment of impact and severity, and responses.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 8 done</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="item" id="step-9" data-step="9" data-part="3" style="--c:var(--part3)">
+      <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-9-panel">
+        <span class="tag">Step 9</span>
+        <span class="title">Review it every few months<small>AI tools change quickly. A short, regular review keeps everything above up to date.</small></span>
+        <span class="meta">30&ndash;60 min a quarter</span>
+        <span class="donepill" hidden>Done</span>
+        <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
+      </button></h3>
+      <div class="panel" id="step-9-panel">
+        <div class="menu">
+          <section class="sec" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
+            <div class="content prose">
+              <p>AI products change faster than most software. Suppliers add features, update their terms and switch new capabilities on, and your team will find new tools. Without a regular look, the list from step 2 and the policy from step 3 will quietly go out of date.</p>
+              <p>For most small businesses, a short review every quarter, led by the person from step 1, is enough.</p>
+            </div>
+          </section>
+          <section class="sec sec-actions" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>What to do</button></h4>
+            <div class="content prose"><ul>
+              <li>Update the list of tools: add new ones, remove ones nobody uses, and look for AI features that have been switched on since last time.</li>
+              <li>Check whether any supplier has changed its terms or its data settings.</li>
+              <li>Read through the log from step 8 and ask whether anything should change as a result.</li>
+              <li>Re-read the policy and update it if it no longer matches how people actually work.</li>
+              <li>Put the next review in the calendar before you finish.</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-document" data-open="true">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>You&rsquo;re done when you can answer</button></h4>
+            <div class="content prose"><ul>
+              <li>When was the last review, and when is the next one?</li>
+              <li>What has changed since the last one?</li>
+            </ul></div>
+          </section>
+          <section class="sec sec-sources">
+            <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Where this comes from</button></h4>
+            <div class="content">
+              <p class="sources-note">Quoted word for word. Follow a link to read the passage in context.</p>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>GOVERN 1.5</b></span><a href="ai-rmf-playbook.html#i-GOVERN-1-5">Read in context</a></figcaption>
+                <blockquote>AI systems are dynamic and may perform in unexpected ways once deployed or after deployment.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF 1.0 &middot; <b>Section 5.3</b></span><a href="ai-rmf-1-0.html#s-5-3">Read in context</a></figcaption>
+                <blockquote>AI systems should be tested before their deployment and regularly while in operation.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>AI RMF Playbook &middot; <b>MEASURE 3.1</b></span><a href="ai-rmf-playbook.html#i-MEASURE-3-1">Read in context</a></figcaption>
+                <blockquote>Approaches, personnel, and documentation are in place to regularly identify and track existing, unanticipated, and emergent AI risks based on factors such as intended and actual performance in deployed contexts.</blockquote>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="stepfoot">
+          <button class="btn mark" type="button" aria-pressed="false">Mark step 9 done</button>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <!-- ================================================= GUIDES -->
+  <section id="guides" aria-labelledby="h-guides">
+    <div class="fn-head" style="--c:var(--ink)"><h2 id="h-guides">Guides</h2><p>More detail on three of the steps</p></div>
+    <div class="cards">
+      <a class="card" href="guide-ai-inventory.html" style="--c:var(--part1)">
+        <span class="k">Step 2 &middot; 8-minute read</span>
+        <span class="t">Making a list of the AI your business uses</span>
+        <span class="d">Where AI tends to hide, how to ask your team without anyone feeling caught out, and what to write down.</span>
+      </a>
+      <a class="card" href="guide-ai-policy.html" style="--c:var(--part1)">
+        <span class="k">Step 3 &middot; 10-minute read</span>
+        <span class="t">Writing an AI policy your team will read</span>
+        <span class="d">What a small-business AI policy needs to cover, with a two-page starter policy you can copy and adapt.</span>
+      </a>
+      <a class="card" href="guide-data.html" style="--c:var(--part2)">
+        <span class="k">Step 4 &middot; 9-minute read</span>
+        <span class="t">Keeping sensitive information out of AI tools</span>
+        <span class="d">What can happen to what you type, how to sort your information, and the settings worth checking on every tool.</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================================================= POLICIES -->
+  <section id="policies" aria-labelledby="h-policies">
+    <div class="fn-head" style="--c:var(--ink)"><h2 id="h-policies">Policy templates</h2><p>Documents to copy and adapt</p></div>
+    <div class="prose" style="margin-bottom:14px">
+      <p>Short, plain-language templates for the documents that make these steps stick. Start with the AI lead, the acceptable use policy and the incident plan, and add the rest as your use of AI grows. <a href="policies.html">See all the templates and where to start</a>.</p>
+    </div>
+    <div class="cards">
+      <a class="card" href="policy-ai-lead.html" style="--c:var(--part1)">
+        <span class="k">Step 1 &middot; start here</span>
+        <span class="t">AI lead: a role description</span>
+        <span class="d">Who looks after AI, what they&rsquo;re responsible for, and which decisions they can make on their own.</span>
+      </a>
+      <a class="card" href="policy-tool-approval.html" style="--c:var(--part1)">
+        <span class="k">Steps 2 and 5</span>
+        <span class="t">Approving new AI tools</span>
+        <span class="d">Three levels of checking based on what a tool can see and do, with a request form for your team.</span>
+      </a>
+      <a class="card" href="policy-supplier-questions.html" style="--c:var(--part2)">
+        <span class="k">Step 5</span>
+        <span class="t">Questions for AI suppliers</span>
+        <span class="d">What to ask a provider before trusting them with your information, and how to read the answers.</span>
+      </a>
+      <a class="card" href="policy-human-review.html" style="--c:var(--part2)">
+        <span class="k">Step 6</span>
+        <span class="t">Checking AI-assisted work</span>
+        <span class="d">Which work must be checked by a person, and what checking actually involves.</span>
+      </a>
+      <a class="card" href="policy-connected-ai.html" style="--c:var(--part3)">
+        <span class="k">Step 7</span>
+        <span class="t">Rules for AI that can act</span>
+        <span class="d">Least access, a person&rsquo;s approval for high-impact actions, and spending limits.</span>
+      </a>
+      <a class="card" href="policy-incident-response.html" style="--c:var(--part3)">
+        <span class="k">Step 8 &middot; start here</span>
+        <span class="t">AI incident plan and log</span>
+        <span class="d">What counts as an incident, the five things to do, who to tell, and a log to record it.</span>
+      </a>
+      <a class="card" href="policy-quarterly-review.html" style="--c:var(--part3)">
+        <span class="k">Step 9</span>
+        <span class="t">Quarterly AI review checklist</span>
+        <span class="d">The short review that keeps your list, your policy and your settings up to date.</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================================================= FRAMEWORK -->
+  <section id="framework" aria-labelledby="h-framework">
+    <div class="fn-head" style="--c:var(--ink)"><h2 id="h-framework">The NIST framework</h2><p>How the steps line up with it</p></div>
+    <div class="prose">
+      <p>NIST&rsquo;s framework sorts the work of managing AI risk into four functions. <b>Govern</b> covers people, policies and accountability. <b>Map</b> is about understanding what each AI system is for, where it&rsquo;s used and what could go wrong. <b>Measure</b> is about testing and tracking how systems perform. <b>Manage</b> is about acting on what you find, including switching things off and dealing with incidents.</p>
+      <p>Most of this playbook sits under Govern, and that&rsquo;s deliberate. A small business rarely builds its own AI. It buys it, switches it on and decides how staff may use it, and those are governance decisions. Much of Map and most of Measure are written for organisations that build or formally evaluate AI systems: choosing test data, measuring bias, benchmarking accuracy. A business whose AI is a chat assistant and a few features inside its accounting software can&rsquo;t do that work, and the framework doesn&rsquo;t expect it to:</p>
+    </div>
+    <figure class="quote" style="max-width:78ch">
+      <figcaption><span>AI RMF 1.0 &middot; <b>Section 5</b></span><a href="ai-rmf-1-0.html#s-5">Read in context</a></figcaption>
+      <blockquote>Framework users may apply these functions as best suits their needs for managing AI risks based on their resources and capabilities. Some organizations may choose to select from among the categories and subcategories; others may choose and have the capacity to apply all categories and subcategories.</blockquote>
+    </figure>
+    <div class="prose" style="margin-top:14px">
+      <p>The parts of Map and Measure that do fit a business using other people&rsquo;s AI are covered here in plain terms: knowing what each tool is for (step 2), understanding the risks that come with a supplier&rsquo;s product (step 5), deciding where a person checks the output (step 6), and keeping an eye on things once they&rsquo;re in use (step 9). Steps 4 and 7 deal with specific risks rather than framework outcomes, so they draw on the Generative AI Profile and the OWASP list instead.</p>
+      <p>The table lists what each step cites. If an auditor, insurer or customer asks how your approach relates to the NIST framework, this is the answer.</p>
+    </div>
+    <div class="tablewrap">
+      <table class="grid fnmap">
+        <thead><tr><th scope="col">Step</th><th scope="col">NIST AI RMF outcomes</th><th scope="col">Risks it addresses</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#step-1">Step 1</a>: Put one person in charge</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-2-3">GOVERN 2.3</a></td><td>&mdash;</td></tr>
+          <tr><td><a href="#step-2">Step 2</a>: Find out what AI you&rsquo;re already using</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-6">GOVERN 1.6</a> <a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-1-1">MAP 1.1</a></td><td>&mdash;</td></tr>
+          <tr><td><a href="#step-3">Step 3</a>: Write down the rules</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-4">GOVERN 1.4</a> <a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-2-2">GOVERN 2.2</a></td><td>&mdash;</td></tr>
+          <tr><td><a href="#step-4">Step 4</a>: Keep sensitive information out</td><td>&mdash;</td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-4">Data Privacy</a><br>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM02-2026">LLM02 Sensitive Information Disclosure</a></td></tr>
+          <tr><td><a href="#step-5">Step 5</a>: Check your AI suppliers</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-6-1">GOVERN 6.1</a> <a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-4-1">MAP 4.1</a></td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-12">Value Chain and Component Integration</a></td></tr>
+          <tr><td><a href="#step-6">Step 6</a>: Check AI&rsquo;s work before it goes out</td><td><a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-3-5">MAP 3.5</a></td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-2">Confabulation</a>, <a href="ai-rmf-genai-profile.html#s-2-7">Human-AI Configuration</a><br>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM07-2026">LLM07 Misinformation</a></td></tr>
+          <tr><td><a href="#step-7">Step 7</a>: Limit what AI can do on its own</td><td>&mdash;</td><td>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM01-2026">LLM01 Prompt Injection</a>, <a href="owasp-llm-top-10-2026.html#s-LLM03-2026">LLM03 Excessive Agency</a>, <a href="owasp-llm-top-10-2026.html#s-LLM06-2026">LLM06 Unbounded Consumption</a></td></tr>
+          <tr><td><a href="#step-8">Step 8</a>: Be ready for when something goes wrong</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-5">GOVERN 1.5</a> <a class="fnref" style="--c:var(--manage)" href="ai-rmf-playbook.html#i-MANAGE-2-4">MANAGE 2.4</a> <a class="fnref" style="--c:var(--manage)" href="ai-rmf-playbook.html#i-MANAGE-4-3">MANAGE 4.3</a></td><td>&mdash;</td></tr>
+          <tr><td><a href="#step-9">Step 9</a>: Review it every few months</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-5">GOVERN 1.5</a> <a class="fnref" style="--c:var(--measure)" href="ai-rmf-playbook.html#i-MEASURE-3-1">MEASURE 3.1</a></td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================= LIBRARY -->
+  <section id="library" aria-labelledby="h-library">
+    <div class="fn-head" style="--c:var(--ink)"><h2 id="h-library">Library</h2><p>The sources, in full</p></div>
+    <div class="prose" style="margin-bottom:14px">
+      <p>The four documents this playbook draws on, reformatted to be readable and searchable on screen. Their text is reproduced word for word so that the passages quoted above can be checked against them. They are unofficial copies, and the original publications remain authoritative.</p>
+    </div>
+    <div class="cards">
+      <a class="card" href="ai-rmf-playbook.html" style="--c:var(--library)">
+        <span class="k">NIST</span>
+        <span class="t">AI RMF Playbook</span>
+        <span class="d">Suggested actions for each of the framework&rsquo;s 72 outcomes. Most of this playbook draws on it.</span>
+      </a>
+      <a class="card" href="ai-rmf-1-0.html" style="--c:var(--library)">
+        <span class="k">NIST AI 100-1 &middot; January 2023</span>
+        <span class="t">AI Risk Management Framework 1.0</span>
+        <span class="d">The framework itself: what makes AI trustworthy, and the four functions that organise the work of managing its risks.</span>
+      </a>
+      <a class="card" href="ai-rmf-genai-profile.html" style="--c:var(--library)">
+        <span class="k">NIST AI 600-1 &middot; July 2024</span>
+        <span class="t">Generative AI Profile</span>
+        <span class="d">The framework applied to generative AI: twelve risks, including confabulation and data privacy, and over 200 suggested actions.</span>
+      </a>
+      <a class="card" href="owasp-llm-top-10-2026.html" style="--c:var(--library)">
+        <span class="k">OWASP GenAI Security Project &middot; 2026</span>
+        <span class="t">Top 10 for LLM Applications</span>
+        <span class="d">The ten most important security risks in applications built on large language models, with examples and mitigations.</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    AI Playbook for small businesses &middot; independent educational material &middot; not legal advice<br>
+    Not a publication of NIST or OWASP, and not endorsed by either &middot; quoted passages are verbatim and link to their source &middot; the original publications are authoritative<br>
+    Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+  </footer>
+</div>
+<script src="site.js"></script>
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="profile_bar.js"></script>
+<script src="ui_common.js"></script>
+<script src="data/done_when.js"></script>
+<script src="answers_engine.js"></script>
+<script src="done_when.js"></script>
+</body>
+</html>

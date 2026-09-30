@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your AI policy</title>
+<meta name="description" content="Answer about twelve short questions and leave with a one-page AI policy for your business, a never-put-in list to pin up, and a short to-do list. Nothing you type leaves your browser.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="quick_check.css">
+<link rel="stylesheet" href="quick_policy.css">
+</head>
+<body>
+<div class="wrap qc pol" id="qc">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html">Quick check</a>
+    <a href="profile.html">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html" aria-current="page">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">Quick check, part 3 &middot; 8 to 10 minutes &middot; prototype</p>
+    <h1>Your AI policy<span>built from your answers</span></h1>
+    <p class="lede">About twelve short questions. Each one writes a line of a one-page AI policy, and you can watch it take shape as you go. You leave with the policy, a never-put-in list to pin up, and a short list of things still to do.</p>
+  </header>
+
+  <main id="main">
+    <noscript>
+      <div class="callout"><p>This page needs JavaScript. The <a href="guide-ai-policy.html#starter">starter policy in the policy guide</a> works without it: copy it and fill in the highlighted parts.</p></div>
+    </noscript>
+  </main>
+
+  <footer>
+    Prototype. Policy wording version <span id="policy-version"></span>, last reviewed <span id="policy-reviewed"></span>.
+    Plain-language rules, not legal advice. If you work in a regulated industry, ask someone qualified to look over your version.<br>
+    Nothing you type is sent anywhere. Your answers stay in this browser tab, and in this browser if you choose to save.
+    <a href="tests/run_tests.html">How these rules are tested</a>
+  </footer>
+</div>
+
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="data/questions.js"></script>
+<script src="data/rules.js"></script>
+<script src="quick_engine.js"></script>
+<script src="data/policy_questions.js"></script>
+<script src="policy_engine.js"></script>
+<script src="progress_bar.js"></script>
+<script src="quick_policy.js"></script>
+<script src="profile_bar.js"></script>
+</body>
+</html>

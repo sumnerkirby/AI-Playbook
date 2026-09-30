@@ -1,0 +1,95 @@
+/* D. Answers become the policy. Builds on site.css and quick_check.css:
+   questions on the left, the policy taking shape on the right (below on a
+   phone), with the section being answered highlighted. */
+
+.wrap.pol{max-width:1180px}
+.pol-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:34px;align-items:start;padding-top:18px}
+.pol-ask{min-width:0}
+.pol-ask .screen{padding-top:0}
+.pol-preview{position:sticky;top:14px;min-width:0}
+.pol-preview .template{margin:0;max-width:none;display:flex;flex-direction:column;max-height:calc(100vh - 28px)}
+.pol-preview .template-body{overflow-y:auto;position:relative;font-size:14.5px;padding:14px 18px 18px}
+.pol-preview .template-body p,.pol-preview .template-body li{line-height:1.5}
+.template-head .live{display:inline-flex;gap:6px;align-items:center}
+.template-head .live i{width:7px;height:7px;border-radius:50%;background:var(--go)}
+
+/* the section the current question writes */
+.pol-sec{border-radius:2px;transition:background .18s,box-shadow .18s}
+.pol-sec.editing{background:#FFF6D6;box-shadow:0 0 0 6px #FFF6D6}
+.pol-sec.flash{background:#FBE9A8;box-shadow:0 0 0 6px #FBE9A8}
+
+/* ---------- inputs ---------- */
+.field{margin:18px 0 0;max-width:560px}
+.field label,.field .lab{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.field input[type=text],.field input[type=date]{
+  width:100%;font:inherit;font-size:17px;padding:12px 14px;border:1px solid var(--rule);border-radius:3px;background:var(--card);color:var(--ink)
+}
+.field input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.inline-add{display:flex;gap:6px}
+.inline-add input{flex:1 1 auto;min-width:0}
+.inline-add .btn{flex:0 0 auto}
+.answers.row{flex-direction:row;flex-wrap:wrap}
+.answers.row .answer{flex:1 1 150px;width:auto}
+
+.ticks{display:flex;flex-direction:column;gap:5px;margin:18px 0 0;max-width:600px;padding:0;list-style:none}
+.tick{
+  display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:var(--card);
+  border:1px solid var(--rule);border-radius:3px;cursor:pointer;font-size:15.5px;line-height:1.45
+}
+.tick:hover{border-color:var(--ink3)}
+.tick input{width:18px;height:18px;margin:2px 0 0;flex:0 0 auto;accent-color:var(--ink)}
+.tick input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.tick.industry{border-left:3px solid var(--part2)}
+.tick .tag-ind{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--part2);margin-top:2px}
+.tick.own{background:var(--pressed)}
+.tick .x{margin-left:auto;padding:0 4px}
+
+/* tools: one row per tool, with its account type */
+.toolrows{display:flex;flex-direction:column;gap:5px;margin:14px 0 0;max-width:600px;padding:0;list-style:none}
+.toolrow{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:9px 10px 9px 14px;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+.toolrow .name{font-family:var(--display);font-weight:600;font-size:16px;flex:1 1 140px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.seg button{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border:0;background:var(--card);color:var(--ink2);cursor:pointer}
+.seg button + button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.seg button.notyet[aria-pressed=true]{background:var(--check);color:#fff}
+.x{font-family:var(--mono);font-size:16px;line-height:1;color:var(--ink3);background:none;border:0;cursor:pointer;padding:6px}
+.x:hover{color:var(--stop)}
+.chiprow.tools{margin-top:16px}
+
+.from-quick{
+  display:inline-flex;gap:8px;align-items:center;margin:0 0 12px;padding:4px 10px;border-radius:999px;
+  background:var(--go-tint);border:1px solid var(--go-line);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--go)
+}
+.reminder{margin:14px 0 0;max-width:600px}
+.reminder ul{margin:4px 0 0;padding-left:20px}
+.nav-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:24px}
+.nav-row .spacer{flex:1 1 auto}
+
+/* ---------- finished ---------- */
+.done-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:8px}
+.done-grid .template{max-width:none;margin:0}
+.done-side > * + *{margin-top:18px}
+.never-sheet .template-body{font-size:16px}
+.never-sheet .template-body li{margin-bottom:6px}
+.todos{list-style:none;margin:0;padding:0}
+.todos li{background:var(--card);border:1px solid var(--rule2);border-left:3px solid var(--check);border-radius:2px;padding:10px 13px;margin-bottom:5px;font-size:15px}
+.blanks-note{margin:0 0 14px}
+
+@media (max-width:860px){
+  .pol-layout,.done-grid{grid-template-columns:1fr}
+  .pol-preview{position:static}
+  .pol-preview .template{max-height:none}
+  .pol-preview .template-body{overflow:visible}
+}
+
+@media print{
+  /* print one template on its own: the policy, or the never-put-in list */
+  body.printing *{visibility:hidden}
+  body.printing .print-target,body.printing .print-target *{visibility:visible}
+  body.printing .print-target{position:absolute;left:0;top:0;width:100%;border:0 !important;margin:0}
+  body.printing .print-target .template-head{display:none}
+  .fill{background:none !important;border-bottom:1px dotted #999}
+  .pol-sec.editing,.pol-sec.flash{background:none;box-shadow:none}
+  .never-sheet .template-body{font-size:18px}
+}

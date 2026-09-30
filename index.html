@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Playbook for small businesses</title>
+<meta name="description" content="Nine practical steps for small businesses to secure and govern their use of AI, based on the NIST AI Risk Management Framework and the OWASP Top 10 for LLM Applications.">
+<script>
+  /* The playbook used to be this page. Links to a step, the guides or the
+     library (index.html#step-6) go on to the same place on playbook.html. */
+  (function(){
+    function forward(){
+      var h = location.hash;
+      if (/^#(step-\d+|steps|atlas|guides|policies|framework|library)$/.test(h)) location.replace('playbook.html' + h);
+    }
+    forward();
+    window.addEventListener('hashchange', forward);
+  })();
+</script>
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html" aria-current="page"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html">Quick check</a>
+    <a href="profile.html">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <div class="about-split">
+    <div>
+      <header class="mast">
+        <p class="eyebrow">A practical guide &middot; Based on NIST and OWASP guidance</p>
+        <h1>AI Playbook<span>for small businesses</span></h1>
+      </header>
+      <section class="about-text" aria-label="About this playbook">
+        <p>Your staff are almost certainly using AI already. Some of it they&rsquo;ve chosen, like a chat assistant for drafting emails, and some of it has quietly arrived inside software you already pay for. The trouble starts when nobody knows what&rsquo;s being used, what information goes into it, or who would notice if it went wrong.</p>
+        <p>This playbook is nine steps for getting a handle on that: who&rsquo;s responsible, which tools are in use, what the rules are, how your data is protected, and what happens when something goes wrong. It&rsquo;s written for businesses without a security team or a compliance department.</p>
+        <p>The steps are based on the AI Risk Management Framework from the US National Institute of Standards and Technology (NIST) and the OWASP Top 10 for LLM Applications. Each one quotes the passages it draws on, word for word, so you can check how we&rsquo;ve read them. Nothing you enter on this site leaves your browser.</p>
+      </section>
+    </div>
+
+    <aside class="starts" aria-labelledby="h-starts">
+      <p class="starts-head" id="h-starts">Where do you want to start?</p>
+      <div class="start" style="--c:var(--part3);--btn:#9A5A2F">
+        <span class="k">Quick start &middot; About 5 minutes</span>
+        <h2>The quick AI check</h2>
+        <p>Six yes-or-no questions about the situations that cause the most harm, then tap the everyday jobs where AI is involved to see which are fine, which need a check, and which to stop.</p>
+        <a class="start-btn" href="quick_check.html">Start the quick check</a>
+      </div>
+      <div class="start" style="--c:var(--part1)">
+        <span class="k">Full start &middot; Most steps take an hour or two</span>
+        <h2>The nine-step playbook</h2>
+        <p>Work through the steps in order. The first three matter most, and if you only get that far you&rsquo;ll be in better shape than most businesses your size.</p>
+        <a class="start-btn" href="playbook.html#step-1">Open the playbook</a>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    AI Playbook for small businesses &middot; independent educational material &middot; not legal advice<br>
+    Not a publication of NIST or OWASP, and not endorsed by either &middot; quoted passages are verbatim and link to their source &middot; the original publications are authoritative<br>
+    Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI use and risk record</title>
+<meta name="description" content="One document from everything you've done on the playbook: who is responsible, what AI you use, the rules, suppliers, risks, controls and open actions. Made in your browser; nothing is sent anywhere.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="quick_check.css">
+<link rel="stylesheet" href="record.css">
+</head>
+<body>
+<div class="wrap qc" id="qc">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html">Quick check</a>
+    <a href="profile.html">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html" aria-current="page">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">Everything so far, in one document &middot; prototype</p>
+    <h1>AI use and risk record<span>made from your answers, not written by hand</span></h1>
+    <p class="lede">Everything you&rsquo;ve done on this site, gathered into one document: who is responsible, what AI you use, your rules, your suppliers, your risks and what&rsquo;s still open. To change the record, change the answers it comes from. Gaps stay visible until they&rsquo;re filled.</p>
+  </header>
+
+  <main id="main">
+    <noscript><div class="callout"><p>The record needs JavaScript. Its wording is in data/record.js, and its rules are published in the <a href="tests/run_tests.html">tests</a>.</p></div></noscript>
+    <section class="rec-panel" id="panel" aria-label="Make a copy" hidden></section>
+    <article class="rec-doc" id="record-doc" hidden></article>
+  </main>
+  <p class="visually-hidden" id="announce" aria-live="polite"></p>
+
+  <footer>
+    Prototype. Record version <span id="record-version"></span>. A self-assessment, not a certification, audit or legal advice.<br>
+    Kept in this browser only. Nothing is sent anywhere.
+    <a href="tests/run_tests.html">How these rules are tested</a>
+  </footer>
+</div>
+<div class="rec-running" id="running" aria-hidden="true"></div>
+<div class="rec-watermark" id="watermark" aria-hidden="true" hidden>Draft</div>
+
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="data/questions.js"></script>
+<script src="data/rules.js"></script>
+<script src="quick_engine.js"></script>
+<script src="data/policy_questions.js"></script>
+<script src="policy_engine.js"></script>
+<script src="data/pulse_questions.js"></script>
+<script src="pulse_engine.js"></script>
+<script src="data/tool_questions.js"></script>
+<script src="data/tool_rules.js"></script>
+<script src="tool_engine.js"></script>
+<script src="data/risk_matrix.js"></script>
+<script src="risk_engine.js"></script>
+<script src="data/done_when.js"></script>
+<script src="answers_engine.js"></script>
+<script src="data/record.js"></script>
+<script src="record_engine.js"></script>
+<script src="ui_common.js"></script>
+<script src="record.js"></script>
+</body>
+</html>

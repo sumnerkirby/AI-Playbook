@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your business</title>
+<meta name="description" content="Three quick questions about your business, so the AI Playbook shows what applies to you: team size, how you use AI, and your industry. Saved in your browser only.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="quick_check.css">
+<style>
+  .changes{list-style:none;margin:0;padding:0;max-width:78ch}
+  .changes li{display:flex;gap:4px 14px;flex-wrap:wrap;align-items:baseline;padding:9px 13px;margin-bottom:4px;background:var(--card);border:1px solid var(--rule2);border-left:3px solid #B8861B;border-radius:2px;font-size:15px}
+  .changes .where{font-family:var(--display);font-weight:600;flex:0 0 auto}
+  .changes .what{color:var(--ink2);flex:1 1 200px}
+  .changes a{color:var(--ink);text-underline-offset:3px}
+  .words-big{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+  .words-big b{font-family:var(--display);font-weight:600;font-size:16px;padding:5px 12px;background:var(--card);border:1px solid var(--rule);border-radius:999px}
+  .share{display:flex;gap:6px;flex-wrap:wrap;align-items:center;max-width:760px}
+  .share code{flex:1 1 260px;min-width:0;overflow-wrap:anywhere;font-family:var(--mono);font-size:12.5px;background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:9px 11px}
+  .overlay h3{margin:2px 0 6px;font-family:var(--display);font-weight:600;font-size:17.5px}
+  .overlay ul{margin:0 0 8px;padding-left:20px}
+  .overlay li{margin-bottom:5px;font-size:15.5px}
+  .multi .answer[aria-pressed=true]::after{content:"\2713";position:absolute;right:16px;top:14px;font-size:16px}
+  .multi .answer{position:relative;padding-right:44px}
+  .multi .answer[aria-pressed=true]{padding-right:43px}
+  .head-row{display:flex;gap:6px 14px;align-items:baseline;flex-wrap:wrap}
+  .linkish{background:none;border:0;padding:0;font-family:var(--body);font-size:15px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px;cursor:pointer}
+  .linkish:hover{text-decoration-color:var(--ink)}
+  .fold-sub{font-family:var(--display);font-weight:600;font-size:15px;margin:16px 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap qc" id="qc">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="quick_check.html">Quick check</a>
+    <a href="profile.html" aria-current="page">Your business</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">Your business &middot; under a minute &middot; prototype</p>
+    <h1>Your business<span>three quick questions</span></h1>
+    <p class="lede">So the playbook can show what applies to you: notes for a business your size, the checks for how you use AI, and what&rsquo;s different in your industry. Nothing is taken away. The nine steps are the same for everyone.</p>
+  </header>
+
+  <main id="main">
+    <noscript><div class="callout"><p>This page needs JavaScript. Everything on the site works without a profile: <a href="playbook.html">start with the playbook</a>.</p></div></noscript>
+  </main>
+
+  <footer>
+    Prototype. Profile changes version <span id="fx-version"></span>. Industry notes are things to check with an advisor, not legal advice, and are not yet verified for publication.<br>
+    Your answers are saved in this browser only. The share link holds your answers after the #, which browsers never send to a server.
+    <a href="tests/run_tests.html">How these rules are tested</a>
+  </footer>
+</div>
+
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="progress_bar.js"></script>
+<script src="profile.js"></script>
+</body>
+</html>
