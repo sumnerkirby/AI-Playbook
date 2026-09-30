@@ -86,16 +86,16 @@ var RecordEngine = (function(){
       try {
         lines = T.restore(raw.ai_list, profile, today).lines;
         skipped = Array.isArray(raw.ai_list.skipped) ? raw.ai_list.skipped.filter(s => typeof s === 'string').slice(0, 500) : [];
-      } catch (e) { problems.push('Your AI list couldn’t be read.'); }
+      } catch (e) { problems.push('Your AI list could not be read.'); }
     }
     const policy = cleanPolicy(raw.policy, today);
-    if (raw.policy && !policy) problems.push('Your saved policy couldn’t be read.');
+    if (raw.policy && !policy) problems.push('Your saved policy could not be read.');
     const quick = cleanQuick(raw.quick);
-    if (raw.quick && !quick) problems.push('Your saved quick check couldn’t be read.');
+    if (raw.quick && !quick) problems.push('Your saved quick check could not be read.');
     let pulse = null;
     if (raw.pulse){
       try { pulse = PU.restore(raw.pulse, {industry: profile.industry[0] || null}).log; }
-      catch (e) { problems.push('Your monthly check-ins couldn’t be read.'); }
+      catch (e) { problems.push('Your monthly check-ins could not be read.'); }
     }
     return {profile, answers, done, lines, skipped, risk: K.cleanStore(raw.risk), policy, quick, pulse, record: cleanStore(raw.record), problems};
   }
@@ -124,7 +124,7 @@ var RecordEngine = (function(){
     const sources = [];
     if (inp.quick){
       const c = inp.quick.carry;
-      sources.push({date: inp.quick.saved_on, text: `Quick check saved: ${plural(c.finds.length, 'kind of AI use', 'kinds of AI use')} tapped, ${plural(c.screener.flags.length, 'red flag')} from the screener.`});
+      sources.push({date: inp.quick.saved_on, text: `Quick check saved: ${plural(c.finds.length, 'kind of AI use', 'kinds of AI use')} selected, ${plural(c.screener.flags.length, 'red flag')} from the screener.`});
     }
     if (inp.pulse) PU.sorted(inp.pulse).forEach(c => {
       if (c.sweep && c.sweep.answer !== 'not_looked')
@@ -381,7 +381,7 @@ var RecordEngine = (function(){
   function sign(store, name, model, today){
     const n = txt(name, 120);
     if (!n) throw new Error('Type your name to sign.');
-    if (model.draft) throw new Error('A draft can’t be signed. Complete the sections listed on page 1 first.');
+    if (model.draft) throw new Error('A draft cannot be signed. Complete the sections listed on page 1 first.');
     store.signoff = {name: n, date: today, fingerprint: model.fingerprint};
     return store;
   }

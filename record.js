@@ -112,7 +112,7 @@
       const notes = [];
       s.rows.forEach(r => {
         if (r.adjusted) notes.push(`${r.label}: position moved by us on ${d(r.adjusted.date)}. Reason: ${r.adjusted.reason}`);
-        if (r.accept) notes.push(`${r.label}: we live with this risk. Signed off by ${r.accept.by}. Reason: ${r.accept.reason}.${r.accept.review_by ? ` Review by ${d(r.accept.review_by)}.` : ''}`);
+        if (r.accept) notes.push(`${r.label}: we accept this risk. Approved by ${r.accept.by}. Reason: ${r.accept.reason}.${r.accept.review_by ? ` Review by ${d(r.accept.review_by)}.` : ''}`);
       });
       if (notes.length) h += `<ul>${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`;
       if (s.stopped.length) h += `<h3>Stopped or paused uses</h3><ul>${s.stopped.map(x => `<li><strong>${esc(x.label)}</strong> (${x.paused ? 'paused' : 'not started'}): ${esc(x.reasons.join(' '))}</li>`).join('')}</ul>`;
@@ -191,7 +191,7 @@
   function panelHTML(m){
     const need = RC.minimum.map(id => m.sections.find(s => s.id === id));
     return `<div class="rec-status ${m.draft ? 'draft' : 'ready'}">
-        <h2>${m.draft ? 'Draft: not complete yet' : 'Complete enough to share inside the business'}</h2>
+        <h2>${m.draft ? 'Draft: not yet complete' : 'Complete enough to share within the business'}</h2>
         <ul class="rec-need">${need.map(s => `<li class="${s.status === 'complete' ? 'done' : ''}"><span aria-hidden="true">${s.status === 'complete' ? '&#10003;' : '&#9675;'}</span>
           ${esc(s.n)}. ${esc(s.title)}: ${s.status === 'complete' ? 'done' : `<a href="${s.fix}">${s.status === 'partial' ? 'finish it' : 'start it'}</a>`}</li>`).join('')}</ul>
         ${m.stale ? `<p class="rec-gap">The re-check date has passed. Review the answers, then make a new copy.</p>` : ''}
@@ -215,13 +215,13 @@
           <button class="btn quiet" type="button" data-act="csv-list"${inp.lines.length ? '' : ' disabled'}>AI list (.csv)</button>
           <button class="btn quiet" type="button" data-act="csv-risk"${m.sections.find(s => s.id === 'risk').status === 'empty' ? ' disabled' : ''}>Risk register (.csv)</button>
         </p>
-        <p class="small-note">The Word copy can be edited, but edits made there don&rsquo;t update the record. The .json file holds everything this browser keeps for the playbook, to move it to another browser or hand to an IT provider.</p>
+        <p class="small-note">The Word copy can be edited, but edits made there do not update the record. The .json file contains everything this browser keeps for the playbook, so that you can move it to another browser or give it to an IT provider.</p>
         ${pending ? pendingHTML() : ''}
       </div>
       <div class="rec-sign">
         <h2>Sign it</h2>
         <p>${esc(RC.signoff.replace('{business}', inSentence(m.business)).replace('{date}', d(m.today)))}</p>
-        ${m.draft ? `<p class="small-note">A draft can&rsquo;t be signed.</p>` : `<p class="rec-signrow"><label for="rec-signer" class="visually-hidden">Your name</label>
+        ${m.draft ? `<p class="small-note">A draft cannot be signed.</p>` : `<p class="rec-signrow"><label for="rec-signer" class="visually-hidden">Your name</label>
           <input id="rec-signer" class="textin" type="text" maxlength="120" placeholder="Your name">
           <button class="btn" type="button" data-act="sign">Sign</button></p>`}
       </div>`;
@@ -278,7 +278,7 @@
     }
     if (act === 'json'){
       U.download(JSON.stringify(R.bundle(readAll(), today), null, 2), `ai_playbook_everything_${today}.json`, 'application/json');
-      return say('Saved. Keep the file somewhere safe: it holds names and answers you typed.');
+      return say('Saved. Keep the file in a safe place, because it contains names and answers you typed.');
     }
     if (act === 'open') return $('#rec-file').click();
     if (act === 'import-no'){ pending = null; return render(); }

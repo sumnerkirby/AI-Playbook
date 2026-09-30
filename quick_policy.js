@@ -135,7 +135,7 @@
       const notYet = a.tools.some(t => t.account !== 'business');
       return `
         ${hints.activities.length || hints.personal ? `<div class="callout reminder"><span class="k">From your quick check</span>
-          ${hints.activities.length ? `<p>You said AI helps with:</p><ul>${hints.activities.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p>Which tools do those?</p>` : ''}
+          ${hints.activities.length ? `<p>You said AI helps with:</p><ul>${hints.activities.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p>Which tools do those tasks?</p>` : ''}
           ${hints.personal ? `<p><b>Some work happens on personal or free accounts.</b> Add those tools too, and mark them Not yet.</p>` : ''}</div>` : ''}
         <div class="chiprow tools">${P.common_tools.map(t => `<button type="button" class="chip" data-tool="${esc(t)}" aria-pressed="${names.includes(t.toLowerCase())}">${esc(t)}</button>`).join('')}</div>
         ${a.tools.length ? `<ul class="toolrows">${a.tools.map((t, i) => `<li class="toolrow"><span class="name">${esc(t.name)}</span>
@@ -153,7 +153,7 @@
     acts: () => choice('acts', P.yes_no_not_sure),
     telling: () => `<div class="answers" role="group">${P.telling_options.map(o =>
       `<button type="button" class="answer" data-tell="${o.id}" aria-pressed="${a.telling.includes(o.id)}">${esc(o.label)}</button>`).join('')}</div>
-      <p class="hint" style="margin-top:10px">Tick all that apply.</p>`,
+      <p class="hint" style="margin-top:10px">Check all that apply.</p>`,
     incident: () => `${textField('incident_who', 'Who to tell', `placeholder="${esc(a.decider || 'Name or role')}" autocomplete="name"`)}
       <p class="example" style="margin-top:18px">How fast?</p>${choice('incident_speed', P.speed_options, true)}`,
     recording: () => choice('recording', P.yes_no_not_sure),
@@ -233,9 +233,9 @@
           <div>
             <h3 class="subhead">Next</h3>
             <div class="cards" style="grid-template-columns:1fr">
-              ${a.team === 'solo' ? '' : '<a class="card" href="guide-ai-policy.html#rollout" style="--c:var(--part1)"><span class="k">Guide</span><span class="t">Rolling it out to the team</span><span class="d">Go through it together, and keep a note of who has read it.</span></a>'}
+              ${a.team === 'solo' ? '' : '<a class="card" href="guide-ai-policy.html#rollout" style="--c:var(--part1)"><span class="k">Guide</span><span class="t">Introducing it to the team</span><span class="d">Go through it together, and keep a note of who has read it.</span></a>'}
               <a class="card" href="quick_pulse.html" style="--c:var(--part3)"><span class="k">1 minute a month</span><span class="t">Monthly AI check-in</span><span class="d">Three questions a month keep this ${noun} and your AI list current.</span></a>
-              <a class="card" href="playbook.html#step-3" style="--c:var(--part1)"><span class="k">Playbook step 3</span><span class="t">Write down the rules</span><span class="d">What ${a.team === 'solo' ? 'these rules cover' : 'this policy covers'}, and when to update it.</span></a>
+              <a class="card" href="playbook.html#step-3" style="--c:var(--part1)"><span class="k">Playbook step 3</span><span class="t">Write an AI policy</span><span class="d">What ${a.team === 'solo' ? 'these rules cover' : 'this policy covers'}, and when to update it.</span></a>
               ${quick ? '' : '<a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">5 minutes</span><span class="t">Run the quick check</span><span class="d">Red flags, and what you use AI for. Its answers fill in parts of this.</span></a>'}
             </div>
           </div>
@@ -346,7 +346,7 @@
           downloadBlob(window.templateDocx($('#policy-body'), PE.text(doc.title)),
             `${slug(a.business)}_ai_${a.team === 'solo' ? 'rules' : 'policy'}.docx`);
           say('Downloaded as a Word document. The yellow parts are the blanks still to fill.');
-        } catch (err) { say('The Word download didn’t work in this browser. Use Print or PDF instead.'); }
+        } catch (err) { say('The Word download did not work in this browser. Use Print or PDF instead.'); }
         return;
       }
       case 'copy': return copyText(PE.plain(PE.build(a)), 'Copied as plain text, ready to paste into an email or document.');
@@ -360,7 +360,7 @@
       }
       case 'download':
         downloadBlob(new Blob([JSON.stringify(PE.carryOver(a, today()), null, 2)], {type: 'application/json'}), `ai_policy_answers_${today()}.json`);
-        return say('Downloaded. The full check will be able to read this file, so you won’t answer anything twice.');
+        return say('Downloaded. The full check can read this file, so you will not need to answer anything twice.');
     }
   });
   window.addEventListener('afterprint', () => {

@@ -42,7 +42,7 @@
   const LABEL = {go: 'Go', check: 'Check', stop: 'Stop'};
   const light = (l, text) => `<span class="light ${l}">${ICON[l]}${esc(text || LABEL[l])}</span>`;
   const WHO = {
-    you: 'You can do this',
+    you: 'You can do this yourself',
     it_provider: 'You or your IT provider',
     supplier: 'Ask your supplier',
     advisor: 'Ask your advisor or compliance consultant',
@@ -87,7 +87,7 @@
     const a = times.start, b = times[k];
     if (!a || !b) return '';
     const s = Math.round((b - a) / 1000);
-    return s < 60 ? `${s} seconds` : `${Math.floor(s / 60)} min ${s % 60} s`;
+    return s < 60 ? plural(s, 'second') : `${Math.floor(s / 60)} min ${s % 60} s`;
   }
 
   /* ---------- routing: the state decides the screen ---------- */
@@ -138,11 +138,11 @@
     const opts = PROFILE_OPTIONS.industry.options;
     screen(`
       ${saved ? `<div class="callout resume"><span class="k">Saved in this browser</span>
-        <p>You saved a quick check on ${esc(fmtDate(saved.saved_on))}.${saved.rules_version !== RULES.version ? ' Our rules have changed since then, so it will be checked again against the current ones.' : ''}</p>
+        <p>You saved a quick check on ${esc(fmtDate(saved.saved_on))}.${saved.rules_version !== RULES.version ? ' The rules have changed since then, so it will be checked again against the current rules.' : ''}</p>
         <p><button class="btn" type="button" data-act="resume">Open it</button> <button class="btn quiet" type="button" data-act="forget">Delete it</button></p></div>` : ''}
       <div class="parts">
-        <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 90 seconds</span><span class="t">Red flags</span><p>Six yes, no or not sure questions about the situations that cause the most harm.</p></div>
-        <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 3 to 5 minutes</span><span class="t">Tap what you do</span><p>Tap the jobs where AI is involved, answer one or two questions on each, and see which are fine.</p></div>
+        <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 90 seconds</span><span class="t">Red flags</span><p>Six questions, each answered yes, no or not sure, about the situations most likely to cause harm.</p></div>
+        <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 3 to 5 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
       </div>
       <fieldset class="chips">
         <legend>${esc(PROFILE_OPTIONS.industry.label)} <span class="small-note">Optional</span></legend>
@@ -151,7 +151,7 @@
         <p class="small-note ind-examples" aria-live="polite">${industryExamples()}</p>
       </fieldset>
       <div class="go-row"><button class="btn primary" type="button" data-act="start">Start part 1</button><span class="small-note">No sign-up. No email.</span></div>
-      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> No accounts, no tracking, no uploads. Your answers are kept in this page&rsquo;s address so you can bookmark the result, and saved in this browser only if you choose.</span></p>
+      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> There are no accounts, no tracking and no uploads. Your answers are kept in this page&rsquo;s address so that you can bookmark the result, and are saved in this browser only if you choose.</span></p>
     `);
   }
 
@@ -201,7 +201,7 @@
     ask({
       q: qs[i],
       about: def.label,
-      left: `<b>Part 2 of 2</b> &middot; Activity ${n + 1} of ${state.cards.length}`,
+      left: `<b>Part 2 of 2</b> &middot; Task ${n + 1} of ${state.cards.length}`,
       n: before + i + 1, total: counts.reduce((x, y) => x + y, 0),
       onAnswer: id => {
         cd.answers[qs[i].id] = id;
@@ -225,10 +225,10 @@
   function screenerFinding(h, compact){
     const stop = h.outcome === 'stop';
     return `<div class="finding ${h.outcome}">
-      ${light(h.outcome, stop ? 'Stop now' : 'Worth finding out')}
+      ${light(h.outcome, stop ? 'Stop now' : 'Find out')}
       <h3>${esc(h.title)}</h3>
       ${compact ? '' : `<p>${stop ? '<b>Why it matters:</b> ' : ''}${esc(h.reason)}</p>`}
-      <p class="fix"><b>${stop ? 'Fix today:' : 'How to check (about 5 minutes):'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
+      <p class="fix"><b>${stop ? 'Fix now:' : 'How to check (about 5 minutes):'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
       ${advice(h)}
       <p><a href="${h.how.href}">${esc(h.how.label)}</a></p>
       ${compact ? '' : basis(h)}
@@ -237,7 +237,7 @@
   function screenerFindings(r, compact){
     if (!r.hits.length) return `<div class="okbox">${light('go', 'No red flags')}
       <h3>No red flags found in this quick check.</h3>
-      <p>This looked at the situations most likely to cause serious harm. It didn&rsquo;t look at which AI tools you use, what their suppliers do with your information, or whether AI output is checked before it goes out.</p></div>`;
+      <p>This looked at the situations most likely to cause serious harm. It did not examine which AI tools you use, what their suppliers do with your information, or whether AI output is checked before use.</p></div>`;
     return r.hits.map(h => screenerFinding(h, compact)).join('');
   }
 
@@ -249,12 +249,12 @@
     const t = took('a');
     screen(`
       <p class="step-label"><b>Part 1 of 2 &middot; Result</b></p>
-      <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? 'No red flags yet, but some things to find out' : 'No red flags found'}</h2>
+      <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? 'No red flags, but some things to find out' : 'No red flags found'}</h2>
       <p class="honest">Quick check, not a full review</p>
       ${t ? `<p class="timing">Part 1 took ${t}.</p>` : ''}
       ${screenerFindings(r)}
       <div class="go-row" style="margin-top:24px">
-        <button class="btn primary" type="button" data-act="to-tap">Next: see what AI you&rsquo;re using (3 to 5 minutes)</button>
+        <button class="btn primary" type="button" data-act="to-tap">Next: everyday tasks (3 to 5 minutes)</button>
         <button class="btn quiet" type="button" data-act="stop-here">Stop here and see the summary</button>
       </div>
       ${backRow()}
@@ -273,23 +273,23 @@
         <span class="t">${esc(c.label)}</span><span class="h">${esc(c.hint)}</span><span class="box" aria-hidden="true"></span></button>`;
     const nudge = CARDS.none_nudge;
     screen(`
-      <p class="step-label"><b>Part 2 of 2 &middot; Tap what you do</b></p>
-      <h2>Which of these involve AI in your business, even a little?</h2>
-      <p class="example">Tap every job where anyone uses AI. The small print on each card says where AI often hides.</p>
+      <p class="step-label"><b>Part 2 of 2 &middot; Everyday tasks</b></p>
+      <h2>In which of these tasks does anyone in your business use AI?</h2>
+      <p class="example">Select every task in which anyone uses AI, even occasionally. The note on each card says where AI is often found.</p>
       <div class="tapgrid" role="group" aria-label="Activities">${tapOrder().map(btn).join('')}</div>
       <div class="tapextra">
         <button type="button" class="tapcard" data-other aria-pressed="${!!extra.o}"><span class="t">Something else</span><span class="h">Anything not listed</span><span class="box" aria-hidden="true"></span></button>
-        <button type="button" class="tapcard" data-none aria-pressed="false"><span class="t">None of these</span><span class="h">We don&rsquo;t use AI for any of these</span></button>
+        <button type="button" class="tapcard" data-none aria-pressed="false"><span class="t">None of these</span><span class="h">We do not use AI for any of these</span></button>
       </div>
       <div class="othertext"${extra.o ? '' : ' hidden'}>
-        <label for="other-in">What else? (optional, never leaves this browser)</label>
+        <label for="other-in">What else? (Optional. This text never leaves this browser.)</label>
         <input id="other-in" type="text" maxlength="120" autocomplete="off" value="${esc(otherText)}">
       </div>
       <div class="callout nudge" hidden>
         <span class="k">Before you move on</span>
         <p>${esc(nudge.text)}</p>
         <ul>${nudge.places.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
-        <p><button class="btn" type="button" data-act="look-again">Look again</button> <button class="btn quiet" type="button" data-act="none-confirm">None of these, really</button></p>
+        <p><button class="btn" type="button" data-act="look-again">Look again</button> <button class="btn quiet" type="button" data-act="none-confirm">None of these apply</button></p>
       </div>
       <div class="sticky-go">
         <button class="btn primary" type="button" data-act="tap-continue"></button>
@@ -301,7 +301,7 @@
   function syncTap(){
     const n = state.cards.length + (extra.o ? 1 : 0);
     const b = $('[data-act="tap-continue"]', main);
-    b.textContent = n ? `Continue with ${plural(n, 'activity', 'activities')}` : 'Tap at least one, or None of these';
+    b.textContent = n ? `Continue with ${plural(n, 'task')}` : 'Select at least one, or None of these';
     b.disabled = !n;
   }
   /* taps update in place, so the grid doesn't jump back to the top */
@@ -332,10 +332,10 @@
     const answerText = E.cardQuestions(cd.id, cd.answers)
       .map(q => `${esc(q.short)}: <b>${esc(q.answers.find(a => a.id === cd.answers[q.id]).label)}</b>`).join(' &middot; ');
     const reasons = r.light === 'go'
-      ? `<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: this quick version doesn&rsquo;t ask what the supplier does with your information.</p>`
+      ? `<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: the quick check does not ask what the supplier does with your information.</p>`
       : `<ul class="reasons">${r.hits.map(h => `<li>
           ${h.outcome !== r.light ? light(h.outcome) + ' ' : ''}${esc(h.reason)}
-          <p class="fix"><b>${h.outcome === 'stop' ? 'Fix:' : 'Next:'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
+          <p class="fix"><b>${h.outcome === 'stop' ? 'Fix:' : 'Next step:'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
           ${advice(h)}
           <p><a href="${h.how.href}">${esc(h.how.label)}</a></p>
         </li>`).join('')}</ul>`;
@@ -363,36 +363,36 @@
 
     let partB;
     if (!didB) partB = `<p>You stopped after part 1.</p><p><button class="btn" type="button" data-act="to-tap">Do part 2 now (3 to 5 minutes)</button></p>`;
-    else if (state.none) partB = `<div class="finding"><h3>No activities tapped</h3>
-      <p>That&rsquo;s possible, but AI often arrives without anyone choosing it: inside email, video calls, browser add-ons and the software you already pay for. A short look through <a href="playbook.html#step-2">step 2 of the playbook</a> is the best way to be sure.</p></div>`;
+    else if (state.none) partB = `<div class="finding"><h3>No tasks selected</h3>
+      <p>That is possible, but AI is often added without anyone choosing it: in email, video calls, browser add-ons and the software the business already pays for. Working through <a href="playbook.html#step-2">step 2 of the playbook</a> is the most reliable way to confirm it.</p></div>`;
     else {
       const n = cards.length + (extra.o ? 1 : 0);
       partB = `
-        <p class="counts"><span>${plural(n, 'activity', 'activities')} with AI:</span>
+        <p class="counts"><span>${plural(n, 'task')} with AI:</span>
           ${light('go', t.go + ' go')} ${light('check', t.check + ' check')} ${light('stop', t.stop + ' stop')}</p>
         <div class="resultgrid">${sorted.map(x => `<button type="button" class="resultcell ${x.r.light}" data-jump="r-${x.cd.id}">${light(x.r.light)}<span class="t">${esc(x.def.label)}</span></button>`).join('')}</div>
         ${sorted.map(cardFinding).join('')}
-        ${extra.o ? `<div class="finding"><span class="light none">Not checked</span><h3>Something else${otherText ? ': ' + esc(otherText) : ''}</h3><p>Not checked here. Add it when you do the full check of your AI tools.</p></div>` : ''}`;
+        ${extra.o ? `<div class="finding"><span class="light none">Not checked</span><h3>Something else${otherText ? ': ' + esc(otherText) : ''}</h3><p>Not checked here. Add it when you complete the full check of your AI tools.</p></div>` : ''}`;
     }
 
     screen(`
       <p class="step-label"><b>Your quick check</b><span>${esc(fmtDate(today()))}</span>${ind ? `<span>${esc(ind.label)}</span>` : ''}</p>
-      <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in what this asked about'}</h2>
+      <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in the areas covered'}</h2>
       <p class="honest">Quick check, not a full review</p>
       ${time ? `<p class="timing">This took ${time}.</p>` : ''}
       ${ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
 
       ${didB
-        ? `<h3 class="subhead">Part 2: what you use AI for</h3>${partB}<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A, true)}`
-        : `<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A)}<h3 class="subhead">Part 2: what you use AI for</h3>${partB}`}
+        ? `<h3 class="subhead">Part 2: everyday tasks</h3>${partB}<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A, true)}`
+        : `<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A)}<h3 class="subhead">Part 2: everyday tasks</h3>${partB}`}
 
-      <h3 class="subhead">What this didn&rsquo;t look at</h3>
+      <h3 class="subhead">What this check does not cover</h3>
       <ul class="notlooked">
-        <li>Which tools and plans you use, by name. One job can involve more than one tool.</li>
+        <li>Which tools and plans you use, by name. One task can involve more than one tool.</li>
         <li>What suppliers do with your information: whether they train on it, whether you can delete it, and data agreements.</li>
-        <li>AI nobody thought of. Browser add-ons and features inside specialist software are easy to miss.</li>
-        <li>Whether AI output is checked before it goes out.</li>
-        <li>Anything you set up or built yourself, beyond the question about public assistants.</li>
+        <li>AI that nobody mentioned. Browser add-ons and features in specialist software are easy to miss.</li>
+        <li>Whether AI output is checked before use.</li>
+        <li>Anything you set up or built yourself, apart from the question about public assistants.</li>
       </ul>
 
       <h3 class="subhead">Next</h3>
@@ -416,17 +416,17 @@
     const policyHref = `quick_policy.html#${E.encode(state)}`;
     const first = toList
       ? `<div class="start next-card" style="--c:var(--part2)"><span class="k">Do this next &middot; 5 to 15 minutes a tool</span>
-          <h4>Check the stop and check cards properly</h4>
-          <p>Your activities go onto your AI list, worst first. This saves the result in this browser so the list can pick it up.</p>
+          <h4>Examine the stop and check results in detail</h4>
+          <p>Your tasks are added to your AI list, most serious first. This saves the result in this browser so that the list can use it.</p>
           <button class="start-btn" type="button" data-act="save-go">Save and open my AI list</button></div>`
       : `<div class="start next-card" style="--c:var(--part3);--btn:#9A5A2F"><span class="k">Do this next &middot; 8 to 10 minutes</span>
           <h4>Turn this into your AI policy</h4>
-          <p>About twelve questions, some already answered from this check. You leave with a one-page policy.</p>
+          <p>About twelve questions, some already answered by this check. The result is a one-page policy.</p>
           <a class="start-btn" href="${policyHref}">Start my AI policy</a></div>`;
     const also = [
       toList ? `<a href="${policyHref}">Turn this into your AI policy</a><span>8 to 10 minutes</span>`
-             : `<button class="linkish" type="button" data-act="save-go">Check each tool properly on your AI list</button><span>5 to 15 minutes a tool; saves this result first</span>`,
-      `<a href="playbook.html#step-2">Find all the AI you use</a><span>Playbook step 2, the places this check can&rsquo;t reach</span>`,
+             : `<button class="linkish" type="button" data-act="save-go">Check each tool in detail on your AI list</button><span>5 to 15 minutes a tool; saves this result first</span>`,
+      `<a href="playbook.html#step-2">List all the AI tools in use</a><span>Playbook step 2, which covers what this check cannot</span>`,
       `<a href="quick_pulse.html">Keep it current</a><span>1 minute a month, with a calendar reminder</span>`,
       `<a href="policy-supplier-questions.html">Questions to ask a supplier</a><span>Template, for anything marked check</span>`,
     ];

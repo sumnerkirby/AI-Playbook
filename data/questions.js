@@ -21,16 +21,16 @@ var SCREENER = {
   questions: [
     {id: 'q1', code: '1',
      text: `Do you or anyone in the business put **customer, client or staff details** into an AI tool on a **personal or free account**?`,
-     example: `Pasting a customer's email into free ChatGPT to draft a reply.`,
-     hint: `What matters is the type of account, not who pays for it. A personal plan paid for by the business still counts as personal.`,
+     example: `Pasting a customer's email into the free version of ChatGPT to draft a reply.`,
+     hint: `The type of account matters, not who pays for it. A personal plan paid for by the business is still a personal account.`,
      answers: YES_NO_NOT_SURE},
     {id: 'q2', code: '2',
      text: `Has anyone put **passwords, card numbers, Social Security numbers or bank account numbers** into an AI tool?`,
-     example: `Asking AI to fill in a form using someone's card details.`,
+     example: `Asking AI to fill in a form with someone's card details.`,
      answers: YES_NO_NOT_SURE},
     {id: 'q3', code: '3',
      text: `Can any AI tool **send, post, pay, book or delete** things **without a person clicking to approve**?`,
-     example: `An assistant that replies to emails for you, or an automation that pays invoices.`,
+     example: `An assistant that replies to email for you, or an automation that pays invoices.`,
      answers: YES_NO_NOT_SURE},
     {id: 'q4', code: '4',
      text: `Does AI help decide **who gets hired, approved, or turned down**?`,
@@ -39,15 +39,15 @@ var SCREENER = {
     {id: 'q4b', code: 'd', follow_up_of: 'q4',
      show_if: {q: 'q4', in: ['yes']},
      text: `Does **a person make the final decision** every time?`,
-     example: `A person reads the application and decides. The AI only prepares information.`,
+     example: `A person reads the application and makes the decision. The AI only prepares information.`,
      answers: YES_NO_NOT_SURE},
     /* Worded to match the tool check's red line (public or link-shared AND
        given personal or confidential documents), so a flag here means the
        same thing as a red there. The design note's wording flagged any of
        your own documents, including a public price list. */
     {id: 'q5', code: '5',
-     text: `Is there a **chatbot or assistant that people outside your business can use**, which you gave **documents that aren't meant to be public**?`,
-     example: `A website chatbot that was given client files or internal notes to answer from.`,
+     text: `Is there a **chatbot or assistant that people outside your business can use**, that has been given **documents that are not meant to be public**?`,
+     example: `A website chatbot that answers questions using client files or internal notes.`,
      answers: YES_NO_NOT_SURE},
     {id: 'q6', code: '6',
      text: `Does anything **record or transcribe** calls or meetings **without people being told**?`,
@@ -91,7 +91,7 @@ var CARD_QUESTIONS = {
     text: `Which kind of account is it on?`,
     hint: `What matters is the type of plan, not who pays for it.`,
     answers: [
-      {id: 'business', code: 'b', label: `A business or team plan`,    detail: `Including AI built into business software you pay for`},
+      {id: 'business', code: 'b', label: `A business or team plan`,    detail: `Including AI built into business software the business pays for`},
       {id: 'personal', code: 'p', label: `A personal or free account`, detail: `Even if the business pays for it`},
       {id: 'not_sure', code: 'u', label: `Not sure`},
     ]},
@@ -111,19 +111,19 @@ var CARD_QUESTIONS = {
     hint: `Both have their own rules for AI used in hiring.`,
     answers: YES_NO_NOT_SURE},
   told: {code: 't', short: `People told`,
-    text: `Are people told it's happening?`,
-    hint: `Told at the start, with a way to say no.`,
+    text: `Are people told that it is happening?`,
+    hint: `Told at the start, with a way to decline.`,
     answers: YES_NO_NOT_SURE},
   says_ai: {code: 'i', short: `Says it is an AI`,
-    text: `Does it say it's an AI, and can people reach a person?`,
+    text: `Does it say that it is an AI, and can people reach a person?`,
     answers: YES_NO_NOT_SURE},
 };
 
 var CARDS = {
-  title: `Tap what you do`,
+  title: `Everyday tasks`,
   minutes: `3 to 5 minutes`,
   cards: [
-    {id: 'writing',      code: 'wr', label: `Writing emails, letters or documents`, hint: `Including Copilot or Gemini buttons in your email`,           questions: ['data', 'account']},
+    {id: 'writing',      code: 'wr', label: `Writing emails, letters or documents`, hint: `Including Copilot or Gemini features in your email`,           questions: ['data', 'account']},
     {id: 'summarizing',  code: 'su', label: `Summarizing long documents`,           hint: `Contracts, statements, reports`,                              questions: ['data', 'account']},
     {id: 'meetings',     code: 'mt', label: `Meeting notes or call transcripts`,    hint: `Many video-call apps now do this automatically`,              questions: ['told', 'data', 'account']},
     {id: 'customers',    code: 'cu', label: `Answering customers (chat or email)`,  hint: `A chatbot on your website or booking page`,                   questions: ['says_ai', 'data', 'account']},
@@ -131,7 +131,7 @@ var CARDS = {
     {id: 'bookkeeping',  code: 'bk', label: `Bookkeeping, invoices or receipts`,    hint: `Reading receipts, categorizing spending`,                     questions: ['acts', 'data', 'account']},
     {id: 'inbox',        code: 'ib', label: `Handling your inbox or calendar`,      hint: `Assistants that sort, reply or schedule`,                     questions: ['acts', 'data', 'account']},
     {id: 'hiring',       code: 'hi', label: `Hiring or managing staff`,             hint: `Screening applicants, writing job ads, scheduling shifts`,    questions: ['person_decides', 'nyc_co']},
-    {id: 'research',     code: 'rs', label: `Research and searching`,               hint: `Asking an AI instead of searching`,                           questions: ['data', 'account']},
+    {id: 'research',     code: 'rs', label: `Research and searching`,               hint: `Asking an AI tool instead of using a search engine`,                           questions: ['data', 'account']},
     {id: 'spreadsheets', code: 'sp', label: `Spreadsheets and numbers`,             hint: `Formulas, analysis, forecasts`,                               questions: ['data', 'account']},
     {id: 'website',      code: 'wb', label: `Building or editing your website or code`, hint: `Website builders with AI, coding assistants`,            questions: ['data', 'account']},
     {id: 'phone',        code: 'ph', label: `Answering the phone`,                  hint: `AI receptionists or voice assistants`,                        questions: ['told', 'acts']},
@@ -149,9 +149,9 @@ var CARDS = {
   industry_general: `No extra questions for this industry yet; the general rules apply.`,
 
   none_nudge: {
-    text: `Before you move on: AI often arrives without anyone choosing it. Do any of these sound familiar?`,
+    text: `AI is often added without anyone choosing it. Do any of these apply to your business?`,
     places: [
-      `AI buttons in your email or documents (Copilot, Gemini)`,
+      `AI features in your email or documents (Copilot, Gemini)`,
       `Meeting summaries in your video-call app`,
       `Browser add-ons that help with writing or spelling`,
       `New AI features in booking, accounting or customer software`,

@@ -95,7 +95,7 @@ var RecordTestRun = (function(){
   test('Dana: the record is complete enough to leave draft', () => {
     const m = record(dana());
     eq([m.draft, m.business], [false, 'Reyes Financial Planning'], 'not a draft; name from the policy');
-    eq(sec(m, 'responsibility').rows.map(r => [r.role, r.value]), [['Decides on new AI tools', 'Dana Reyes, owner'], ['Who to ask if unsure', 'Dana'], ['Out of hours', 'Dana, 555 0100']], 'responsibility');
+    eq(sec(m, 'responsibility').rows.map(r => [r.role, r.value]), [['Decides on new AI tools', 'Dana Reyes, owner'], ['Whom to ask if unsure', 'Dana'], ['Out of hours', 'Dana, 555 0100']], 'responsibility');
     eq(sec(m, 'ai_in_use').rows.map(r => [r.tool, r.light]), [['Microsoft Copilot Chat', 'green'], ['ChatGPT', 'green']], 'AI in use');
     ok(sec(m, 'about').statement.includes('Reyes Financial Planning is responsible for its accuracy'), 'responsibility for accuracy');
     ok(sec(m, 'rules').policy.sections.length > 3 && sec(m, 'rules').policy.never.length > 3, 'the policy, quoted');
@@ -106,11 +106,11 @@ var RecordTestRun = (function(){
     const m = record(dana());
     const sup = sec(m, 'suppliers');
     eq(sup.rows.map(r => r.tool), ['Microsoft Copilot Chat'], 'only a tool with supplier answers');
-    eq(sup.rows[0].answers.map(a => [a.answer, a.source]), [['No, and we\'ve checked the setting or the terms', 'Checked in the admin center'], ['Yes', null], ['Yes', null], ['Yes', null]], 'sources only where one was noted');
+    eq(sup.rows[0].answers.map(a => [a.answer, a.source]), [['No, and we have checked the setting or the terms', 'Checked in the admin center'], ['Yes', null], ['Yes', null], ['Yes', null]], 'sources only where one was noted');
     eq(sup.public_only, ['ChatGPT'], 'public information only: no supplier questions asked');
     const c = sec(m, 'controls').list;
     eq([c[0].level, c[7].level, c[7].answers.length], ['recorded', 'none', 1], 'step 1 recorded; step 8 answered but not marked done');
-    eq(sec(m, 'discovery').sources[0].text, 'Quick check saved: 3 kinds of AI use tapped, 4 red flags from the screener.', 'discovery source');
+    eq(sec(m, 'discovery').sources[0].text, 'Quick check saved: 3 kinds of AI use selected, 4 red flags from the screener.', 'discovery source');
     ok(sec(m, 'discovery').limit.includes('No full discovery sweep'), 'the limit is stated');
   });
   test('Dana: risks, open actions and incidents', () => {
@@ -221,12 +221,12 @@ var RecordTestRun = (function(){
     d.ai_list = {lines: 'nonsense'};
     d.policy = {a: 'nonsense'};
     const m = record(d);
-    eq(m.problems, ['Your AI list couldn’t be read.', 'Your saved policy couldn’t be read.'], 'both reported');
+    eq(m.problems, ['Your AI list could not be read.', 'Your saved policy could not be read.'], 'both reported');
     eq([sec(m, 'ai_in_use').status, sec(m, 'rules').status], ['empty', 'empty'], 'shown as gaps');
   });
   test('the Word stamp says when, from what, and that edits don\'t flow back', () => {
     const s = R.stamp(record(dana()), 3);
-    ok(s.includes('September 29, 2026') && s.includes('record 3') && s.includes(TOOL_RULES.version) && s.includes('don’t update the record'), s);
+    ok(s.includes('September 29, 2026') && s.includes('record 3') && s.includes(TOOL_RULES.version) && s.includes('do not update the record'), s);
   });
 
   const failed = results.filter(r => r.fails.length);

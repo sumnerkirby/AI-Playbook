@@ -30,13 +30,13 @@ var RECORD = {
      empty: `Not yet completed. Answer the questions in step 1 of the playbook.`, fix: 'playbook.html#step-1'},
     {id: 'discovery',      n: '4',  title: `How we found our AI`,
      empty: `Not yet completed. Save a quick check, or answer the questions in step 2 of the playbook.`, fix: 'quick_check.html',
-     limit: `No full discovery sweep has been done: the playbook’s discovery tool isn’t built yet. What is listed here came from the quick check, monthly check-ins and the owner’s own answers.`},
+     limit: `No full discovery sweep has been done. The entries listed here came from the quick check, the monthly check-ins and the owner’s own answers.`},
     {id: 'ai_in_use',      n: '5',  title: `AI in use`,
      empty: `Not yet completed. Check at least one tool in the tool check.`, fix: 'tool_check.html'},
     {id: 'rules',          n: '6',  title: `Rules we follow`,
-     empty: `Not yet completed. Make and save a policy in the quick policy.`, fix: 'quick_policy.html'},
+     empty: `Not yet completed. Create and save a policy with the AI policy tool.`, fix: 'quick_policy.html'},
     {id: 'suppliers',      n: '7',  title: `Suppliers`,
-     empty: `Not yet completed. The tool check asks each supplier question once something beyond public information goes in.`, fix: 'tool_check.html'},
+     empty: `Not yet completed. The tool check asks the supplier questions for any tool that receives more than public information.`, fix: 'tool_check.html'},
     {id: 'risk',           n: '8',  title: `Risk assessment`,
      empty: `Not yet completed. Check a tool, or add a business-wide risk on the risk overview.`, fix: 'risk_matrix.html'},
     {id: 'controls',       n: '9',  title: `Controls in place`},
@@ -58,15 +58,15 @@ var RECORD = {
     confirmed: {label: `Confirmed`, detail: `Re-confirmed at a review in the last three months`},
     none:      {label: `Not yet`,   detail: `Not marked done, or not every question answered`},
   },
-  roles: {decides: `Decides on new AI tools`, ask: `Who to ask if unsure`, out_of_hours: `Out of hours`},
+  roles: {decides: `Decides on new AI tools`, ask: `Whom to ask if unsure`, out_of_hours: `Out of hours`},
 
   /* what a saved file can hold, as the import message names it */
   parts: {profile: `business profile`, answers: `playbook answers`, done: `steps marked done`, ai_list: `AI list`, risk: `risk overview`,
     policy: `AI policy`, quick: `quick check`, pulse: `monthly check-ins`, record: `record name, copies and sign-off`},
 
   signoff: `I confirm that this record reflects how {business} uses AI as of {date}, to the best of my knowledge.`,
-  signoff_stale: `Signed for an earlier version. Something has changed since, so it needs signing again.`,
-  word_stamp: `Generated {date} from the AI playbook (record {record_version}, tool rules {rules_version}). Edits made in this Word file don’t update the record.`,
+  signoff_stale: `Signed for an earlier version. Something has changed since then, so it must be signed again.`,
+  word_stamp: `Generated {date} from the AI playbook (record {record_version}, tool rules {rules_version}). Edits made in this Word file do not update the record.`,
 
   /* Appendix A: the sources each playbook step quotes (playbook.html, Where
      this comes from). A terminal test keeps this list matched to the page. */

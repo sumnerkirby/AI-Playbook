@@ -87,14 +87,14 @@
     const queue = T.queue(savedQuick(), list.lines, list.skipped);
 
     main.innerHTML = `<section class="screen">
-      ${hasProfile ? '' : `<div class="callout" style="max-width:760px;margin-bottom:16px"><span class="k">Answer three questions first</span><p>Some checks depend on your business: your team size, whether you set up your own AI tools, and your industry. <a href="profile.html">Your business profile</a> takes under a minute.</p></div>`}
+      ${hasProfile ? '' : `<div class="callout" style="max-width:760px;margin-bottom:16px"><span class="k">Answer three questions first</span><p>Some checks depend on your business: your team size, whether you set up your own AI tools, and your industry. <a href="profile.html">Your business profile</a> takes less than a minute.</p></div>`}
       <div class="go-row">
         <button class="btn primary" type="button" data-act="new">Check a new tool</button>
-        <button class="btn" type="button" data-act="found">Check one that&rsquo;s already in use</button>
+        <button class="btn" type="button" data-act="found">Check one already in use</button>
       </div>
 
       ${queue.length ? `<h3 class="subhead">To check (${queue.length})</h3>
-        <p class="example">Found by your quick check, your policy and your monthly check-ins. Likely worst first.</p>
+        <p class="example">Found by your quick check, your policy and your monthly check-ins, with the likely most serious first.</p>
         ${queue.slice(0, 12).map(i => `<div class="q-item">${U.light(i.light, i.light ? ({stop: 'Stop', check: 'Check', go: 'Go', red: 'Stop', amber: 'Check', green: 'Go'})[i.light] : 'To check')}
           <span class="n"><b>${esc(i.label)}</b><small>${esc(i.source)}${i.account === 'personal' ? ' &middot; personal account' : ''}${i.can_act && i.can_act !== 'no' ? ' &middot; can act' : ''}</small></span>
           <button class="btn" type="button" data-queue="${esc(i.key)}">Check it</button>
@@ -113,7 +113,7 @@
             <span class="badges">${st.due ? '<span class="badge due">Re-check due</span>' : ''}${st.waiting ? `<span class="badge wait">Waiting on supplier until ${esc(U.fmtDate(st.waiting.until))}</span>` : ''}${open && st.state !== 'retired' ? `<span class="badge">${open} to-do${open > 1 ? 's' : ''}</span>` : ''}</span>
             <button class="btn" type="button" data-line="${esc(l.id)}">Open</button></li>`;
         }).join('')}</ul>`
-        : '<p class="empty">Nothing yet. Start with the tool your business uses most, or with anything customer details go into.</p>'}
+        : '<p class="empty">Nothing yet. Begin with the tool your business uses most, or with any tool that receives customer details.</p>'}
 
       <h3 class="subhead">Your records</h3>
       <div class="actions">
@@ -123,7 +123,7 @@
         <button class="btn" type="button" data-act="restore">Restore from a backup</button>
       </div>
       <input type="file" accept=".json,application/json" id="restore-file" class="visually-hidden" tabindex="-1" aria-hidden="true">
-      <p class="small-note" style="margin-top:8px">For a team: keep the spreadsheet on your shared drive, and re-export it after each change.</p>
+      <p class="small-note" style="margin-top:8px">For a team, keep the spreadsheet on your shared drive, and export it again after each change.</p>
       <p class="status" id="status" role="status"></p>
     </section>
     <section class="printlist" id="printlist" aria-hidden="true">
@@ -131,7 +131,7 @@
       <table><thead><tr><th>Tool</th><th>Use</th><th>Plan</th><th>Light</th><th>Open to-dos</th><th>Standing rules</th><th>Re-check by</th></tr></thead>
       <tbody>${rows.filter(x => x.st.state !== 'retired').map(({l, r}) => `<tr><td>${esc(T.name(l))}</td><td>${esc(T.useLabel(l.answers.use))}</td><td>${esc(planLabel(l.answers.plan))}</td>
         <td>${esc(r.label)}</td><td>${r.todos.filter(t => !t.done).map(t => esc(t.text)).join('<br>')}</td><td>${r.standing.map(esc).join('<br>')}</td><td>${esc(l.recheck_by ? U.fmtDate(l.recheck_by) : 'After the change')}</td></tr>`).join('')}</tbody></table>
-      <p style="font-size:11px">Rules version ${esc(R.version)}. This list says what was recorded; it isn't a record of what's been checked by anyone else.</p>
+      <p style="font-size:11px">Rules version ${esc(R.version)}. This list shows what was recorded. It is not a record of what anyone else has checked.</p>
     </section>`;
   }
 
@@ -190,8 +190,8 @@
   /* ================= results ================= */
   function resultHTML(r, a, opts){
     const light = r.light;
-    const sub = light === 'red' ? (a.mode === 'discovered' ? 'A red line is crossed. Pause this use now; what is still allowed is below.' : 'A red line is crossed. Don’t start this use until it changes.')
-      : light === 'amber' ? `${r.todos.filter(t => !t.done).length} to-do${r.todos.filter(t => !t.done).length === 1 ? '' : 's'} open. It turns green as they’re done.` : 'No open to-dos.';
+    const sub = light === 'red' ? (a.mode === 'discovered' ? 'A red line is crossed. Pause this use now; what is still allowed is below.' : 'A red line is crossed. Do not start this use until it changes.')
+      : light === 'amber' ? `${r.todos.filter(t => !t.done).length} to-do${r.todos.filter(t => !t.done).length === 1 ? '' : 's'} open. It turns green when they are done.` : 'No open to-dos.';
     const allowed = T.allowedText(r);
     const notes = r.allowed_notes;
     const conf = r.confidence;
@@ -218,7 +218,7 @@
             <p><a href="${esc(t.how.href)}">${esc(t.how.label)}</a></p>
           </div></li>`).join('')}</ul>` : ''}
       ${r.standing.length ? `<h3 class="subhead">Standing rules</h3><ul class="standing">${r.standing.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
-      <p class="small-note" style="margin-top:16px">Based on ${conf.answers} answers${conf.dont_know ? `, ${conf.dont_know} of them don&rsquo;t know` : ''}.${conf.dont_know ? ' Finding those out could change this result.' : ''}${conf.unsourced ? ` ${conf.unsourced} supplier answer${conf.unsourced > 1 ? 's have' : ' has'} no source noted.` : ''}
+      <p class="small-note" style="margin-top:16px">Based on ${conf.answers} answers${conf.dont_know ? `, ${conf.dont_know} of them not sure` : ''}.${conf.dont_know ? ' Resolving those could change this result.' : ''}${conf.unsourced ? ` ${conf.unsourced} supplier answer${conf.unsourced > 1 ? 's have' : ' has'} no source noted.` : ''}
         ${opts.recheck !== undefined ? ` Re-check ${opts.recheck ? 'by ' + esc(U.fmtDate(opts.recheck)) : 'after the change'}.` : ''}</p>
       ${answersHTML(a)}`;
   }
@@ -253,7 +253,7 @@
     const hasSupplierTodo = r.todos.some(t => t.supplier && !t.done);
     main.innerHTML = `<section class="screen">
       <p class="step-label"><b>Your AI list</b><span>${esc(st.label)}</span><span>Checked ${esc(U.fmtDate(l.checked))}</span></p>
-      ${st.state === 'retired' ? `<div class="callout whybox"><span class="k">Retired ${esc(U.fmtDate(l.retired_on))}</span><p>Kept here as history. Untick a retirement step to bring it back.</p></div>` : ''}
+      ${st.state === 'retired' ? `<div class="callout whybox"><span class="k">Retired ${esc(U.fmtDate(l.retired_on))}</span><p>Kept here as history. Uncheck a retirement step to restore it.</p></div>` : ''}
       ${st.due && st.state !== 'retired' ? `<div class="callout whybox" style="--c:var(--check)"><span class="k">Time to re-check</span><ul>${st.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
         <p><button class="btn primary" type="button" data-act="recheck">Re-check now (your answers are filled in)</button></p></div>` : ''}
       ${st.waiting ? `<div class="callout whybox" style="--c:#2D5F8B"><span class="k">Waiting on the supplier</span><p>Follow up by ${esc(U.fmtDate(st.waiting.until))}${st.waiting.note ? `: ${esc(st.waiting.note)}` : ''}.${today > st.waiting.until ? ' <b>That date has passed.</b>' : ''}</p></div>` : ''}
@@ -273,7 +273,7 @@
           ${l.events.length ? `<ul class="events">${l.events.slice().reverse().map(e => `<li>${esc(U.fmtDate(e.date))}: ${esc((Q.events.find(x => x.id === e.id) || {}).label)}${e.note ? ` (${esc(e.note)})` : ''}</li>`).join('')}</ul>` : ''}
         </div>
         <div class="panelbox"><h4>Waiting on the supplier?</h4>
-          <p class="small-note" style="margin:0">${hasSupplierTodo ? 'You have a to-do that the supplier has to answer.' : 'For when an answer has to come from the supplier.'}</p>
+          <p class="small-note" style="margin:0">${hasSupplierTodo ? 'You have a to-do that the supplier must answer.' : 'For when an answer must come from the supplier.'}</p>
           <div class="row"><label class="visually-hidden" for="wait-date">Follow up by</label><input type="date" id="wait-date" value="${esc(l.waiting ? l.waiting.until : T.addDays(today, 14))}" min="${today}">
             <input type="text" id="wait-note" maxlength="200" placeholder="What you asked" aria-label="What you asked" value="${esc(l.waiting ? l.waiting.note : '')}"></div>
           <div class="row"><button class="btn" type="button" data-act="wait">${l.waiting ? 'Update' : 'Mark as waiting'}</button>${l.waiting ? '<button class="btn quiet" type="button" data-act="unwait">Answer received</button>' : ''}</div>
@@ -368,7 +368,7 @@
           T.refresh(line, P, today, true);
           list.lines.push(line);
         }
-        if (!saveList()) announce('This browser is blocking storage, so the list only lasts while this page is open.');
+        if (!saveList()) announce('This browser is blocking storage, so the list lasts only while this page is open.');
         return goto({name: 'line', lineId: line.id}, false);
       }
       case 'recheck': {
@@ -385,7 +385,7 @@
       case 'wait': {
         const l = lineById(view.lineId);
         const until = $('#wait-date').value;
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(until)) return say('Pick a date to follow up by.');
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(until)) return say('Choose a follow-up date.');
         l.waiting = {until, note: $('#wait-note').value.trim().slice(0, 200)};
         saveList(); return render();
       }
@@ -449,8 +449,8 @@
           if (list.lines.length && !confirm(`Replace the ${list.lines.length} uses on this list with the ${lines.length} in the backup?`)) return;
           list = {version: 1, lines, skipped: Array.isArray(obj.skipped) ? obj.skipped.filter(s => typeof s === 'string') : []};
           saveList(); render();
-          say(`Restored ${lines.length} use${lines.length === 1 ? '' : 's'}.${dropped ? ` ${dropped} ${dropped === 1 ? 'entry' : 'entries'} couldn’t be read and ${dropped === 1 ? 'was' : 'were'} left out.` : ''} Every light was worked out again under today’s rules.`);
-        } catch (err) { say('That file couldn’t be read as an AI list backup. Nothing was changed.'); }
+          say(`Restored ${lines.length} use${lines.length === 1 ? '' : 's'}.${dropped ? ` ${dropped} ${dropped === 1 ? 'entry' : 'entries'} could not be read and ${dropped === 1 ? 'was' : 'were'} left out.` : ''} Every light was recalculated under the current rules.`);
+        } catch (err) { say('That file could not be read as an AI list backup. Nothing was changed.'); }
       };
       reader.readAsText(el.files[0]);
       el.value = '';

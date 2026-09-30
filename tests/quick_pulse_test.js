@@ -106,7 +106,7 @@ var PulseTestRun = (function(){
     ok(s.startsWith('BEGIN:VCALENDAR\r\n') && s.endsWith('END:VCALENDAR\r\n'), 'wrapped, with CRLF');
     ok(s.includes('\r\nRRULE:FREQ=MONTHLY\r\n'), 'monthly');
     ok(s.includes('DTSTART:20261028T090000'), 'the 31st moves to the 28th so no month is skipped');
-    ok(s.includes('Three questions: any new AI tools\\, anything go wrong'), 'commas escaped');
+    ok(s.includes('Three questions: new AI tools\\, problems with AI\\,'), 'commas escaped');
     s.split('\r\n').forEach(l => ok(l.length <= 75, 'line too long: ' + l));
     ok(s.replace(/\r\n /g, '').includes('URL:' + url), 'URL survives folding');
     ok(!/\n(?!.)/.test(s.replace(/\r\n/g, '')), 'no bare newlines');

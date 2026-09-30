@@ -196,7 +196,7 @@ var ToolEngine = (function(){
     if (line.retired_on) return {state: 'retired', label: 'Retired', due: false, why: []};
     const why = [];
     if (line.recheck_by && today > line.recheck_by) why.push('The re-check date has passed.');
-    if (line.rules_version !== R.version) why.push('Our guidance has changed since this was checked.');
+    if (line.rules_version !== R.version) why.push('The guidance has changed since this was checked.');
     if (line.profile_snapshot && line.profile_snapshot !== profileKey(profile)) why.push('Your business profile has changed.');
     if (line.reopen) why.push('Something changed: ' + line.reopen + '.');
     const r = evaluate(Object.assign({}, line.answers, {_evidence: line.evidence}), profile, line.done);

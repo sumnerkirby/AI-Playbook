@@ -151,8 +151,8 @@ var RiskEngine = (function(){
   function respond(store, item, r){
     if (!RK.responses.some(x => x.id === r.response)) throw new Error('Choose a response.');
     if (r.response === 'accept'){
-      if (!item.can_accept) throw new Error('A red line can’t be accepted. Stop or change the use instead.');
-      if (!r.by || !r.reason || !ISO.test(r.review_by || '')) throw new Error('Living with a risk needs who signs off, a reason, and a review date.');
+      if (!item.can_accept) throw new Error('A red line cannot be accepted. Stop or change the use instead.');
+      if (!r.by || !r.reason || !ISO.test(r.review_by || '')) throw new Error('Accepting a risk requires the name of the person who approves it, a reason, and a review date.');
     }
     store.response[item.id] = {
       response: r.response, owner: (r.owner || '').slice(0, 80), due: ISO.test(r.due || '') ? r.due : null,
@@ -163,7 +163,7 @@ var RiskEngine = (function(){
   }
   function addCustom(store, c, today){
     if (!c.title || !c.title.trim()) throw new Error('Describe the risk in a few words.');
-    if (!RK.levels.includes(c.impact) || !RK.levels.includes(c.likelihood)) throw new Error('Rate how bad it would be, and how likely.');
+    if (!RK.levels.includes(c.impact) || !RK.levels.includes(c.likelihood)) throw new Error('Rate how serious it would be, and how likely.');
     const risk = {
       id: 'r-' + today.replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6),
       title: c.title.trim().slice(0, 200), type: RK.types.some(t => t.id === c.type) ? c.type : 'other',

@@ -73,7 +73,7 @@
       h2 = O.team_size.label; why = O.team_size.why;
       body = `<div class="answers">${O.team_size.options.map(o => answer('team', o, p.team_size === o.id)).join('')}</div>`;
     } else if (step === 'use'){
-      h2 = O.ai_use.label; why = `Tick all that apply. ${O.ai_use.why}`;
+      h2 = O.ai_use.label; why = `Check all that apply. ${O.ai_use.why}`;
       body = `<div class="answers multi">${O.ai_use.options.map(o => answer('use', o, p.ai_use.includes(o.id), o.examples)).join('')}</div>`;
       next = `<button class="btn primary" type="button" data-act="next"${p.ai_use.length ? '' : ' disabled'}>Next</button>`;
     } else if (step === 'industry'){
@@ -113,7 +113,7 @@
     fromLink = false;
     history.replaceState(history.state, '', '#' + PR.encode(p));
     goto('result');
-    if (!ok) say('This browser is blocking storage, so the profile only lasts while this page is open.');
+    if (!ok) say('This browser is blocking storage, so the profile lasts only while this page is open.');
   }
 
   /* ---------- result ---------- */
@@ -127,7 +127,7 @@
     const ov = PR.overlays(p);
     const link = location.href.split('#')[0] + '#' + PR.encode(p);
     main.innerHTML = `<section class="screen">
-      ${fromLink ? `<div class="callout" style="--c:var(--part2)"><span class="k">From a link</span><p>This profile came from a link, and isn&rsquo;t saved. Use it to tailor the site in this browser?</p>
+      ${fromLink ? `<div class="callout" style="--c:var(--part2)"><span class="k">From a link</span><p>This profile came from a link and is not saved. Use it to tailor the site in this browser?</p>
         <p><button class="btn primary" type="button" data-act="use-link">Use this profile</button> <button class="btn quiet" type="button" data-act="no-link">No thanks</button></p></div>`
         : '<p class="honest">Saved in this browser</p>'}
       <div class="head-row"><h2>Your business</h2><button class="linkish" type="button" data-act="change">Change answers</button></div>
@@ -135,8 +135,8 @@
 
       <h3 class="subhead">Start here</h3>
       <div class="cards">
-        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">5 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and what you use AI for. Starts with your industry.</span></a>
-        <a class="card" href="playbook.html" style="--c:var(--part1)"><span class="k">The playbook</span><span class="t">Nine steps, with notes for you</span><span class="d">Steps with a note for your business are marked.</span></a>
+        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">5 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and the tasks you use AI for. Begins with your industry.</span></a>
+        <a class="card" href="playbook.html" style="--c:var(--part1)"><span class="k">The playbook</span><span class="t">Nine steps, with notes for your business</span><span class="d">Steps with a note for your business are marked.</span></a>
         <a class="card" href="tool_check.html" style="--c:var(--part2)"><span class="k">5 to 15 minutes a tool</span><span class="t">Your AI list</span><span class="d">Check each use of each tool, with the checks for your size and industry.</span></a>
         <a class="card" href="quick_policy.html" style="--c:var(--part2)"><span class="k">8 to 10 minutes</span><span class="t">${p.team_size === 'solo' ? 'Your AI rules and settings' : 'Your AI policy'}</span><span class="d">Built from your answers, in the form that fits your size.</span></a>
       </div>
@@ -145,7 +145,7 @@
       ${fold('What changes for you', changes.length ? plural(changes.length, 'change') : '', `
         ${changes.length ? `<ul class="changes">${changes.map(c => `<li><span class="where">${esc(c.where)}</span><span class="what">${esc(c.what)}${c.reason ? `: ${esc(c.reason)}` : ''}</span>${c.href ? `<a href="${esc(c.href)}">See it</a>` : ''}</li>`).join('')}</ul>`
           : '<p>No changes: the site as it is fits a business like yours.</p>'}
-        <p class="small-note" style="margin-top:8px">Everything else stays as it is, and nothing is removed: anything set aside has a Show anyway button.</p>`)}
+        <p class="small-note" style="margin-top:8px">Everything else is unchanged, and nothing is removed. Anything set aside has a Show anyway button.</p>`)}
       ${ov.map(o => fold(`${o.label}: notes to check with an advisor`, plural(o.points.length, 'point'), `<div class="finding overlay">
         <p>${esc(o.summary)}</p><ul>${o.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
         <p><b>Red line in the checks:</b> ${esc(o.red_line)}</p>
@@ -153,7 +153,7 @@
         <p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Things to check with an advisor, not legal advice. Not yet verified for publication.</p></div>`)).join('')}
       ${fold('Share this profile, or see an example', '', `
         <div class="share"><code id="share-link">${esc(link)}</code><button class="btn" type="button" data-act="copy">Copy link</button></div>
-        <p class="small-note" style="margin-top:8px">The link holds these answers, which describe your business, not you. It doesn&rsquo;t save anything for whoever opens it unless they choose to.</p>
+        <p class="small-note" style="margin-top:8px">The link contains these answers, which describe your business, not you. It saves nothing for the person who opens it unless they choose to save it.</p>
         <h4 class="fold-sub">Examples</h4>
         <ul class="changes">${EXAMPLES.map(x => `<li><span class="what">${esc(x.label)}</span><a href="#${x.p}">See this profile</a></li>`).join('')}</ul>`)}
 
@@ -213,7 +213,7 @@
         return say('Profile cleared. The site shows everything again.');
       case 'copy':
         try { await navigator.clipboard.writeText($('#share-link').textContent); say('Link copied.'); }
-        catch (err) { say('Copy the link above by hand; this browser blocked copying.'); }
+        catch (err) { say('This browser blocked copying. Copy the link above manually.'); }
         return;
     }
   });

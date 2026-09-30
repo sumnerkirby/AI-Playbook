@@ -186,7 +186,7 @@
       ${hits.length ? `<ul class="reasons">${hits.map(h => `<li>${esc(h.reason)}
         <p class="fix"><b>${h.outcome === 'stop' ? 'Fix:' : 'Next:'}</b> ${esc(h.fix)}<span class="who">${esc(WHO[h.owner])}</span></p>
         <p><a href="${h.how.href}">${esc(h.how.label)}</a></p></li>`).join('')}</ul>`
-        : '<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: this quick version doesn&rsquo;t ask what the supplier does with your information.</p>'}
+        : '<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: the check-in does not ask what the supplier does with your information.</p>'}
     </div>`;
   }
   function connFinding(x){
@@ -219,7 +219,7 @@
       ${d.new_tools.map(toolFinding).join('')}
       ${d.connections.map(connFinding).join('')}
       ${d.incidents.length ? `<div class="finding check"><span class="light none">Logged</span><h3>Things that went wrong</h3><ul>${d.incidents.map(i => `<li>${esc(i.text)}</li>`).join('')}</ul><p><a href="${PULSE.incident_card.how.href}">${esc(PULSE.incident_card.how.label)}</a></p></div>` : ''}
-      ${d.sweep && d.sweep.found.length ? `<div class="finding"><span class="light none">To check</span><h3>Found on the statement</h3><p>${d.sweep.found.map(esc).join(', ')}</p><p>Check each one: what it's used for, and on which account. <a href="quick_check.html">The quick check</a> does this in a few minutes.</p></div>` : ''}
+      ${d.sweep && d.sweep.found.length ? `<div class="finding"><span class="light none">To check</span><h3>Found on the statement</h3><p>${d.sweep.found.map(esc).join(', ')}</p><p>Check each one: what it is used for, and on which account. <a href="quick_check.html">The quick check</a> does this in a few minutes.</p></div>` : ''}
       ${d.sweep && d.sweep.answer === 'not_looked' ? '<p class="small-note">The statement question will come up again next month.</p>' : ''}
       <p style="margin-top:18px">Next check-in: <b>${esc(PU.fmtDate(st.next))}</b>.</p>
       <div class="go-row" style="margin-top:14px">
@@ -236,7 +236,7 @@
     if (st.state === 'none') return ['No check-ins yet', 'The first one takes about a minute.'];
     const ago = st.days === 0 ? 'today' : st.days === 1 ? 'yesterday' : `${st.days} days ago`;
     if (st.state === 'done') return [`Last check-in: ${ago}`, `${last}. Next one due ${PU.fmtDate(st.next)}.`];
-    return [st.state === 'overdue' ? `It's been ${st.days} days` : 'Your monthly check-in is due', `Last check-in: ${last}.`];
+    return [st.state === 'overdue' ? `It has been ${st.days} days` : 'Your monthly check-in is due', `Last check-in: ${last}.`];
   }
   function renderHome(){
     log = loadLog();
@@ -248,8 +248,8 @@
         <p class="big" style="margin:0">${esc(big)}<small>${esc(small)}</small></p>
         <button class="btn primary" type="button" data-act="start">${st.state === 'done' ? 'Record something now' : 'Start this month’s check-in'}</button>
       </div>
-      ${!checkins.length && !hasBaseline() ? `<div class="callout" style="margin-top:14px;max-width:760px"><span class="k">Works best after the quick check</span><p>On its own, the monthly check-in only catches what&rsquo;s new. <a href="quick_check.html">The quick check</a> (5 minutes) finds what you already use.</p></div>` : ''}
-      ${PU.backupDue(log, t) ? `<div class="callout" style="margin-top:14px;max-width:760px;--c:var(--check)"><span class="k">Time for a backup</span><p>Your check-ins live only in this browser. Download a copy and keep it with your other business records.</p><p><button class="btn" type="button" data-act="backup">Download a backup</button></p></div>` : ''}
+      ${!checkins.length && !hasBaseline() ? `<div class="callout" style="margin-top:14px;max-width:760px"><span class="k">Works best after the quick check</span><p>On its own, the monthly check-in finds only what is new. <a href="quick_check.html">The quick check</a> (5 minutes) finds what you already use.</p></div>` : ''}
+      ${PU.backupDue(log, t) ? `<div class="callout" style="margin-top:14px;max-width:760px;--c:var(--check)"><span class="k">Time for a backup</span><p>Your check-ins are stored only in this browser. Download a copy and keep it with your other business records.</p><p><button class="btn" type="button" data-act="backup">Download a backup</button></p></div>` : ''}
 
       <h3 class="subhead">Reminders</h3>
       <div class="actions">
@@ -262,7 +262,7 @@
         <div><h3 class="subhead">AI found by check-ins</h3>
           ${list.length ? `<ul class="log">${list.map(x => `<li><span class="d">${esc(x.date)}</span><span class="n"><b>${esc(x.name)}</b> ${x.source === 'connection' ? '&middot; connected' : x.source === 'statement' ? '&middot; on the statement' : ''}</span>${light(x.light)}</li>`).join('')}</ul>` : '<p class="empty">Nothing new yet.</p>'}</div>
         <div><h3 class="subhead">Things that went wrong</h3>
-          ${inc.length ? `<ul class="log">${inc.map(i => `<li><span class="d">${esc(i.date)}</span><span class="n">${esc(i.text)}</span></li>`).join('')}</ul>` : `<p class="empty">${checkins.length ? 'None recorded. That&rsquo;s worth recording too.' : 'Nothing yet.'}</p>`}</div>
+          ${inc.length ? `<ul class="log">${inc.map(i => `<li><span class="d">${esc(i.date)}</span><span class="n">${esc(i.text)}</span></li>`).join('')}</ul>` : `<p class="empty">${checkins.length ? 'None recorded. A month with no problems is also worth recording.' : 'Nothing yet.'}</p>`}</div>
       </div>
 
       <h3 class="subhead">Check-ins</h3>
@@ -321,7 +321,7 @@
       case 'text-next': {
         const v = $('#t-in').value.trim();
         const key = b.dataset.key;
-        if (!v && key !== 'sweep_text'){ $('#t-in').focus(); $('#t-in').placeholder = 'A few words is enough'; return; }
+        if (!v && key !== 'sweep_text'){ $('#t-in').focus(); $('#t-in').placeholder = 'A few words are enough'; return; }
         flow[key] = v;
         /* keep what was typed on this step, so Back shows it again */
         history.replaceState({pulse: clone(flow)}, '');
@@ -355,7 +355,7 @@
         download(JSON.stringify(PU.carryOver(log, today()), null, 2), `ai_check_ins_for_full_check_${today()}.json`, 'application/json');
         return say('Downloaded. The full check will be able to read this file.');
       case 'wipe':
-        if (!confirm(`Delete all ${log.checkins.length} check-ins from this browser? This can't be undone unless you have a backup.`)) return;
+        if (!confirm(`Delete all ${log.checkins.length} check-ins from this browser? This cannot be undone unless you have a backup.`)) return;
         sdel('localStorage', LOG_KEY);
         renderHome();
         return say('All check-ins deleted from this browser.');
@@ -375,11 +375,11 @@
         if (log.checkins.length && !confirm(`Replace the ${log.checkins.length} check-ins in this browser with the ${next.checkins.length} in the backup?`)) return;
         next.checkins.forEach((c, i) => { c._id = 'restored-' + i; });
         log = next;
-        if (!saveLog()) return say('This browser is blocking storage, so the backup couldn’t be restored here.');
+        if (!saveLog()) return say('This browser is blocking storage, so the backup could not be restored here.');
         renderHome();
         say(`Restored ${plural(next.checkins.length, 'check-in')}.${dropped ? ` ${plural(dropped, 'entry', 'entries')} in the file couldn’t be read and ${dropped === 1 ? 'was' : 'were'} left out.` : ''}`);
       } catch (err) {
-        say('That file couldn’t be read as a check-in backup. Nothing was changed.');
+        say('That file could not be read as a check-in backup. Nothing was changed.');
       }
     };
     reader.readAsText(e.target.files[0]);

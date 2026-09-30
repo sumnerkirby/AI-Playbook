@@ -189,7 +189,7 @@ var ToolTestRun = (function(){
       training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes', output: ['person'], person_decides: 'yes', nyc_co: 'yes', acts: ['produces_only']};
     const r = ev(a, p);
     eq(r.light, 'amber', 'amber');
-    ok(r.allowed_notes.some(n => n.startsWith('Stop until advised for roles in New York City')), 'stop until advised for NYC roles');
+    ok(r.allowed_notes.some(n => n.startsWith('For roles in New York City or Colorado, stop until you have advice')), 'stop until advised for NYC roles');
     ok(r.todos.some(t => t.id === 't.person.nyc_co' && t.flag === 'get_advice'), 'get advice');
     eq(ev(Object.assign({}, a, {person_decides: 'no'}), p).light, 'red', 'no person deciding: red');
   });

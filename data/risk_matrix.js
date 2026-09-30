@@ -26,7 +26,7 @@ var RISK = {
      tool-check answers (list answers match if any item does). */
   impact: [
     {level: 'high', why: `Sensitive or regulated information`, when: {any: [{q: 'data', in: ['sensitive', 'regulated', 'secrets']}, {q: 'special', in: ['yes', 'dont_know']}]}, types: ['leak', 'supplier']},
-    {level: 'high', why: `Helps decide about a person`, when: {any: [{q: 'output', in: ['person']}, {q: 'use', in: ['hiring']}]}, types: ['wrong_output', 'unfair']},
+    {level: 'high', why: `Helps make a decision about a person`, when: {any: [{q: 'output', in: ['person']}, {q: 'use', in: ['hiring']}]}, types: ['wrong_output', 'unfair']},
     {level: 'high', why: `Can send, pay or delete`, when: {q: 'acts', in: ['acts']}, types: ['unwanted_action']},
     {level: 'high', why: `Safety-relevant output`, when: {q: 'safety', in: ['yes']}, types: ['wrong_output']},
     {level: 'moderate', why: `Customer or staff details`, when: {q: 'data', in: ['personal']}, types: ['leak', 'supplier']},
@@ -45,12 +45,12 @@ var RISK = {
   raises: [
     {id: 'personal_plan', why: `Personal or free account, and something private goes in`,
      when: {all: [{q: 'plan', in: ['free_personal', 'paid_personal']}, {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']}]}},
-    {id: 'dont_know', why: `A "don't know" on a supplier or plan question`, when: {any: [
+    {id: 'dont_know', why: `A Not sure answer to a supplier or plan question`, when: {any: [
       {q: 'plan', in: ['dont_know']}, {q: 'training', in: ['dont_know']}, {q: 'deletion', in: ['dont_know']},
       {q: 'agreement', in: ['dont_know']}, {q: 'published', in: ['dont_know']}]}},
     {id: 'acts_unapproved', why: `Can act, and not every risky action needs approval`, when: {all: [{q: 'acts', in: ['acts']}, {q: 'approval', in: ['some', 'none', 'dont_know']}]}},
     {id: 'public', why: `Public-facing, or shared by a public link`, when: {any: [{q: 'direct', in: ['yes']}, {q: 'own_access', in: ['public']}]}},
-    {id: 'unpublished', why: `Browser add-on, or a supplier that doesn't publish its data handling`, when: {any: [{q: 'extension', in: ['yes']}, {q: 'published', in: ['no']}]}},
+    {id: 'unpublished', why: `Browser add-on, or a supplier that does not publish its data handling`, when: {any: [{q: 'extension', in: ['yes']}, {q: 'published', in: ['no']}]}},
     {id: 'discovered', why: `Found already in use, with no rules yet`, when: {q: '_mode', in: ['discovered']}, cleared_by_standing: true},
     {id: 'team_no_rules', why: `Several people use it with no written rules`, when: {q: '_team', in: ['small', 'medium', 'large']}, cleared_by: 't.team.tell'},
   ],
@@ -72,7 +72,7 @@ var RISK = {
   types: [
     {id: 'leak',            label: `Information leaks out`},
     {id: 'wrong_output',    label: `Wrong output reaches someone`},
-    {id: 'unwanted_action', label: `AI does something nobody wanted`},
+    {id: 'unwanted_action', label: `AI takes an action nobody wanted`},
     {id: 'supplier',        label: `Supplier problem (terms change, breach, shutdown)`},
     {id: 'unfair',          label: `Unfair or unlawful decision about a person`},
     {id: 'used_against',    label: `AI used against us`},
@@ -82,16 +82,16 @@ var RISK = {
   responses: [
     {id: 'mitigate', label: `Reduce it`, detail: `Do the to-dos and keep the standing rules`},
     {id: 'avoid',    label: `Stop or change the use`, detail: `For example, stop putting patient details in`},
-    {id: 'transfer', label: `Share it`, detail: `Contract terms or insurance. Only partly possible: reputational harm can't be shared`},
-    {id: 'accept',   label: `Live with it`, detail: `You sign off, with a reason and a review date. Not available where a red line is crossed`},
+    {id: 'transfer', label: `Share it`, detail: `Contract terms or insurance. This is only partly possible, because reputational harm cannot be shared`},
+    {id: 'accept',   label: `Accept it`, detail: `You approve it, with a reason and a review date. Not available where a red line is crossed`},
   ],
 
   /* for risks not tied to a tool: the only place the owner rates directly */
   describe: {
-    impact: {low: `Annoying; fixed within a day; nobody outside affected`,
-             moderate: `Costs real time or money; a customer is affected; embarrassing`,
-             high: `Legal trouble, serious harm to someone, loss of important data, or threatens the business`},
-    likelihood: {low: `Hard to imagine happening this year`, moderate: `Could happen this year`, high: `Likely this year, or has already happened`},
+    impact: {low: `An inconvenience, fixed within a day, with nobody outside the business affected`,
+             moderate: `Costs significant time or money, affects a customer, or causes embarrassment`,
+             high: `Legal liability, serious harm to someone, loss of important data, or a threat to the business`},
+    likelihood: {low: `Unlikely to happen this year`, moderate: `Could happen this year`, high: `Likely to happen this year, or has already happened`},
   },
 
   /* suggestions for business-wide risks; the owner picks and rates */
@@ -106,7 +106,7 @@ var RISK = {
      title: `Someone uses a cloned voice or fake email to get patient information`,
      control: `Verify identity using details already on file before sharing anything.`},
     {id: 'cant_answer', type: 'other', industry: '*',
-     title: `Customers ask how we use AI and we can't answer`,
+     title: `Customers ask how we use AI and we cannot answer`,
      control: `Keep a short, honest answer ready, taken from your AI policy.`},
     {id: 'key_person', type: 'other', industry: '*',
      title: `The one person who understands our automations leaves`,

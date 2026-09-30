@@ -100,7 +100,7 @@
       <div class="top"><span class="num${i.paused ? ' hollow' : ''}" aria-hidden="true">${n + 1}</span><span class="t"><span class="visually-hidden">${n + 1}. </span>${esc(i.label)}</span>
         ${zb(i.zone)}${i.type ? ` <span class="badge">${esc(K.typeLabel(i.type))}</span>` : ''}${i.source === 'custom' ? ' <span class="badge">Business-wide</span>' : ''}</div>
       <p class="pos">Impact <b>${L(i.impact)}</b> &middot; Likelihood ${moved ? `<b>${L(i.before)}</b> before, <b>${L(i.now)}</b> now` : `<b>${L(i.now)}</b>`}${i.paused ? ' &middot; <b>Paused:</b> a red line is crossed' : ''}${i.zone_before !== i.zone ? ` &middot; was ${esc(RK.zone_labels[i.zone_before])}` : ''}</p>
-      ${i.ai_list ? `<p class="on-list">On your AI list: <b>${esc(i.ai_list)}</b>.${i.zone === 'act' && !i.red ? ' The list says whether you can use it; this page says how much is at stake if it goes wrong.' : ''}</p>` : ''}
+      ${i.ai_list ? `<p class="on-list">On your AI list: <b>${esc(i.ai_list)}</b>.${i.zone === 'act' && !i.red ? ' The list shows whether you can use it. This page shows how much is at stake if it goes wrong.' : ''}</p>` : ''}
       ${i.adjusted ? `<span class="adjusted">Moved by you: ${esc(i.adjusted.reason)} (suggested: impact ${L(i.suggested.impact)}, likelihood ${L(i.suggested.now)})</span>` : ''}
       <ul class="why">${i.why.impact.map(w => `<li>${esc(w)}</li>`).join('')}
         ${i.why.raises.map(w => `<li>Raises the likelihood: ${esc(w)}</li>`).join('')}
@@ -109,18 +109,18 @@
       ${i.response ? `<p class="small-note" style="margin:6px 0 0">Response: ${esc(RK.responses.find(x => x.id === i.response).label)}${i.owner ? ` &middot; ${esc(i.owner)}` : ''}${i.due ? ` &middot; due ${esc(U.fmtDate(i.due))}` : ''}${i.review_by ? ` &middot; review by ${esc(U.fmtDate(i.review_by))}` : ''}</p>` : ''}
       <details${errors['resp:' + i.id] ? ' open' : ''}><summary>Response, owner and dates</summary>
         <form data-resp="${esc(i.id)}">
-          <div><label class="lab">What you&rsquo;ll do</label><select name="response">${RK.responses.map(x => `<option value="${x.id}"${x.id === (r.response || i.response || 'mitigate') ? ' selected' : ''}${x.id === 'accept' && !i.can_accept ? ' disabled' : ''}>${esc(x.label)}: ${esc(x.detail)}${x.id === 'accept' && !i.can_accept ? ' (not for red lines)' : ''}</option>`).join('')}</select></div>
+          <div><label class="lab">What you will do</label><select name="response">${RK.responses.map(x => `<option value="${x.id}"${x.id === (r.response || i.response || 'mitigate') ? ' selected' : ''}${x.id === 'accept' && !i.can_accept ? ' disabled' : ''}>${esc(x.label)}: ${esc(x.detail)}${x.id === 'accept' && !i.can_accept ? ' (not for red lines)' : ''}</option>`).join('')}</select></div>
           <div class="row"><div style="flex:1 1 180px"><label class="lab">Owner</label><input type="text" name="owner" maxlength="80" value="${esc(r.owner || '')}"></div>
             <div><label class="lab">Due</label><input type="date" name="due" value="${esc(r.due || '')}"></div>
             <div><label class="lab">Review by</label><input type="date" name="review_by" value="${esc(r.review_by || (r.accept && r.accept.review_by) || '')}"></div></div>
-          <div class="row"><div style="flex:1 1 160px"><label class="lab">If living with it: who signs off</label><input type="text" name="by" maxlength="80" value="${esc(r.accept ? r.accept.by : '')}"></div>
-            <div style="flex:2 1 220px"><label class="lab">and why</label><input type="text" name="reason" maxlength="300" value="${esc(r.accept ? r.accept.reason : '')}"></div></div>
+          <div class="row"><div style="flex:1 1 160px"><label class="lab">If accepting it: who approves</label><input type="text" name="by" maxlength="80" value="${esc(r.accept ? r.accept.by : '')}"></div>
+            <div style="flex:2 1 220px"><label class="lab">Reason</label><input type="text" name="reason" maxlength="300" value="${esc(r.accept ? r.accept.reason : '')}"></div></div>
           ${errors['resp:' + i.id] ? `<p class="errmsg" role="alert">${esc(errors['resp:' + i.id])}</p>` : ''}
           <div><button class="btn" type="submit">Save</button></div>
         </form></details>
       ${i.source === 'use' ? `<details${errors['adj:' + i.id] ? ' open' : ''}><summary>Move this position</summary>
         <form data-adj="${esc(i.id)}">
-          <p class="small-note" style="margin:0">The position is suggested from your answers. If you know something they don&rsquo;t show, move it and say why. It will show as moved by you.</p>
+          <p class="small-note" style="margin:0">The position is suggested from your answers. If you know something the answers do not show, move it and give the reason. It will be marked as moved by you.</p>
           <div class="row"><div><label class="lab">Impact</label>${sel('impact', RK.levels, i.impact, L)}</div><div><label class="lab">Likelihood now</label>${sel('likelihood', RK.levels, i.now, L)}</div></div>
           <div><label class="lab">Why</label><input type="text" name="reason" maxlength="300" value="${esc(i.adjusted ? i.adjusted.reason : '')}"></div>
           ${errors['adj:' + i.id] ? `<p class="errmsg" role="alert">${esc(errors['adj:' + i.id])}</p>` : ''}
@@ -141,7 +141,7 @@
     const checked = lines.filter(l => !l.retired_on).length;
 
     main.innerHTML = `<section class="screen">
-      ${!checked ? `<div class="callout" style="max-width:760px;margin-bottom:14px"><span class="k">Check a tool first</span><p>Positions come from your tool checks. <a href="tool_check.html">Check your first tool</a>, and it will appear here. You can add business-wide risks now.</p></div>` : ''}
+      ${!checked ? `<div class="callout" style="max-width:760px;margin-bottom:14px"><span class="k">Check a tool first</span><p>Positions come from your tool checks. <a href="tool_check.html">Check your first tool</a>, and it will appear here. You can add risks that apply to the whole business now.</p></div>` : ''}
       ${items.length ? `<p class="headline"><span>${zb('act')} ${c.act}</span><span>${zb('plan')} ${c.plan}</span><span>${zb('watch')} ${c.watch}</span>${stopped.length ? `<span class="small-note">${stopped.length} stopped or paused, below</span>` : ''}</p>
         ${mv ? `<p class="movement">Since your snapshot on ${esc(U.fmtDate(mv.since))}: ${esc(mv.summary)}.</p>` : ''}
         <div class="matrix-wrap">
@@ -157,24 +157,24 @@
           <div>
             <h3 class="subhead" style="margin-top:0">What to deal with first</h3>
             <ol class="first-list" style="margin:0;padding-left:20px;font-size:15px">${items.filter(i => i.zone !== 'watch').slice(0, 6).map(i => `<li style="margin-bottom:5px"><a href="#ri-${esc(i.id)}">${esc(i.label)}</a> ${zb(i.zone)}</li>`).join('') || '<li>Nothing in Act now or Plan.</li>'}</ol>
-            <p class="small-note" style="margin-top:10px">Act now, then Plan, then Watch. Within a zone, the soonest date comes first. There&rsquo;s no single score for the business: one number would hide which risks matter.</p>
+            <p class="small-note" style="margin-top:10px">Act now comes first, then Plan, then Watch. Within a zone, the earliest date comes first. There is no single score for the business, because one number would hide which risks matter.</p>
           </div>
         </div>` : ''}
 
       ${items.length ? `<h3 class="subhead">The register</h3><ol class="reg">${items.map(itemHTML).join('')}</ol>` : ''}
 
       ${stopped.length ? `<h3 class="subhead">Stopped until resolved</h3>
-        <p class="example">These cross a red line in the tool check. Red lines can&rsquo;t be accepted away; the fix is on your <a href="tool_check.html">AI list</a>.</p>
+        <p class="example">These cross a red line in the tool check. A red line cannot be accepted as a risk. The fix is on your <a href="tool_check.html">AI list</a>.</p>
         <ul class="reg">${stopped.map(s => `<li class="ritem act"><div class="top"><span class="t">${esc(s.label)}</span><span class="badge">${s.paused ? 'Paused' : 'Not started'}</span></div>
           <ul class="why">${s.reasons.map(r => `<li>${esc(r)}</li>`).join('')}${s.fix.map(f => `<li>What would change it: ${esc(f)}</li>`).join('')}</ul></li>`).join('')}</ul>` : ''}
 
       <h3 class="subhead">Risks not tied to one tool</h3>
       <form class="addrisk" id="addrisk">
-        <p class="example" style="margin:0">Some risks don&rsquo;t belong to any one tool, like someone using AI against you. These are the only positions you rate yourself.</p>
+        <p class="example" style="margin:0">Some risks do not belong to any one tool, such as someone using AI against your business. These are the only positions you rate yourself.</p>
         ${sugg.length ? `<div class="suggest">${sugg.map(s => `<button class="chip" type="button" data-suggest="${s.id}">${esc(s.title)}</button>`).join('')}</div>` : ''}
         <div style="margin-top:8px"><label class="lab" for="ar-title" style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)">The risk</label><input type="text" id="ar-title" name="title" maxlength="200"></div>
         <div style="margin-top:8px"><label class="lab" for="ar-type" style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)">Kind</label>${sel('type', RK.types.map(t => t.id), 'used_against', K.typeLabel, ' id="ar-type"')}</div>
-        <fieldset><legend>How bad if it happens?</legend><div class="levels">${RK.levels.map(l => `<label><input type="radio" name="impact" value="${l}"><b>${L(l)}</b>${esc(RK.describe.impact[l])}</label>`).join('')}</div></fieldset>
+        <fieldset><legend>How serious would it be?</legend><div class="levels">${RK.levels.map(l => `<label><input type="radio" name="impact" value="${l}"><b>${L(l)}</b>${esc(RK.describe.impact[l])}</label>`).join('')}</div></fieldset>
         <fieldset><legend>How likely?</legend><div class="levels">${RK.levels.map(l => `<label><input type="radio" name="likelihood" value="${l}"><b>${L(l)}</b>${esc(RK.describe.likelihood[l])}</label>`).join('')}</div></fieldset>
         <div style="margin-top:10px"><label class="lab" for="ar-control" style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)">What you do about it (optional)</label><input type="text" id="ar-control" name="control" maxlength="300"></div>
         ${errors.add ? `<p class="errmsg" role="alert" style="margin-top:8px">${esc(errors.add)}</p>` : ''}
@@ -182,7 +182,7 @@
       </form>
 
       <h3 class="subhead">Snapshots</h3>
-      <p class="example">Save one at each quarterly review. The next one shows what moved, which is evidence the work is being done, not just written down.</p>
+      <p class="example">Save a snapshot at each quarterly review. The next snapshot shows what moved, which is evidence that the work is being done and not only written down.</p>
       <div class="actions">
         <button class="btn" type="button" data-act="snapshot"${items.length ? '' : ' disabled'}>Save a snapshot</button>
         <button class="btn" type="button" data-act="csv"${items.length || stopped.length ? '' : ' disabled'}>Download the register (CSV)</button>
@@ -198,7 +198,7 @@
       <tbody>${items.map((i, n) => `<tr><td>${n + 1}</td><td>${esc(i.label)}${i.adjusted ? ' (moved by owner)' : ''}</td><td>${L(i.impact)}</td><td>${L(i.before)}</td><td>${L(i.now)}</td><td>${esc(RK.zone_labels[i.zone])}</td>
         <td>${i.response ? esc(RK.responses.find(x => x.id === i.response).label) : ''}</td><td>${esc(i.owner)}</td><td>${esc(i.due || '')}</td><td>${esc(i.review_by || '')}</td></tr>`).join('')}
       ${stopped.map(s => `<tr><td></td><td>${esc(s.label)}</td><td colspan="8">${s.paused ? 'Paused' : 'Stopped'}: ${esc(s.reasons.join(' '))}</td></tr>`).join('')}</tbody></table>
-      <p style="font-size:11px">Positions suggested from tool-check answers (risk rules ${esc(RK.version)}). This says what was recorded; it isn&rsquo;t a record of what anyone else has checked.</p>
+      <p style="font-size:11px">Positions suggested from tool-check answers (risk rules ${esc(RK.version)}). This shows what was recorded. It is not a record of what anyone else has checked.</p>
     </section>`;
     if (focusSel){ const el = $(focusSel, main); if (el) el.focus(); }
   }

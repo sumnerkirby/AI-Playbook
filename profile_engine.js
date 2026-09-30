@@ -122,7 +122,7 @@ var ProfileEngine = (function(){
   function describe(e){
     const where = e.target ? `${FX.pages[e.page]}: ${FX.targets[e.target]}` : FX.pages[e.page];
     const what = {
-      note: `a note for you${e.title ? `: ${e.title}` : ''}`,
+      note: `a note for your business${e.title ? `: ${e.title}` : ''}`,
       hide: `set aside, with a way to show it`,
       tag: e.text && e.text.toLowerCase(),
       banner: e.title && e.title.toLowerCase(),

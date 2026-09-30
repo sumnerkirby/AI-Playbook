@@ -10,7 +10,7 @@ var PROFILE_OPTIONS = {
 
   team_size: {
     label: `Who uses AI for work in your business?`,
-    why: `So we don't show you team steps if it's just you.`,
+    why: `If you work alone, the site leaves out the steps meant for a team.`,
     options: [
       {id: 'solo',   code: 's', label: `Just me`,                              summary: `Just me`},
       {id: 'small',  code: 't', label: `Me and a small team (2 to 10 people)`, summary: `Small team`},
@@ -21,7 +21,7 @@ var PROFILE_OPTIONS = {
 
   ai_use: {
     label: `How does your business use AI?`,
-    why: `Setting up your own assistants or writing code adds checks that ready-made tools don't need.`,
+    why: `Setting up your own assistants or writing code requires checks that ready-made tools do not.`,
     multiple: true,
     options: [
       {id: 'use',       code: 'u', label: `We use ready-made AI tools`,
@@ -29,8 +29,8 @@ var PROFILE_OPTIONS = {
       {id: 'configure', code: 'c', label: `We set up our own AI assistants or automations, without writing code`,
        examples: `Custom GPTs, Gemini Gems, Copilot Studio agents, Claude Projects; Zapier, Make or n8n with an AI step`},
       {id: 'build',     code: 'b', label: `We write code that uses AI`,
-       examples: `Calling an AI company's API from your own software, running a model yourself`},
-      {id: 'none',      code: 'n', label: `We don't use AI`, examples: ``},
+       examples: `Calling an AI company's API from your own software, or running a model yourself`},
+      {id: 'none',      code: 'n', label: `We do not use AI`, examples: ``},
     ],
   },
 
@@ -39,7 +39,7 @@ var PROFILE_OPTIONS = {
     why: `Some industries have extra rules about information that goes into AI tools.`,
     options: [
       {id: 'healthcare',   code: 'hc', label: `Healthcare and wellness`,
-       examples: `Dental, therapy, clinics, physiotherapy, pharmacy, vets`},
+       examples: `Dental, therapy, clinics, physical therapy, pharmacy, veterinary`},
       {id: 'professional', code: 'pr', label: `Legal, accounting and professional services`,
        examples: `Law firms, bookkeepers, tax preparers, consultants, architects`},
       {id: 'finance',      code: 'fi', label: `Finance and insurance`,
@@ -77,7 +77,7 @@ var PROFILE_OPTIONS = {
 
   it_support: {
     label: `Who looks after your IT?`,
-    why: `So each to-do says who does it: you, your IT provider, or your supplier.`,
+    why: `Each to-do then names who does it: you, your IT provider, or your supplier.`,
     optional: true,
     options: [
       {id: 'none',     code: 'n', label: `No one`},
@@ -102,7 +102,7 @@ var PROFILE_OPTIONS = {
       last_reviewed: '2026-09-29',
       summary: `Patient information needs extra care.`,
       points: [
-        `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans don't offer one.`,
+        `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans do not offer one.`,
         `A BAA for your main software may not cover a new AI feature inside it. Ask the supplier.`,
       ],
       red_line: `Patient information in a tool without a BAA.`,
@@ -116,7 +116,7 @@ var PROFILE_OPTIONS = {
         `Tax preparers: rules on using and disclosing tax return information (IRC section 7216) and the FTC Safeguards Rule may apply.`,
       ],
       red_line: `Client-confidential material on a plan that may train on it.`,
-      advice: `Check your professional body's guidance on AI, and your engagement letters.`,
+      advice: `Check your professional association's guidance on AI, and your engagement letters.`,
     },
     finance: {
       last_reviewed: '2026-09-29',
@@ -174,7 +174,7 @@ var PROFILE_OPTIONS = {
       last_reviewed: '2026-09-29',
       summary: `Controlled Unclassified Information (CUI) stays in approved systems.`,
       points: [
-        `DFARS 252.204-7012 and CMMC require CUI to stay in environments approved for it. General commercial AI plans usually aren't.`,
+        `DFARS 252.204-7012 and CMMC require CUI to stay in environments approved for it. General commercial AI plans usually are not.`,
       ],
       red_line: `CUI in any tool not approved for CUI.`,
       advice: `Your contract may require you to report incidents quickly. Ask your contracting officer or advisor.`,
@@ -183,8 +183,8 @@ var PROFILE_OPTIONS = {
       last_reviewed: '2026-09-29',
       summary: `Customer drawings, and outputs that affect safety.`,
       points: [
-        `Customer drawings and specifications are the customer's property.`,
-        `Estimates, load calculations and safety checks need a qualified person to check them.`,
+        `Customer drawings and specifications belong to the customer.`,
+        `Estimates, load calculations and safety checks must be checked by a qualified person.`,
       ],
       red_line: `Safety-relevant output with no qualified check.`,
       advice: `Check what your contracts say about sharing customer documents.`,
@@ -193,8 +193,8 @@ var PROFILE_OPTIONS = {
       last_reviewed: '2026-09-29',
       summary: `Client work, ownership and telling clients.`,
       points: [
-        `Unreleased or embargoed client work shouldn't go into a plan that may train on it.`,
-        `Who owns AI-generated work, and whether to tell clients AI was used, are worth agreeing up front.`,
+        `Unreleased or embargoed client work should not go into a plan that may train on it.`,
+        `Agree with clients in advance on who owns AI-generated work, and whether you will tell them when AI was used.`,
       ],
       red_line: `Embargoed client material on a plan that may train on it.`,
       advice: `Check your client contracts for rules on AI and confidentiality.`,

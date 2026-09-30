@@ -25,7 +25,7 @@
     /* the quick check asks its own industry question, and the AI list has its
        own box asking for the profile, so a second prompt would compete */
     if (page === 'quick_check.html' || page === 'tool_check.html') return;
-    bar.innerHTML = `<span class="k">Tailor this site</span><span class="words">Answer three quick questions to see what applies to your business.</span><a href="profile.html">Start (under a minute)</a>`;
+    bar.innerHTML = `<span class="k">Tailor this site</span><span class="words">Answer three questions to see which parts of this site apply to your business.</span><a href="profile.html">Start (under a minute)</a>`;
     (document.querySelector('.toolrow') || site).after(bar);
     return;
   }
@@ -47,7 +47,7 @@
   function overlayHTML(){
     return PR.overlays(p).map(o => `<p><b>${esc(o.label)}.</b> ${esc(o.summary)}</p><ul>${o.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` +
       `<p><b>Red line in the checks:</b> ${esc(o.red_line)}</p><p class="advice"><b>Get advice</b>${esc(o.advice)}</p>` +
-      `<p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Not legal advice; not yet verified for publication.</p>`).join('');
+      `<p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Not legal advice. Not yet verified for publication.</p>`).join('');
   }
   /* a note inside a playbook step goes at the top of the step, and the
      closed step shows that it has one */

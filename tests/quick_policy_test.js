@@ -49,7 +49,7 @@ var PolicyTestRun = (function(){
   test('a role at the start of a sentence gets a capital, mid-sentence it does not', () => {
     const a = PE.initial(TODAY); a.decider = 'the office manager';
     eq(secText(PE.build(a), 'who'),
-      "The office manager decides which AI tools we can use. If you're not sure whether something is allowed, ask the office manager.", 'who');
+      "The office manager decides which AI tools we can use. If you are not sure whether something is allowed, ask the office manager.", 'who');
   });
 
   /* ---------- dates ---------- */
@@ -64,7 +64,7 @@ var PolicyTestRun = (function(){
     const doc = PE.build(PE.initial(TODAY));
     eq(PE.text(doc.title), '[Business name]: Using AI at work', 'title');
     ok(secText(doc, 'who').includes('[Name or role] decides'), 'who');
-    ok(secText(doc, 'tools').includes('[Tools we\'ve approved]'), 'tools');
+    ok(secText(doc, 'tools').includes('[Approved tools]'), 'tools');
     ok(secText(doc, 'people').includes('[What customer and staff information can go in]'), 'people');
     ok(secText(doc, 'telling').includes('[How we tell customers about AI]'), 'telling');
   });
@@ -75,7 +75,7 @@ var PolicyTestRun = (function(){
     Object.assign(a, {business: 'Acme', decider: 'Maria', tools: [{name: 'ChatGPT', account: 'not_yet'}, {name: 'Gemini', account: 'business'}]});
     const t = secText(PE.build(a), 'tools');
     ok(t.includes('Use only your work account'), 'rule');
-    ok(t.includes('Being set up: ChatGPT. Don\'t use it for customer information until October 29, 2026.'), 'being set up line');
+    ok(t.includes('Being set up: ChatGPT. Do not use it for customer information until October 29, 2026.'), 'being set up line');
     ok(!/You may use these tools for work: ChatGPT/.test(t), 'not-yet tool is not listed as approved');
   });
   test('check 2: acting not sure writes the approval rule and a to-do', () => {
@@ -89,9 +89,9 @@ var PolicyTestRun = (function(){
     ok(secText(doc2, 'acting').includes('before connecting'), 'but still ask before connecting');
   });
   test('check 3: the footer says it is a decision, not a record', () => {
-    ok(PE.text(PE.build(PE.initial(TODAY)).footer).includes("isn't a record of what's been checked"), 'team');
+    ok(PE.text(PE.build(PE.initial(TODAY)).footer).includes('is not a record of what has been checked'), 'team');
     const a = PE.initial(TODAY); a.team = 'solo';
-    ok(PE.text(PE.build(a).footer).includes("aren't a record of what's been checked"), 'solo');
+    ok(PE.text(PE.build(a).footer).includes('are not a record of what has been checked'), 'solo');
   });
   test('customer information "only in approved tools" with no business tool says none until there is one', () => {
     const a = PE.initial(TODAY);
