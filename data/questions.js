@@ -46,8 +46,8 @@ var SCREENER = {
        same thing as a red there. The design note's wording flagged any of
        your own documents, including a public price list. */
     {id: 'q5', code: '5',
-     text: `Is there a **chatbot or assistant that people outside your business can use**, that has been given **documents that are not meant to be public**?`,
-     example: `A website chatbot that answers questions using client files or internal notes.`,
+     text: `Can people outside your business use an AI chatbot or assistant that **has access to non-public documents**?`,
+     example: `A website chatbot that answers visitors' questions using client files or internal notes.`,
      answers: YES_NO_NOT_SURE},
     {id: 'q6', code: '6',
      text: `Does anything **record or transcribe** calls or meetings **without people being told**?`,

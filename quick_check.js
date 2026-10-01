@@ -276,8 +276,8 @@
       <p class="step-label"><b>Part 2 of 2 &middot; Everyday tasks</b></p>
       <h2>In which of these tasks does anyone in your business use AI?</h2>
       <p class="example">Select every task in which anyone uses AI, even occasionally. The note on each card says where AI is often found.</p>
-      <div class="tapgrid" role="group" aria-label="Activities">${tapOrder().map(btn).join('')}</div>
-      <div class="tapextra">
+      <div class="tapgrid rows" role="group" aria-label="Everyday tasks">${tapOrder().map(btn).join('')}</div>
+      <div class="tapextra rows">
         <button type="button" class="tapcard" data-other aria-pressed="${!!extra.o}"><span class="t">Something else</span><span class="h">Anything not listed</span><span class="box" aria-hidden="true"></span></button>
         <button type="button" class="tapcard" data-none aria-pressed="false"><span class="t">None of these</span><span class="h">We do not use AI for any of these</span></button>
       </div>

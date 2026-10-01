@@ -155,6 +155,22 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
 .tapcard.industry[aria-pressed=true]{border-left-width:3px;padding-left:14px}
 .tapextra{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
 .tapextra .tapcard{flex:1 1 240px;min-height:0}
+
+/* quick check part 2: one task per row, checkbox at the left, scrolled down the page */
+.rows{display:flex;flex-direction:column;gap:6px;max-width:720px}
+.rows .tapcard{
+  display:grid;grid-template-columns:22px 1fr;column-gap:14px;row-gap:2px;align-items:center;
+  min-height:0;padding:12px 16px
+}
+.rows .tapcard .t{grid-column:2;grid-row:1}
+.rows .tapcard .h{grid-column:2;grid-row:2}
+.rows .tapcard .box{position:static;grid-column:1;grid-row:1 / span 2;width:20px;height:20px;font-size:13px}
+.rows .tapcard[aria-pressed=true]{padding:11px 15px}
+.rows .tapcard.industry[aria-pressed=true]{padding-left:14px}
+.rows .tapcard[data-none]{grid-template-columns:1fr}
+.rows .tapcard[data-none] .t,.rows .tapcard[data-none] .h{grid-column:1}
+.tapextra.rows{margin-top:6px}
+.tapextra.rows .tapcard{flex:none}
 .othertext{margin:8px 0 0;max-width:560px}
 .othertext label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
 .othertext input{
@@ -207,6 +223,9 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   .tapcard[aria-pressed=true] .box{top:9px;right:8px}
   .tapcard .h{font-size:13.5px}
   .tapcard .t{font-size:15px}
+  .rows .tapcard{min-height:0;padding:10px 12px;column-gap:12px}
+  .rows .tapcard[aria-pressed=true]{padding:9px 11px}
+  .rows .tapcard .box{top:auto;right:auto}
   .answer{font-size:16.5px}
 }
 @media (max-width:360px){
