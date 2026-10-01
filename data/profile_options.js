@@ -6,7 +6,7 @@
 
 var PROFILE_OPTIONS = {
   profile_version: 2,
-  last_reviewed: '2026-09-29',
+  last_reviewed: '2026-10-01',
 
   team_size: {
     label: `Who uses AI for work in your business?`,
@@ -99,7 +99,7 @@ var PROFILE_OPTIONS = {
   overlays_verified: false,
   overlays: {
     healthcare: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Patient information needs extra care.`,
       points: [
         `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans do not offer one.`,
@@ -109,7 +109,7 @@ var PROFILE_OPTIONS = {
       advice: `Ask your compliance advisor which of your tools count as business associates.`,
     },
     professional: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Client confidentiality comes first.`,
       points: [
         `Lawyers: ABA Formal Opinion 512 (2024) covers competence, confidentiality and when client consent is needed for generative AI.`,
@@ -119,11 +119,11 @@ var PROFILE_OPTIONS = {
       advice: `Check your professional association's guidance on AI, and your engagement letters.`,
     },
     finance: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Customer financial information is regulated.`,
       points: [
         `Customer financial information is covered by the Gramm-Leach-Bliley Act. Non-bank firms are generally subject to the FTC Safeguards Rule.`,
-        `If AI helps with credit decisions, adverse-action notices still need specific reasons (CFPB Circular 2022-03).`,
+        `If AI helps with credit decisions, adverse-action notices still need specific reasons (Equal Credit Opportunity Act and Regulation B). The CFPB withdrew its 2022 guidance on AI and adverse action in May 2025; the requirement in Regulation B did not change.`,
         `AI outputs such as meeting notes and client summaries may count as business records you have to keep.`,
       ],
       red_line: `AI helping decide credit or cover with no person deciding.`,
@@ -140,7 +140,7 @@ var PROFILE_OPTIONS = {
       },
     },
     retail: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Customer data, card payments and customer-facing chatbots.`,
       points: [
         `Card numbers never go into AI tools (PCI DSS).`,
@@ -150,18 +150,18 @@ var PROFILE_OPTIONS = {
       advice: `If a chatbot takes orders or answers questions about orders, check what it can see.`,
     },
     hiring: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Decisions about people.`,
       points: [
         `New York City Local Law 144 requires a bias audit and notices for automated employment decision tools.`,
-        `Colorado SB 26-189 (from January 1, 2027) requires notice, explanation and human review for automated decisions such as hiring.`,
+        `Colorado SB 26-189 (from January 1, 2027) requires notice, an explanation after an adverse decision, and human review on request, for automated decisions such as hiring.`,
         `Federal anti-discrimination law applies whether or not AI is involved.`,
       ],
       red_line: `AI screening or ranking candidates with no person deciding.`,
       advice: `If you hire in New York City or Colorado, get advice before using AI in hiring.`,
     },
     education: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Children's information.`,
       points: [
         `COPPA covers online services directed at children under 13.`,
@@ -171,7 +171,7 @@ var PROFILE_OPTIONS = {
       advice: `Check what your agreements with schools or parents say about sharing information.`,
     },
     defense: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Controlled Unclassified Information (CUI) stays in approved systems.`,
       points: [
         `DFARS 252.204-7012 and CMMC require CUI to stay in environments approved for it. General commercial AI plans usually are not.`,
@@ -180,7 +180,7 @@ var PROFILE_OPTIONS = {
       advice: `Your contract may require you to report incidents quickly. Ask your contracting officer or advisor.`,
     },
     trades: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Customer drawings, and outputs that affect safety.`,
       points: [
         `Customer drawings and specifications belong to the customer.`,
@@ -190,7 +190,7 @@ var PROFILE_OPTIONS = {
       advice: `Check what your contracts say about sharing customer documents.`,
     },
     creative: {
-      last_reviewed: '2026-09-29',
+      last_reviewed: '2026-10-01',
       summary: `Client work, ownership and telling clients.`,
       points: [
         `Unreleased or embargoed client work should not go into a plan that may train on it.`,

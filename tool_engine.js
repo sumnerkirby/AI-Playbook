@@ -187,6 +187,24 @@ var ToolEngine = (function(){
     return line;
   }
   const profileKey = p => JSON.stringify([p && p.team_size, p && p.industry, pathOf(p), p && p.it_support]);
+  /* Directions for a named tool (data/tool_questions.js, where_to_look.tools):
+     the first tool whose name matches, with the plan groups that fit the
+     plan answer. A personal plan shows personal steps, a business or
+     enterprise plan business steps, anything else both. Null when no tool
+     matches. */
+  const PLAN_GROUPS = {free_personal: ['personal'], paid_personal: ['personal'], business: ['business'], enterprise: ['business']};
+  function vendorHelp(answers){
+    const name = String((answers && answers.tool) || '').toLowerCase();
+    if (!name.trim()) return null;
+    const tools = Q.where_to_look.tools;
+    const id = Object.keys(tools).find(k => tools[k].match.some(m => new RegExp(m, 'i').test(name)));
+    if (!id) return null;
+    const t = tools[id];
+    const groups = t.plans.any ? ['any'] : (PLAN_GROUPS[answers.plan] || ['personal', 'business']);
+    return {id, name: t.name, checked: t.checked, sources: t.sources,
+      sections: groups.filter(g => t.plans[g]).map(g => ({group: g, label: t.plans[g].label, steps: t.plans[g].steps}))};
+  }
+
   function name(line){ return line.answers.tool || 'Unnamed tool'; }
   function useLabel(id){ const o = Q.questions.find(q => q.id === 'use').options.find(x => x.id === id); return o ? o.label : ''; }
 
@@ -363,6 +381,6 @@ var ToolEngine = (function(){
     addDays, addMonths, facts, matches, questionText, visible, prune, nextQuestion, complete,
     evaluate, recheckBy, allowedText, ownerLabel,
     makeLine, refresh, state, name, useLabel, logEvent, reopenAnswers, recheck, retire, anotherUse,
-    queue, fromQueue, csv, restore, CLASSES,
+    queue, fromQueue, csv, restore, vendorHelp, CLASSES,
   };
 })();

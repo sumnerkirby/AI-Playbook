@@ -190,10 +190,13 @@ var TOOL_QUESTIONS = {
      ]},
   ],
 
-  /* Where supplier settings usually live. Deliberately general: vendor
-     settings change, and specific directions must come from the vendor's
-     current pages, with a date. `tools` is left empty until those are
-     checked (exploratory/handoff_website_development.md, section 11). */
+  /* Where supplier settings usually live. `general` applies to any tool.
+     `tools` gives directions for five common tools, each taken from the
+     vendor's own pages on the date in `checked`; settings change, so check
+     them again before that date is a quarter old. A tool is recognized when
+     its name matches one of `match` (case-insensitive regular expressions).
+     `plans` is keyed by plan group: personal (free or paid personal),
+     business (business or enterprise), or any (shown for every plan). */
   where_to_look: {
     general: [
       `In the tool's own settings, under Data, Privacy or Data controls.`,
@@ -201,7 +204,98 @@ var TOOL_QUESTIONS = {
       `On the supplier's trust, privacy or security page, and in the terms for your plan.`,
       `If you still cannot tell, ask the supplier in writing and keep the reply.`,
     ],
-    tools: {},
+    tools: {
+      chatgpt: {
+        name: `ChatGPT`, match: ['\\bchat ?gpt\\b', '\\bopenai\\b'], checked: '2026-10-01',
+        plans: {
+          personal: {label: `Free, Go, Plus or Pro`, steps: [
+            `To stop new chats from being used for training, open Settings, select Data controls, and turn off Improve the model for everyone. In the phone app, open the sidebar and select your profile icon to reach Settings.`,
+            `Turning off training does not delete saved chats. Delete chats separately.`,
+            `If you rate a response with thumbs up or down, the whole conversation may be used for training, even with the setting off.`,
+            `A temporary chat is not used for training and does not appear in your history, but OpenAI may keep it for up to 30 days.`,
+          ]},
+          business: {label: `Business, Enterprise or Edu`, steps: [
+            `OpenAI does not train on content from Business, Enterprise or Edu workspaces by default.`,
+            `Retention and other data settings are set for the whole workspace by its owner, not in your own settings.`,
+          ]},
+        },
+        sources: [{title: `OpenAI Help Center: Data controls in ChatGPT`, href: `https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt`}],
+      },
+      copilot: {
+        name: `Microsoft Copilot`, match: ['^(?!.*github).*\\bcopilot\\b'], checked: '2026-10-01',
+        plans: {
+          personal: {label: `Signed in with a personal Microsoft account`, steps: [
+            `Microsoft states that prompts, responses and file contents in the Copilot app are not used to train its foundation models. This applies to the version of the app released on August 18, 2026; update the app if you have an older version.`,
+            `Your chats can still be used to personalize Copilot, other Microsoft services and ads. To stop this, open Settings, select Personalization, and turn off Saved memories, One shared experience and Allow ads personalization.`,
+            `To delete a chat, select it in the Chats list, then select More and Delete. To delete all of your Copilot history, use the Microsoft privacy dashboard.`,
+          ]},
+          business: {label: `Signed in with a work or school account`, steps: [
+            `With a work or school (Microsoft Entra) account, Copilot Chat has enterprise data protection: prompts and responses are not used to train foundation models. Your IT administrator can see a log of them.`,
+            `The protection applies only when you are signed in with the work or school account. Check which account Copilot shows before you put in business information.`,
+            `Microsoft 365 Copilot is now named Microsoft Copilot, and Microsoft 365 Copilot Chat is now Microsoft Copilot Chat. The data protection did not change.`,
+            `Web searches that Copilot makes for you are handled by Bing under separate terms.`,
+          ]},
+        },
+        sources: [
+          {title: `Microsoft Support: Microsoft Copilot for individuals, your activity history`, href: `https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history`},
+          {title: `Microsoft Support: Microsoft Copilot for individuals, your privacy controls and choices`, href: `https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls`},
+          {title: `Microsoft Support: Data protection when using Microsoft Copilot Chat for work or school`, href: `https://support.microsoft.com/en-us/privacy/data-protection-when-using-microsoft-365-copilot-chat-for-work-or-school`},
+        ],
+      },
+      gemini: {
+        name: `Google Gemini`, match: ['\\bgemini\\b', '\\bbard\\b'], checked: '2026-10-01',
+        plans: {
+          personal: {label: `Signed in with a personal Google account`, steps: [
+            `To stop future chats from being used to train Google's AI models, go to myactivity.google.com/product/gemini (Gemini Apps Activity) and turn off Keep Activity. Chats are still kept for 72 hours, and sending feedback allows that chat to be used.`,
+            `While Keep Activity is on, human reviewers read some chats, and reviewed chats are kept for up to three years even if you delete your activity. Google advises not entering confidential information.`,
+            `A temporary chat is not used to train Google's AI models.`,
+            `Delete chats on the same Gemini Apps Activity page. Activity is deleted automatically after 18 months unless you change the period.`,
+          ]},
+          business: {label: `Signed in with a Google Workspace account`, steps: [
+            `Google states that with a Workspace account, your content is not reviewed by people or used to train generative AI models outside your organization without permission.`,
+            `Your Workspace administrator decides in the Admin console whether Gemini conversations are saved and for how long.`,
+            `Gemini in Workspace follows the Cloud Data Processing Addendum, which is part of your Workspace agreement.`,
+          ]},
+        },
+        sources: [
+          {title: `Gemini Apps Privacy Hub (last updated September 24, 2026)`, href: `https://support.google.com/gemini/answer/13594961`},
+          {title: `Generative AI in Google Workspace Privacy Hub`, href: `https://support.google.com/a/answer/15706919`},
+        ],
+      },
+      claude: {
+        name: `Claude`, match: ['\\bclaude\\b', '\\banthropic\\b'], checked: '2026-10-01',
+        plans: {
+          personal: {label: `Free, Pro or Max`, steps: [
+            `To stop new chats and coding sessions from being used for training, open Settings, select Privacy, and turn off Help Improve our AI models.`,
+            `Chats that Anthropic's safety systems flag may still be used for safety work.`,
+            `To delete a chat on the web, hover over it in the sidebar, select the three-dot button, and select Delete. To delete several, open Chats and tasks and use Select.`,
+          ]},
+          business: {label: `Team, Enterprise or API`, steps: [
+            `Anthropic does not use inputs or outputs from commercial plans to train its models by default.`,
+            `If someone rates a response with thumbs up or down, the whole conversation is kept for up to five years and may be used for training. An owner can turn off rating for the organization under Organization settings, Data and Privacy, Rate chats.`,
+          ]},
+        },
+        sources: [
+          {title: `Anthropic Privacy Center: How do I change my model improvement privacy settings?`, href: `https://privacy.claude.com/en/articles/12109829-how-do-i-change-my-model-improvement-privacy-settings`},
+          {title: `Anthropic Privacy Center: Is my data used for model training? (commercial products)`, href: `https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training`},
+          {title: `Claude Help Center: Delete or rename a conversation`, href: `https://support.claude.com/en/articles/8230524-delete-or-rename-a-conversation`},
+        ],
+      },
+      meta_ai: {
+        name: `Meta AI`, match: ['\\bmeta ai\\b', '\\bmeta\\.ai\\b'], checked: '2026-10-01',
+        plans: {
+          any: {label: `All accounts`, steps: [
+            `Meta states that it uses your conversations with Meta AI to improve its AI, and that it may share your messages with selected partners when Meta AI cannot answer. Meta's pages describe no setting that stops this.`,
+            `Meta's pages describe no business plan for Meta AI. Treat it as a personal tool and put in only information that is already public.`,
+            `To delete all chats, in the Meta AI app open Menu, then Settings, Data and privacy, Manage your information, and select Delete all chats and media.`,
+          ]},
+        },
+        sources: [
+          {title: `Meta Help Center: Remove posts, chats and media from Meta AI and Vibes`, href: `https://www.meta.com/help/artificial-intelligence/2457110494637611/`},
+          {title: `Meta Privacy Center: How Meta uses information for generative AI models and features`, href: `https://www.facebook.com/privacy/genai/`},
+        ],
+      },
+    },
     verified: false,
   },
 

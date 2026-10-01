@@ -156,7 +156,7 @@
       /* supplier answers: say how you know, or where to look */
       if (q.evidence && v){
         body += v === 'dont_know'
-          ? `<div class="callout lookhelp"><span class="k">Where to look</span><ul>${Q.where_to_look.general.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p class="small-note">This stays a to-do until you find out and change your answer.</p></div>`
+          ? `<div class="callout lookhelp"><span class="k">Where to look</span>${lookHelp(a)}<p class="small-note">This stays a to-do until you find out and change your answer.</p></div>`
           : `<div class="evidence"><label for="ev-in">How do you know? (optional)</label><input id="ev-in" type="text" maxlength="200" autocomplete="off" placeholder="A link to the terms, or: checked the setting in the admin console" value="${esc(ev ? ev.note : '')}"></div>`;
         body += `<div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="ev-next">Next</button></div>`;
       }
@@ -187,6 +187,17 @@
     goto({name: 'ask', draft: d});
   }
 
+  /* Where to look: directions for the named tool, when it is one of the
+     tools in the data, then the general places that apply to any tool. */
+  function lookHelp(a){
+    const list = items => `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
+    const v = T.vendorHelp(a);
+    if (!v) return list(Q.where_to_look.general);
+    return `${v.sections.map(sec => `<p class="vh"><b>${esc(v.name)}</b> &middot; ${esc(sec.label)}</p>${list(sec.steps)}`).join('')}
+      <p class="vh-src">From ${v.sources.map(x => `<a href="${esc(x.href)}" rel="noopener noreferrer">${esc(x.title)}</a>`).join('; ')}. Checked ${esc(U.fmtDate(v.checked))}. Settings change; where the tool shows something different, the vendor's current page is correct.</p>
+      <p class="vh"><b>Any tool</b></p>${list(Q.where_to_look.general)}`;
+  }
+
   /* ================= results ================= */
   function resultHTML(r, a, opts){
     const light = r.light;
@@ -212,7 +223,7 @@
             <p><label class="task" for="td-${esc(t.id)}">${t.cleanup ? '<b>Clean-up:</b> ' : ''}${esc(t.text)}</label> <span class="who">${esc(t.owner)}</span></p>
             <p class="why" id="tw-${esc(t.id)}">${esc(t.reason)}</p>
             ${t.flag ? `<p class="advice"><b>Get advice</b>${esc(t.flag_text || '')}</p>` : ''}
-            ${t.where_to_look ? `<details><summary>Where to look</summary><ul>${Q.where_to_look.general.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}
+            ${t.where_to_look ? `<details><summary>Where to look</summary>${lookHelp(a)}</details>` : ''}
             ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}">I&rsquo;ve found out: change my answer</button></p>` : ''}
             ${t.standing && !t.done ? `<p class="small-note">Once done, this becomes a standing rule.</p>` : ''}
             <p><a href="${esc(t.how.href)}">${esc(t.how.label)}</a></p>

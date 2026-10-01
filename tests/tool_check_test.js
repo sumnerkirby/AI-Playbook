@@ -302,6 +302,37 @@ var ToolTestRun = (function(){
     eq(r.lines[0].light, 'red', 'light worked out from the answers, not the file');
   });
 
+  /* ---------- where to look: vendor directions ---------- */
+  test('vendor directions: each tool is recognized by its usual names, and lookalikes are not', () => {
+    const id = tool => { const v = T.vendorHelp({tool, plan: 'business'}); return v && v.id; };
+    eq(['ChatGPT', 'chat gpt plus', 'OpenAI', 'Copilot', 'Microsoft 365 Copilot Chat', 'Gemini', 'Google Bard', 'Claude Pro', 'Anthropic', 'Meta AI', 'meta.ai'].map(id),
+      ['chatgpt', 'chatgpt', 'chatgpt', 'copilot', 'copilot', 'gemini', 'gemini', 'claude', 'claude', 'meta_ai', 'meta_ai'], 'known names');
+    eq(['GitHub Copilot', 'Metadata tool', 'Claudette CRM', 'Zoom', '', '  '].map(id),
+      [null, null, null, null, null, null], 'lookalikes and blanks match nothing');
+  });
+  test('vendor directions: the plan answer picks personal, business or both', () => {
+    const groups = (tool, plan) => T.vendorHelp({tool, plan}).sections.map(s => s.group);
+    eq(groups('ChatGPT', 'free_personal'), ['personal'], 'free personal');
+    eq(groups('ChatGPT', 'paid_personal'), ['personal'], 'paid personal');
+    eq(groups('ChatGPT', 'business'), ['business'], 'business');
+    eq(groups('ChatGPT', 'enterprise'), ['business'], 'enterprise');
+    eq(groups('ChatGPT', 'dont_know'), ['personal', 'business'], 'not sure shows both');
+    eq(groups('ChatGPT', 'built_in'), ['personal', 'business'], 'built in shows both');
+    eq(groups('Meta AI', 'business'), ['any'], 'a tool with one set of steps shows it for every plan');
+  });
+  test('vendor directions: every tool is dated, sourced from the vendor, and free of dashes', () => {
+    const tools = Q.where_to_look.tools;
+    eq(Object.keys(tools).length, 5, 'five tools');
+    Object.keys(tools).forEach(k => {
+      const t = tools[k];
+      ok(/^\d{4}-\d{2}-\d{2}$/.test(t.checked), `${k}: checked date`);
+      ok(t.sources.length && t.sources.every(x => /^https:\/\//.test(x.href) && x.title), `${k}: sources`);
+      ok(Object.keys(t.plans).length && Object.values(t.plans).every(p => p.label && p.steps.length), `${k}: plans`);
+      ok(t.match.some(m => new RegExp(m, 'i').test(t.name)), `${k}: its own name is recognized`);
+    });
+    ok(!/[\u2013\u2014]/.test(JSON.stringify(Q.where_to_look)), 'no dashes');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} tool check tests passed`};
 })();

@@ -24,7 +24,7 @@
 
 var TOOL_RULES = {
   version: '2026.09.1-tool',
-  last_reviewed: '2026-09-29',
+  last_reviewed: '2026-10-01',
   verified: false,
   rules: [
     /* ================= universal red lines ================= */
@@ -36,7 +36,7 @@ var TOOL_RULES = {
      owner: 'you', how: {href: 'guide-data.html', label: `Keeping sensitive information out of AI tools`}},
     {id: 't.personal.personal_plan', outcome: 'stop',
      when: {all: [{q: 'data', in: ['personal', 'sensitive', 'regulated']}, {q: 'plan', in: ['free_personal', 'paid_personal']}]},
-     reason: `Personal or confidential information on a personal account, under consumer terms with no business controls. This is the most common way business information leaks through AI.`,
+     reason: `Personal or confidential information on a personal account, under consumer terms with no business controls. Industry reports find that personal accounts are a common way for business information to leak through AI.`,
      fix: `Move to a business plan with training switched off, or remove personal information from what you put in.`,
      allowed: ['public', 'internal'],
      owner: 'you', how: {href: 'guide-data.html', label: `Keeping sensitive information out of AI tools`}},

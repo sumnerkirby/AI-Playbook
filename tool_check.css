@@ -59,6 +59,10 @@
 .evidence input:focus-visible,.textin:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .lookhelp{margin:14px 0 0;max-width:62ch}
 .lookhelp ul{margin:4px 0 0;padding-left:20px}
+.lookhelp .vh,details .vh{margin:10px 0 0;font-size:15px}
+.lookhelp .vh:first-of-type{margin-top:4px}
+.vh-src{margin:8px 0 0;font-size:13px;line-height:1.5;color:var(--ink2)}
+.vh-src a{color:var(--ink2);text-decoration-color:var(--rule)}
 .multi .answer{position:relative;padding-right:44px}
 .multi .answer[aria-pressed=true]{padding-right:43px}
 .multi .answer[aria-pressed=true]::after{content:"\2713";position:absolute;right:16px;top:14px;font-size:16px}
