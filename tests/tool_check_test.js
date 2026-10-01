@@ -23,7 +23,7 @@ var ToolTestRun = (function(){
   const allDone = (a, p) => ev(a, p).todos.map(t => t.id);
   const has = (r, id) => r.reasons.includes(id);
   /* a clean use that should be green once the team has been told */
-  const CLEAN = {mode: 'new', tool: 'Gemini', plan: 'business', extension: 'no', use: 'marketing', data: ['public'], output: ['internal'], acts: ['produces_only']};
+  const CLEAN = {mode: 'new', tool: 'Gemini', plan: 'business', access: ['website'], use: 'marketing', data: ['public'], output: ['internal'], acts: ['produces_only']};
 
   /* ---------- data ---------- */
   test('no em dashes or en dashes in questions or rules', () => {
@@ -100,7 +100,7 @@ var ToolTestRun = (function(){
   test('"don\'t know" never gives green, even with every to-do ticked', () => {
     let n = 0;
     const p = prof({team_size: 'solo', industry: ['healthcare'], ai_use: ['configure']});
-    const base = {mode: 'discovered', tool: 'X', plan: 'business', extension: 'no', use: 'hiring', data: ['sensitive'], special: 'no',
+    const base = {mode: 'discovered', tool: 'X', plan: 'business', access: ['website'], use: 'hiring', data: ['sensitive'], special: 'no',
       training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes', output: ['person'], person_decides: 'yes', nyc_co: 'no',
       acts: ['acts'], approval: 'all', already_in: ['nothing_sensitive']};
     T.visible(base, p).forEach(q => {
@@ -143,7 +143,7 @@ var ToolTestRun = (function(){
   /* ---------- the five worked examples ---------- */
   test('example 1: staff using free ChatGPT for customer replies (small retail team)', () => {
     const p = prof({industry: ['retail']});
-    const a = {mode: 'discovered', tool: 'ChatGPT', plan: 'free_personal', extension: 'no', use: 'customers', direct: 'no',
+    const a = {mode: 'discovered', tool: 'ChatGPT', plan: 'free_personal', access: ['website'], use: 'customers', direct: 'no',
       data: ['personal'], training: 'yes', deletion: 'yes', agreement: 'no', published: 'yes', output: ['customers'], acts: ['produces_only'],
       already_in: ['personal']};
     const r = ev(a, p);
@@ -160,7 +160,7 @@ var ToolTestRun = (function(){
   });
   test('example 2: AI notes in practice software, BAA unknown (healthcare)', () => {
     const p = prof({industry: ['healthcare']});
-    const a = {mode: 'new', tool: 'Practice notes AI', plan: 'built_in', extension: 'no', use: 'meetings', data: ['sensitive'], special: 'yes',
+    const a = {mode: 'new', tool: 'Practice notes AI', plan: 'built_in', access: ['website'], use: 'meetings', data: ['sensitive'], special: 'yes',
       training: 'no_checked', deletion: 'yes', agreement: 'dont_know', published: 'yes', output: ['internal'], acts: ['produces_only']};
     const r = ev(a, p);
     eq([r.light, r.label], ['amber', 'Go for limited use'], 'limited use');
@@ -172,7 +172,7 @@ var ToolTestRun = (function(){
   });
   test('example 3: automation that reads invoices and schedules payment (trades, 11 to 50)', () => {
     const p = prof({team_size: 'medium', ai_use: ['use', 'configure'], industry: ['trades'], it_support: 'provider'});
-    const a = {mode: 'new', tool: 'Zapier invoices', plan: 'own', extension: 'no', use: 'finance', data: ['internal'],
+    const a = {mode: 'new', tool: 'Zapier invoices', plan: 'own', access: ['website'], use: 'finance', data: ['internal'],
       training: 'no_checked', deletion: 'yes', published: 'yes', output: ['internal'], safety: 'no', acts: ['reads', 'acts'], approval: 'none',
       own_access: 'team', own_docs: 'internal', own_tested: 'yes'};
     eq(ev(a, p).light, 'red', 'pays with no approval');
@@ -185,7 +185,7 @@ var ToolTestRun = (function(){
   });
   test('example 4: candidate screening, recruiter decides, hires in NYC', () => {
     const p = prof({industry: ['hiring']});
-    const a = {mode: 'new', tool: 'Screening add-on', plan: 'business', extension: 'no', use: 'hiring', data: ['personal'],
+    const a = {mode: 'new', tool: 'Screening add-on', plan: 'business', access: ['website'], use: 'hiring', data: ['personal'],
       training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes', output: ['person'], person_decides: 'yes', nyc_co: 'yes', acts: ['produces_only']};
     const r = ev(a, p);
     eq(r.light, 'amber', 'amber');
@@ -193,9 +193,27 @@ var ToolTestRun = (function(){
     ok(r.todos.some(t => t.id === 't.person.nyc_co' && t.flag === 'get_advice'), 'get advice');
     eq(ev(Object.assign({}, a, {person_decides: 'no'}), p).light, 'red', 'no person deciding: red');
   });
+  test('how it is used: add-on and mobile app rules, and saved lines from before', () => {
+    const p = prof();
+    const base = Object.assign({}, CLEAN, {access: ['website', 'desktop']});
+    ok(!has(ev(base, p), 't.extension') && !has(ev(base, p), 't.mobile'), 'website and desktop trigger nothing');
+    ok(has(ev(Object.assign({}, base, {access: ['website', 'extension']}), p), 't.extension'), 'an add-on, with other ways of using it');
+    ok(!has(ev(Object.assign({}, base, {access: ['mobile']}), p), 't.mobile'), 'mobile with public data only: no to-do');
+    ok(has(ev(Object.assign({}, base, {access: ['mobile'], data: ['sensitive'], special: 'no'}), p), 't.mobile'), 'mobile with sensitive data');
+    eq(T.prune({access: ['website', 'dont_know'], tool: 'X'}, p).access, ['website', 'dont_know'], 'prune keeps the answers');
+    /* a line saved with the old yes or no question */
+    const old = Object.assign({}, CLEAN); delete old.access;
+    eq(T.prune(Object.assign({}, old, {extension: 'yes'}), p).access, ['extension'], 'old yes: browser add-on');
+    eq(T.prune(Object.assign({}, old, {extension: 'no'}), p).access, ['dont_know'], 'old no: not sure how it is used');
+    ok(has(ev(Object.assign({}, old, {extension: 'yes'}), p), 't.extension'), 'old yes still triggers the add-on rule');
+    ok(T.complete(T.upgrade(Object.assign({}, old, {extension: 'no'})), p), 'an old line is still complete');
+    const line = T.makeLine(Object.assign({}, old, {extension: 'yes'}), p, TODAY);
+    eq(T.anotherUse({answers: line.answers, evidence: {}}).access, ['extension'], 'another use carries how it is used');
+    eq(T.fromQueue({name: 'Grammar helper', extension: true}).access, ['extension'], 'a quick-check add-on pre-fills the answer');
+  });
   test('example 5: a solo consultant\'s writing extension, client work', () => {
     const p = prof({team_size: 'solo', industry: ['professional']});
-    const a = {mode: 'discovered', tool: 'Writing helper', plan: 'business', extension: 'yes', use: 'writing', data: ['internal', 'regulated'],
+    const a = {mode: 'discovered', tool: 'Writing helper', plan: 'business', access: ['extension'], use: 'writing', data: ['internal', 'regulated'],
       special: 'yes', training: 'dont_know', deletion: 'dont_know', agreement: 'dont_know', published: 'no', output: ['customers'], acts: ['produces_only'],
       already_in: ['sensitive']};
     const r = ev(a, p);

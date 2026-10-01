@@ -145,7 +145,12 @@
     const v = a[q.id];
     const ev = (a._evidence || {})[q.id];
     let body = '';
-    if (q.kind === 'text'){
+    if (q.id === 'use' && !d.lineId){
+      /* a new check can cover several uses: they are checked one after another */
+      const sel = pickedUses(d);
+      body = `<div class="answers multi" role="group" aria-label="Answers">${q.options.map(o => `<button type="button" class="answer" data-usepick="${o.id}" aria-pressed="${sel.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
+        <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="use-next"${sel.length ? '' : ' disabled'}>Next</button></div>`;
+    } else if (q.kind === 'text'){
       body = `<div class="field" style="margin:18px 0 0;max-width:560px"><input class="textin" id="t-in" type="text" maxlength="120" autocomplete="off" placeholder="${esc(q.placeholder || '')}" value="${esc(v || '')}" aria-label="${esc(q.text)}"></div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="text-next">Next</button></div>`;
     } else if (q.kind === 'many'){
@@ -163,12 +168,20 @@
     }
     main.innerHTML = `<section class="screen">
       ${progressBar({left: `<b>Section ${q.step + 1} of ${Q.steps.length}</b> &middot; ${esc(Q.steps[q.step])}${a.mode ? ` &middot; ${a.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, n: idx, total: vis.length})}
-      ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${a.use && q.id !== 'use' ? ' &middot; ' + esc(T.useLabel(a.use)) : ''}</p>` : ''}
+      ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${a.use && q.id !== 'use' ? ' &middot; ' + esc(T.useLabel(a.use)) + passText(d) : ''}</p>` : ''}
       <h2>${esc(q.text)}</h2>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
       ${body}
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button><button class="btn quiet" type="button" data-act="cancel">Cancel</button></div>
     </section>`;
   }
+  /* Several uses in one check: the first is answers.use; the rest wait in
+     draft.pending and are checked after each save, with the tool, plan, how
+     it is used and the supplier answers carried over. */
+  const pickedUses = d => d.sel || [d.answers.use].filter(Boolean).concat(d.pending || []);
+  const passText = d => {
+    const more = (d.pending || []).length;
+    return more || (d.pass || 1) > 1 ? ` &middot; use ${d.pass || 1} of ${(d.pass || 1) + more}` : '';
+  };
   /* the question on screen: one being changed or walked through, else the next unanswered */
   function currentQ(){
     const d = view.draft;
@@ -246,7 +259,7 @@
       <p class="step-label"><b>Tool check</b><span>Result</span>${d.lineId ? '<span>Re-check</span>' : ''}</p>
       ${resultHTML(r, a, {})}
       <div class="go-row" style="margin-top:20px">
-        <button class="btn primary" type="button" data-act="save">${d.lineId ? 'Save the re-check' : 'Save to your AI list'}</button>
+        <button class="btn primary" type="button" data-act="save">${d.lineId ? 'Save the re-check' : (d.pending || []).length ? `Save, then check ${esc(T.useLabel(d.pending[0]).toLowerCase())}` : 'Save to your AI list'}</button>
         <button class="btn quiet" type="button" data-act="cancel">Don&rsquo;t save</button>
       </div>
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button></div>
@@ -316,6 +329,14 @@
       if (q.evidence){ view.draft.focus = q.id; history.replaceState({tc: clone(view)}, ''); return render(d.one === 'dont_know' ? '[data-act="ev-next"]' : '#ev-in'); }
       return answerAndGo(q.id);
     }
+    if (d.usepick){
+      const q = currentQ();
+      const sel = pickedUses(view.draft);
+      view.draft.sel = sel.includes(d.usepick) ? sel.filter(x => x !== d.usepick) : sel.concat(d.usepick);
+      view.draft.focus = q.id;
+      history.replaceState({tc: clone(view)}, '');
+      return render(`[data-usepick="${d.usepick}"]`);
+    }
     if (d.many){
       const q = currentQ();
       const cur = view.draft.answers[q.id] || [];
@@ -358,6 +379,14 @@
         return answerAndGo('tool');
       }
       case 'many-next': return answerAndGo(currentQ().id);
+      case 'use-next': {
+        const dr = view.draft, sel = pickedUses(dr);
+        if (!sel.length) return;
+        dr.answers.use = sel[0];
+        dr.pending = sel.slice(1);
+        delete dr.sel;
+        return answerAndGo('use');
+      }
       case 'ev-next': {
         const q = currentQ();
         const inp = $('#ev-in');
@@ -380,6 +409,11 @@
           list.lines.push(line);
         }
         if (!saveList()) announce('This browser is blocking storage, so the list lasts only while this page is open.');
+        if (!dr.lineId && (dr.pending || []).length){
+          const a = T.anotherUse(line);
+          a.use = dr.pending[0];
+          return goto({name: 'ask', draft: {answers: Object.assign({_evidence: {}}, a), done: [], pending: dr.pending.slice(1), pass: (dr.pass || 1) + 1}}, false);
+        }
         return goto({name: 'line', lineId: line.id}, false);
       }
       case 'recheck': {

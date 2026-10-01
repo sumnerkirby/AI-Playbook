@@ -50,7 +50,7 @@ var RISK = {
       {q: 'agreement', in: ['dont_know']}, {q: 'published', in: ['dont_know']}]}},
     {id: 'acts_unapproved', why: `Can act, and not every risky action needs approval`, when: {all: [{q: 'acts', in: ['acts']}, {q: 'approval', in: ['some', 'none', 'dont_know']}]}},
     {id: 'public', why: `Public-facing, or shared by a public link`, when: {any: [{q: 'direct', in: ['yes']}, {q: 'own_access', in: ['public']}]}},
-    {id: 'unpublished', why: `Browser add-on, or a supplier that does not publish its data handling`, when: {any: [{q: 'extension', in: ['yes']}, {q: 'published', in: ['no']}]}},
+    {id: 'unpublished', why: `Browser add-on, or a supplier that does not publish its data handling`, when: {any: [{q: 'access', in: ['extension']}, {q: 'published', in: ['no']}]}},
     {id: 'discovered', why: `Found already in use, with no rules yet`, when: {q: '_mode', in: ['discovered']}, cleared_by_standing: true},
     {id: 'team_no_rules', why: `Several people use it with no written rules`, when: {q: '_team', in: ['small', 'medium', 'large']}, cleared_by: 't.team.tell'},
   ],

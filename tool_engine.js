@@ -69,7 +69,18 @@ var ToolEngine = (function(){
   }
   const answered = (q, v) => q.kind === 'text' ? typeof v === 'string' && v.trim() !== ''
     : q.kind === 'many' ? Array.isArray(v) && v.length > 0 : v !== undefined && v !== null;
+  /* Lines saved before "How is it used?" held a yes or no for browser add-on.
+     Yes becomes the add-on option; No says nothing about how it is used, so it
+     becomes Not sure. */
+  function upgrade(answers){
+    if (answers.extension === undefined) return answers;
+    const a = Object.assign({}, answers);
+    if (a.access === undefined) a.access = a.extension === 'yes' ? ['extension'] : ['dont_know'];
+    delete a.extension;
+    return a;
+  }
   function prune(answers, profile){
+    answers = upgrade(answers);
     const out = {};
     visible(answers, profile).forEach(q => {
       const v = answers[q.id];
@@ -233,7 +244,7 @@ var ToolEngine = (function(){
     return line;
   }
   /* re-check: the previous answers, ready to change */
-  function reopenAnswers(line){ return Object.assign({}, line.answers, {_evidence: Object.assign({}, line.evidence)}); }
+  function reopenAnswers(line){ return Object.assign({}, upgrade(line.answers), {_evidence: Object.assign({}, line.evidence)}); }
   function recheck(line, answers, profile, today){
     line.answers = prune(answers, profile);
     line.evidence = answers._evidence || line.evidence;
@@ -246,10 +257,11 @@ var ToolEngine = (function(){
     return line;
   }
   /* walkthrough gap 3: another use keeps the tool, plan and supplier answers */
-  const CARRY = ['mode', 'tool', 'plan', 'extension', 'training', 'deletion', 'agreement', 'published'];
+  const CARRY = ['mode', 'tool', 'plan', 'access', 'training', 'deletion', 'agreement', 'published'];
   function anotherUse(line){
     const a = {};
-    CARRY.forEach(k => { if (line.answers[k] !== undefined) a[k] = line.answers[k]; });
+    const saved = upgrade(line.answers);
+    CARRY.forEach(k => { if (saved[k] !== undefined) a[k] = saved[k]; });
     a._evidence = {};
     ['training', 'deletion', 'agreement', 'published'].forEach(k => { if (line.evidence[k]) a._evidence[k] = line.evidence[k]; });
     return a;
@@ -321,7 +333,7 @@ var ToolEngine = (function(){
     const a = {mode: 'discovered'};
     if (i.name) a.tool = i.name;
     if (i.use) a.use = i.use;
-    if (i.extension) a.extension = 'yes';
+    if (i.extension) a.access = ['extension'];
     if (i.account === 'business') a.plan = 'business';
     return a;
   }
@@ -378,7 +390,7 @@ var ToolEngine = (function(){
   }
 
   return {
-    addDays, addMonths, facts, matches, questionText, visible, prune, nextQuestion, complete,
+    addDays, addMonths, facts, matches, questionText, visible, upgrade, prune, nextQuestion, complete,
     evaluate, recheckBy, allowedText, ownerLabel,
     makeLine, refresh, state, name, useLabel, logEvent, reopenAnswers, recheck, retire, anotherUse,
     queue, fromQueue, csv, restore, vendorHelp, CLASSES,

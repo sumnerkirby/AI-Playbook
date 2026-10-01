@@ -32,7 +32,7 @@ var RiskTestRun = (function(){
 
   /* ---------- Northgate Supply Co.: 25 people, defense customer, CUI ---------- */
   const NG = {team_size: 'medium', ai_use: ['use', 'configure'], industry: ['defense'], it_support: 'provider'};
-  const base = {mode: 'new', plan: 'business', extension: 'no', acts: ['produces_only']};
+  const base = {mode: 'new', plan: 'business', access: ['website'], acts: ['produces_only']};
   const northgate = () => ({
     marketing: line(Object.assign({}, base, {tool: 'Copy generator', use: 'marketing', data: ['public'], output: ['customers']}), NG, 'all'),
     chatbot: line(Object.assign({}, base, {tool: 'Website chatbot', use: 'customers', direct: 'yes', records: 'no', data: ['personal'], special: 'no',
@@ -108,9 +108,9 @@ var RiskTestRun = (function(){
   });
   test('likelihood: two raising factors make it High; Low needs none raising and two lowering', () => {
     const P = {team_size: 'solo', ai_use: ['use'], industry: ['other']};
-    const l = line({mode: 'new', tool: 'X', plan: 'free_personal', extension: 'yes', use: 'writing', data: ['internal'], output: ['internal'], acts: ['produces_only']}, P, []);
+    const l = line({mode: 'new', tool: 'X', plan: 'free_personal', access: ['extension'], use: 'writing', data: ['internal'], output: ['internal'], acts: ['produces_only']}, P, []);
     eq(K.likelihood(l, P, 'now').level, 'high', 'personal plan with internal information, and a browser add-on');
-    const plain = line({mode: 'new', tool: 'ChatGPT', plan: 'business', extension: 'no', use: 'writing', data: ['public'], output: ['internal'], acts: ['produces_only']}, P, []);
+    const plain = line({mode: 'new', tool: 'ChatGPT', plan: 'business', access: ['website'], use: 'writing', data: ['public'], output: ['internal'], acts: ['produces_only']}, P, []);
     eq(K.likelihood(plain, P, 'now').lowers, ['Nothing personal or confidential goes in'], 'one lowering factor is not enough');
     eq(K.likelihood(plain, P, 'now').level, 'moderate', 'so it stays Moderate');
   });
@@ -119,7 +119,7 @@ var RiskTestRun = (function(){
        likelihood when something private goes in, and nothing personal or
        confidential going in lowers it. Walkthrough, 1:35 to 1:45. */
     const P = {team_size: 'solo', ai_use: ['use'], industry: ['finance']};
-    const dana = line({mode: 'discovered', tool: 'ChatGPT', plan: 'paid_personal', extension: 'no', use: 'writing', data: ['public'],
+    const dana = line({mode: 'discovered', tool: 'ChatGPT', plan: 'paid_personal', access: ['website'], use: 'writing', data: ['public'],
       output: ['customers'], acts: ['produces_only']}, P, 'all');
     const it = K.items([dana], P, K.emptyStore()).items[0];
     eq(pos(it), ['Moderate', 'Moderate to Low', 'Watch'], 'Dana\'s public writing');
@@ -143,7 +143,7 @@ var RiskTestRun = (function(){
   });
   test('a discovered use that crossed a red line is a hollow marker and listed as paused', () => {
     const P = {team_size: 'solo', ai_use: ['use'], industry: ['retail']};
-    const l = line({mode: 'discovered', tool: 'ChatGPT', plan: 'free_personal', extension: 'no', use: 'customers', direct: 'no', data: ['personal'],
+    const l = line({mode: 'discovered', tool: 'ChatGPT', plan: 'free_personal', access: ['website'], use: 'customers', direct: 'no', data: ['personal'],
       training: 'yes', deletion: 'yes', agreement: 'no', published: 'yes', output: ['customers'], acts: ['produces_only'], already_in: ['personal']}, P, []);
     const {items, stopped} = K.items([l], P, K.emptyStore());
     eq([items.length, items[0].paused, stopped[0].paused], [1, true, true], 'paused');

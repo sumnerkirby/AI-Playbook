@@ -34,10 +34,10 @@ var RecordTestRun = (function(){
     return T.refresh(l, P, '2026-09-28', false);
   }
   function dana(){
-    const copilot = line({mode: 'new', tool: 'Microsoft Copilot Chat', plan: 'business', extension: 'no', use: 'writing', data: ['personal', 'regulated'], special: 'no',
+    const copilot = line({mode: 'new', tool: 'Microsoft Copilot Chat', plan: 'business', access: ['website'], use: 'writing', data: ['personal', 'regulated'], special: 'no',
       training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes', output: ['customers'], acts: ['produces_only'],
       _evidence: {training: {note: 'Checked in the admin center', date: '2026-09-28'}}}, 'all');
-    const chatgpt = line({mode: 'discovered', tool: 'ChatGPT', plan: 'paid_personal', extension: 'no', use: 'writing', data: ['public'],
+    const chatgpt = line({mode: 'discovered', tool: 'ChatGPT', plan: 'paid_personal', access: ['website'], use: 'writing', data: ['public'],
       output: ['customers'], acts: ['produces_only']}, 'all');
     const a = PE.initial('2026-09-28', 'finance');
     Object.assign(a, {team: 'solo', business: 'Reyes Financial Planning',
@@ -159,7 +159,7 @@ var RecordTestRun = (function(){
     eq([first.next_n, first.changes], [1, null], 'no copy yet');
     R.generate(store, first, TODAY);
     const e = Object.assign(dana(), {record: store});
-    e.ai_list.lines.push(line({mode: 'new', tool: 'Otter.ai', plan: 'free_personal', extension: 'no', use: 'meetings', records: 'yes', data: ['personal'],
+    e.ai_list.lines.push(line({mode: 'new', tool: 'Otter.ai', plan: 'free_personal', access: ['website'], use: 'meetings', records: 'yes', data: ['personal'],
       output: ['internal'], acts: ['produces_only']}));
     e.done = ['1', '3'];
     const second = record(e);
