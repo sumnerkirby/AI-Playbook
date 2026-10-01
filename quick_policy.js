@@ -224,7 +224,6 @@
             <h3 class="subhead">Keep this</h3>
             <div class="actions">
               <button class="btn" type="button" data-act="save">Save in this browser</button>
-              <button class="btn" type="button" data-act="download">Download for the full check</button>
               <button class="btn" type="button" data-act="edit">Change answers</button>
               <button class="btn quiet" type="button" data-act="restart">Start again</button>
             </div>
@@ -356,11 +355,8 @@
       }
       case 'save': {
         const ok = sset('localStorage', SAVE_KEY, JSON.stringify({a, saved_on: today(), policy_version: P.version}));
-        return say(ok ? 'Saved in this browser only. Clearing your browser data deletes it.' : 'This browser is blocking storage, so nothing was saved. Use Word or Download instead.');
+        return say(ok ? 'Saved in this browser only. Clearing your browser data deletes it.' : 'This browser is blocking storage, so nothing was saved. Use Word or Copy instead.');
       }
-      case 'download':
-        downloadBlob(new Blob([JSON.stringify(PE.carryOver(a, today()), null, 2)], {type: 'application/json'}), `ai_policy_answers_${today()}.json`);
-        return say('Downloaded. The full check can read this file, so you will not need to answer anything twice.');
     }
   });
   window.addEventListener('afterprint', () => {

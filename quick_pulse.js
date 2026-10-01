@@ -273,7 +273,6 @@
         <button class="btn" type="button" data-act="backup">Download a backup</button>
         <button class="btn" type="button" data-act="restore">Restore from a backup</button>
         <button class="btn" type="button" data-act="csv">Download as a spreadsheet (CSV)</button>
-        <button class="btn" type="button" data-act="carry">Download for the full check</button>
         ${checkins.length ? '<button class="btn quiet" type="button" data-act="wipe">Delete all check-ins</button>' : ''}
       </div>
       <input type="file" accept=".json,application/json" class="restore-input" id="restore-file" tabindex="-1" aria-hidden="true">
@@ -351,9 +350,6 @@
       case 'csv':
         download(PU.csv(log), `ai_check_ins_${today()}.csv`, 'text/csv');
         return say('Spreadsheet downloaded. It opens in Excel, Numbers or Google Sheets.');
-      case 'carry':
-        download(JSON.stringify(PU.carryOver(log, today()), null, 2), `ai_check_ins_for_full_check_${today()}.json`, 'application/json');
-        return say('Downloaded. The full check will be able to read this file.');
       case 'wipe':
         if (!confirm(`Delete all ${log.checkins.length} check-ins from this browser? This cannot be undone unless you have a backup.`)) return;
         sdel('localStorage', LOG_KEY);
