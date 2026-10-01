@@ -64,6 +64,13 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
 .toolrow a{flex:0 0 auto;font-size:14.5px;color:var(--ink2);text-decoration:none;border-bottom:1.5px solid transparent;padding:2px 0}
 .toolrow a:hover{color:var(--ink);border-bottom-color:var(--ink3)}
 .toolrow a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
+/* the playbook leads the row as a filled tab, set apart from the tools */
+.toolrow a.featured{
+  font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.02em;
+  background:var(--ink);color:#fff;border:0;border-radius:3px;padding:5px 12px;margin-right:6px
+}
+.toolrow a.featured:hover{background:var(--focus);color:#fff}
+.toolrow a.featured[aria-current]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink)}
 
 /* ---------- masthead ---------- */
 .mast{padding:40px 0 18px}
@@ -424,6 +431,13 @@ section[id]{scroll-margin-top:80px}
 }
 .start .start-btn:hover{filter:brightness(.9)}
 button.start-btn{border:0;cursor:pointer}
+/* both cards are filled in their part colour, with white text; the playbook comes first */
+.start.primary{background:var(--c);border-color:var(--c);padding:24px 24px 26px;gap:12px}
+.start.primary .k{color:#fff}
+.start.primary h2{font-size:27px;color:#fff}
+.start.primary p{color:#fff;font-size:17px}
+.start.primary .start-btn{background:#fff;color:var(--c);font-weight:600;padding:13px 20px}
+.start.primary .start-btn:hover{filter:none;background:var(--paper)}
 
 /* ---------- progress bar (progress_bar.js, and the playbook's steps done) ---------- */
 .pbar{max-width:640px;margin:0 0 22px}
