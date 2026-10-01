@@ -26,9 +26,15 @@
     if (l && !same(l, saved)){ p = l; step = 'result'; fromLink = true; return true; }
     return false;
   }
+  /* the industry picked in a saved quick check, offered so it isn't asked twice */
+  const quickInd = ((read('sb-ai-playbook:quick') || {}).profile || {}).industry;
+  let fromQuick = false;
   if (!fromHash()){
     if (PR.complete(saved)){ p = saved; step = 'result'; }
-    else { p = PR.blank(); step = 'team'; }
+    else {
+      p = PR.blank(); step = 'team';
+      if (O.industry.options.some(o => o.id === quickInd)){ p.industry = [quickInd]; fromQuick = true; }
+    }
   }
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify(p)); saved = PR.clean(p); return true; } catch (e) { return false; }
@@ -97,6 +103,7 @@
     }
     main.innerHTML = `<section class="screen">
       ${progressBar({left: `<b>Your business</b>${step === 'it' ? ' &middot; optional' : ''}`, n: n + 1, total: list.length})}
+      ${step === 'industry' && fromQuick && p.industry[0] === quickInd ? '<p class="from-quick">Filled in from your quick check</p>' : ''}
       <h2>${esc(h2)}</h2>${why ? `<p class="example">${esc(why)}</p>` : ''}
       ${body}
       <div class="nav-row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:22px">
@@ -135,7 +142,7 @@
 
       <h3 class="subhead">Start here</h3>
       <div class="cards">
-        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">5 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and the tasks you use AI for. Begins with your industry.</span></a>
+        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">10 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and the tasks you use AI for. Begins with your industry.</span></a>
         <a class="card" href="playbook.html" style="--c:var(--part1)"><span class="k">The playbook</span><span class="t">Nine steps, with notes for your business</span><span class="d">Steps with a note for your business are marked.</span></a>
         <a class="card" href="tool_check.html" style="--c:var(--part2)"><span class="k">5 to 15 minutes a tool</span><span class="t">Your AI list</span><span class="d">Check each use of each tool, with the checks for your size and industry.</span></a>
         <a class="card" href="quick_policy.html" style="--c:var(--part2)"><span class="k">8 to 10 minutes</span><span class="t">${p.team_size === 'solo' ? 'Your AI rules and settings' : 'Your AI policy'}</span><span class="d">Built from your answers, in the form that fits your size.</span></a>

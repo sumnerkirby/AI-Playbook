@@ -45,9 +45,9 @@
 .tick .x{margin-left:auto;padding:0 4px}
 
 /* tools: one row per tool, with its account type */
-.toolrows{display:flex;flex-direction:column;gap:5px;margin:14px 0 0;max-width:600px;padding:0;list-style:none}
-.toolrow{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:9px 10px 9px 14px;background:var(--card);border:1px solid var(--rule);border-radius:3px}
-.toolrow .name{font-family:var(--display);font-weight:600;font-size:16px;flex:1 1 140px}
+.approved-tools{display:flex;flex-direction:column;gap:5px;margin:14px 0 0;max-width:600px;padding:0;list-style:none}
+.approved-tool{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:9px 10px 9px 14px;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+.approved-tool .name{font-family:var(--display);font-weight:600;font-size:16px;flex:1 1 140px}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
 .seg button{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border:0;background:var(--card);color:var(--ink2);cursor:pointer}
 .seg button + button{border-left:1px solid var(--rule)}
@@ -57,10 +57,6 @@
 .x:hover{color:var(--stop)}
 .chiprow.tools{margin-top:16px}
 
-.from-quick{
-  display:inline-flex;gap:8px;align-items:center;margin:0 0 12px;padding:4px 10px;border-radius:999px;
-  background:var(--go-tint);border:1px solid var(--go-line);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--go)
-}
 .reminder{margin:14px 0 0;max-width:600px}
 .reminder ul{margin:4px 0 0;padding-left:20px}
 .nav-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:24px}

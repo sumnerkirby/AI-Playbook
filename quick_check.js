@@ -133,6 +133,13 @@
     const o = PROFILE_OPTIONS.industry.options.find(x => x.id === chosenIndustry);
     return o && o.examples ? 'Includes: ' + esc(o.examples) : '';
   }
+  /* part 1's length depends on the industry (some add a question), so the intro says the exact number */
+  const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+  const redFlagCount = () => WORDS[E.screenerQuestions({industry: chosenIndustry}, {}).length] || 'Several';
+  function syncRedFlagCount(){
+    const w = redFlagCount();
+    $$('.q-count').forEach(el => { el.textContent = el.classList.contains('cap') ? w[0].toUpperCase() + w.slice(1) : w; });
+  }
   function showIntro(){
     const saved = loadSaved();
     const opts = PROFILE_OPTIONS.industry.options;
@@ -141,8 +148,8 @@
         <p>You saved a quick check on ${esc(fmtDate(saved.saved_on))}.${saved.rules_version !== RULES.version ? ' The rules have changed since then, so it will be checked again against the current rules.' : ''}</p>
         <p><button class="btn" type="button" data-act="resume">Open it</button> <button class="btn quiet" type="button" data-act="forget">Delete it</button></p></div>` : ''}
       <div class="parts">
-        <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 90 seconds</span><span class="t">Red flags</span><p>Six questions, each answered yes, no or not sure, about the situations most likely to cause harm.</p></div>
-        <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 3 to 5 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
+        <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 2 minutes</span><span class="t">Red flags</span><p><span class="q-count cap">${redFlagCount()}</span> questions, each answered yes, no or not sure, about the situations most likely to cause harm.</p></div>
+        <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 5 to 8 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
       </div>
       <fieldset class="chips">
         <legend>${esc(PROFILE_OPTIONS.industry.label)} <span class="small-note">Optional</span></legend>
@@ -153,6 +160,7 @@
       <div class="go-row"><button class="btn primary" type="button" data-act="start">Start part 1</button><span class="small-note">No sign-up. No email.</span></div>
       <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> There are no accounts, no tracking and no uploads. Your answers are kept in this page&rsquo;s address so that you can bookmark the result, and are saved in this browser only if you choose.</span></p>
     `);
+    syncRedFlagCount();
   }
 
   /* ---------- one question per screen ---------- */
@@ -161,7 +169,7 @@
     const q = o.q;
     onAnswer = o.onAnswer;
     screen(`
-      ${progressBar({left: o.left, n: o.n, total: o.total})}
+      ${progressBar({left: o.left, n: o.n, total: o.total, frac: o.frac})}
       <div class="qhead">${o.about ? `<p class="about">${esc(o.about)}</p>` : ''}<h2>${o.about ? `<span class="visually-hidden">${esc(o.about)}: </span>` : ''}${fmt(q.text)}</h2></div>
       ${q.example ? `<p class="example"><b>For example</b>${esc(q.example)}</p>` : ''}
       ${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
@@ -195,14 +203,13 @@
     const qs = E.cardQuestions(cd.id, cd.answers);
     const i = qs.findIndex(q => cd.answers[q.id] === undefined);
     const n = state.cards.indexOf(cd);
-    /* every question on every tapped card, recounted as answers open or close follow-ups */
-    const counts = state.cards.map(c => E.cardQuestions(c.id, c.answers).length);
-    const before = counts.slice(0, n).reduce((x, y) => x + y, 0);
+    /* progress by task, whose number is fixed once the tasks are picked; a
+       follow-up question moves the bar a little within the task, never back */
     ask({
       q: qs[i],
       about: def.label,
       left: `<b>Part 2 of 2</b> &middot; Task ${n + 1} of ${state.cards.length}`,
-      n: before + i + 1, total: counts.reduce((x, y) => x + y, 0),
+      frac: (n + i / qs.length) / state.cards.length,
       onAnswer: id => {
         cd.answers[qs[i].id] = id;
         cd.answers = E.pruneCard(cd.id, cd.answers);
@@ -249,12 +256,12 @@
     const t = took('a');
     screen(`
       <p class="step-label"><b>Part 1 of 2 &middot; Result</b></p>
-      <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? 'No red flags, but some things to find out' : 'No red flags found'}</h2>
+      <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? `No red flags confirmed yet: ${plural(checks, 'thing')} to find out first` : 'No red flags found'}</h2>
       <p class="honest">Quick check, not a full review</p>
       ${t ? `<p class="timing">Part 1 took ${t}.</p>` : ''}
       ${screenerFindings(r)}
       <div class="go-row" style="margin-top:24px">
-        <button class="btn primary" type="button" data-act="to-tap">Next: everyday tasks (3 to 5 minutes)</button>
+        <button class="btn primary" type="button" data-act="to-tap">Next: everyday tasks (5 to 8 minutes)</button>
         <button class="btn quiet" type="button" data-act="stop-here">Stop here and see the summary</button>
       </div>
       ${backRow()}
@@ -282,7 +289,7 @@
         <button type="button" class="tapcard" data-none aria-pressed="false"><span class="t">None of these</span><span class="h">We do not use AI for any of these</span></button>
       </div>
       <div class="othertext"${extra.o ? '' : ' hidden'}>
-        <label for="other-in">What else? (Optional. This text never leaves this browser.)</label>
+        <label for="other-in">What else? (Optional. It is listed on your result but not checked here. This text never leaves this browser.)</label>
         <input id="other-in" type="text" maxlength="120" autocomplete="off" value="${esc(otherText)}">
       </div>
       <div class="callout nudge" hidden>
@@ -299,10 +306,11 @@
     syncTap();
   }
   function syncTap(){
-    const n = state.cards.length + (extra.o ? 1 : 0);
+    /* counts only the tasks that get questions, so it matches Task 1 of n; Something else has none */
+    const n = state.cards.length;
     const b = $('[data-act="tap-continue"]', main);
-    b.textContent = n ? `Continue with ${plural(n, 'task')}` : 'Select at least one, or None of these';
-    b.disabled = !n;
+    b.textContent = n ? `Continue with ${plural(n, 'task')}` : extra.o ? 'Continue' : 'Select at least one, or None of these';
+    b.disabled = !n && !extra.o;
   }
   /* taps update in place, so the grid doesn't jump back to the top */
   function toggleCard(id){
@@ -361,15 +369,25 @@
     const time = took('end');
     const didB = state.cards.length || state.none || extra.o;
 
+    /* says where the headline numbers come from, in the words the findings below use */
+    const aStops = A.hits.filter(h => h.outcome === 'stop').length;
+    const aChecks = A.hits.length - aStops;
+    const tallyA = A.hits.length
+      ? [aStops && `${aStops} to fix now`, aChecks && `${aChecks} to find out`].filter(Boolean).join(', ')
+      : 'none';
+    const tallyB = state.none ? 'none selected'
+      : [t.stop && `${t.stop} stop`, t.check && `${t.check} check`, t.go && `${t.go} go`, extra.o && '1 not checked'].filter(Boolean).join(', ');
+    const breakdown = `<p class="breakdown">Red flags: ${tallyA}.${didB ? ` Everyday tasks: ${tallyB}.` : ''}</p>`;
+
     let partB;
-    if (!didB) partB = `<p>You stopped after part 1.</p><p><button class="btn" type="button" data-act="to-tap">Do part 2 now (3 to 5 minutes)</button></p>`;
+    if (!didB) partB = `<p>You stopped after part 1.</p><p><button class="btn" type="button" data-act="to-tap">Do part 2 now (5 to 8 minutes)</button></p>`;
     else if (state.none) partB = `<div class="finding"><h3>No tasks selected</h3>
       <p>That is possible, but AI is often added without anyone choosing it: in email, video calls, browser add-ons and the software the business already pays for. Working through <a href="playbook.html#step-2">step 2 of the playbook</a> is the most reliable way to confirm it.</p></div>`;
     else {
       const n = cards.length + (extra.o ? 1 : 0);
       partB = `
         <p class="counts"><span>${plural(n, 'task')} with AI:</span>
-          ${light('go', t.go + ' go')} ${light('check', t.check + ' check')} ${light('stop', t.stop + ' stop')}</p>
+          ${light('go', t.go + ' go')} ${light('check', t.check + ' check')} ${light('stop', t.stop + ' stop')}${extra.o ? ' <span class="light none">1 not checked</span>' : ''}</p>
         <div class="resultgrid">${sorted.map(x => `<button type="button" class="resultcell ${x.r.light}" data-jump="r-${x.cd.id}">${light(x.r.light)}<span class="t">${esc(x.def.label)}</span></button>`).join('')}</div>
         ${sorted.map(cardFinding).join('')}
         ${extra.o ? `<div class="finding"><span class="light none">Not checked</span><h3>Something else${otherText ? ': ' + esc(otherText) : ''}</h3><p>Not checked here. Add it when you complete the full check of your AI tools.</p></div>` : ''}`;
@@ -378,9 +396,11 @@
     screen(`
       <p class="step-label"><b>Your quick check</b><span>${esc(fmtDate(today()))}</span>${ind ? `<span>${esc(ind.label)}</span>` : ''}</p>
       <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in the areas covered'}</h2>
+      ${breakdown}
       <p class="honest">Quick check, not a full review</p>
       ${time ? `<p class="timing">This took ${time}.</p>` : ''}
-      ${ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
+      ${ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
+        : ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
 
       ${didB
         ? `<h3 class="subhead">Part 2: everyday tasks</h3>${partB}<h3 class="subhead">Part 1: red flags</h3>${screenerFindings(A, true)}`
@@ -403,7 +423,6 @@
         <button class="btn" type="button" data-act="print">Print or save as PDF</button>
         <button class="btn" type="button" data-act="copy">Copy link</button>
         <button class="btn" type="button" data-act="save">Save in this browser</button>
-        <button class="btn" type="button" data-act="download">Download for the full check</button>
       </div>
       <p class="status" id="status" role="status"></p>
       ${backRow()}
@@ -437,27 +456,17 @@
   }
   function saveAndGo(){
     if (sset('localStorage', SAVE_KEY, JSON.stringify(record()))) return void (location.href = 'tool_check.html');
-    $('#next-status').textContent = 'This browser is blocking storage, so nothing was saved. Use Copy link or Download instead.';
+    $('#next-status').textContent = 'This browser is blocking storage, so nothing was saved. Use Copy link or Print instead.';
   }
 
-  /* ---------- keep: save, copy, download ---------- */
+  /* ---------- keep: save, copy ---------- */
   function say(msg){ const s = $('#status'); if (s) s.textContent = msg; }
   function record(){
     return Object.assign(E.carryOver(state, today()), {hash: hashFor(), other: extra.o ? otherText : null});
   }
   function save(){
     const ok = sset('localStorage', SAVE_KEY, JSON.stringify(record()));
-    say(ok ? 'Saved in this browser only. Clearing your browser data deletes it.' : 'This browser is blocking storage, so nothing was saved. Use Copy link or Download instead.');
-  }
-  function download(){
-    const blob = new Blob([JSON.stringify(record(), null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `quick_ai_check_${today()}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-    say('Downloaded. The full check will be able to read this file, so you won’t answer anything twice.');
+    say(ok ? 'Saved in this browser only. Clearing your browser data deletes it.' : 'This browser is blocking storage, so nothing was saved. Use Copy link or Print instead.');
   }
   async function copyLink(){
     try {
@@ -477,6 +486,7 @@
       chosenIndustry = chosenIndustry === t.dataset.ind ? null : t.dataset.ind;
       $$('[data-ind]', main).forEach(b => b.setAttribute('aria-pressed', b.dataset.ind === chosenIndustry));
       $('.ind-examples', main).innerHTML = industryExamples();
+      syncRedFlagCount();
       return;
     }
     if (t.dataset.card) return toggleCard(t.dataset.card);
@@ -531,7 +541,6 @@
       case 'copy': return copyLink();
       case 'save': return save();
       case 'save-go': return saveAndGo();
-      case 'download': return download();
     }
   });
   main.addEventListener('input', e => {

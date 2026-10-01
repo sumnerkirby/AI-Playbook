@@ -88,7 +88,7 @@ var PROFILE_EFFECTS = {
        `New AI features in booking, accounting or customer software`,
        `Staff using AI on their own phones or personal accounts`,
      ],
-     links: [{href: 'quick_check.html', label: `The quick check takes 5 minutes`}]},
+     links: [{href: 'quick_check.html', label: `The quick check takes about 10 minutes`}]},
     {id: 'configure.step7', when: {q: 'path', in: ['configure', 'build']}, page: 'playbook.html', target: '#step-7', kind: 'note',
      title: `Tools you have set up yourself`,
      text: `Custom assistants and automations carry risks that ready-made tools do not. For each one, record:`,

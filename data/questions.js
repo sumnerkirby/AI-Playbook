@@ -17,7 +17,7 @@ var YES_NO_NOT_SURE = [
 
 var SCREENER = {
   title: `Red-flag screener`,
-  minutes: `90 seconds`,
+  minutes: `2 minutes`,
   questions: [
     {id: 'q1', code: '1',
      text: `Do you or anyone in the business put **customer, client or staff details** into an AI tool on a **personal or free account**?`,
@@ -121,7 +121,7 @@ var CARD_QUESTIONS = {
 
 var CARDS = {
   title: `Everyday tasks`,
-  minutes: `3 to 5 minutes`,
+  minutes: `5 to 8 minutes`,
   cards: [
     {id: 'writing',      code: 'wr', label: `Writing emails, letters or documents`, hint: `Including Copilot or Gemini features in your email`,           questions: ['data', 'account']},
     {id: 'summarizing',  code: 'su', label: `Summarizing long documents`,           hint: `Contracts, statements, reports`,                              questions: ['data', 'account']},
@@ -134,7 +134,7 @@ var CARDS = {
     {id: 'research',     code: 'rs', label: `Research and searching`,               hint: `Asking an AI tool instead of using a search engine`,                           questions: ['data', 'account']},
     {id: 'spreadsheets', code: 'sp', label: `Spreadsheets and numbers`,             hint: `Formulas, analysis, forecasts`,                               questions: ['data', 'account']},
     {id: 'website',      code: 'wb', label: `Building or editing your website or code`, hint: `Website builders with AI, coding assistants`,            questions: ['data', 'account']},
-    {id: 'phone',        code: 'ph', label: `Answering the phone`,                  hint: `AI receptionists or voice assistants`,                        questions: ['told', 'acts']},
+    {id: 'phone',        code: 'ph', label: `Answering the phone`,                  hint: `AI receptionists or voice assistants`,                        questions: ['told', 'acts', 'data', 'account']},
 
     /* Trial card from the design note's trade-offs: browser add-ons are the
        AI the walkthrough's owner missed. Test whether it earns its place. */
@@ -147,6 +147,11 @@ var CARDS = {
 
   /* on the results, when the chosen industry has no question or card of its own */
   industry_general: `No extra questions for this industry yet; the general rules apply.`,
+  /* shown on the result instead of industry_general; a flag to check with an
+     advisor, not a conclusion (log item 49; pending in notes/verification_log.md) */
+  industry_advice: {
+    professional: `Client confidentiality rules apply to client files in AI tools: your professional body's guidance, and for tax preparers the IRS rules on using taxpayer information. Check with an advisor.`,
+  },
 
   none_nudge: {
     text: `AI is often added without anyone choosing it. Do any of these apply to your business?`,

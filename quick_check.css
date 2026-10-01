@@ -133,6 +133,12 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   margin:34px 0 12px;padding-bottom:7px;border-bottom:1.5px solid var(--rule)
 }
 .timing{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink3);margin:0 0 14px}
+.breakdown{margin:-4px 0 12px;font-size:16px;color:var(--ink2)}
+/* an answer carried over from another page (policy, profile) */
+.from-quick{
+  display:inline-flex;gap:8px;align-items:center;margin:0 0 12px;padding:4px 10px;border-radius:999px;
+  background:var(--go-tint);border:1px solid var(--go-line);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--go)
+}
 
 /* ---------- tap cards ---------- */
 .tapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin:18px 0 0}

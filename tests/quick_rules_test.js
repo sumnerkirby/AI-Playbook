@@ -177,6 +177,22 @@ var TestRun = (function(){
     ok(!E.cardComplete('writing', {data: 'sensitive'}), 'incomplete without account');
   });
 
+  test('industry advice: professional services get a check-with-an-advisor note, worded as a flag (log item 49)', () => {
+    const t = CARDS.industry_advice.professional;
+    ok(/Check with an advisor\.$/.test(t), 'ends by sending the reader to an advisor');
+    ok(!/[\u2013\u2014]/.test(t), 'no dashes');
+    ok(Object.keys(CARDS.industry_advice).every(id => PROFILE_OPTIONS.industry.options.some(o => o.id === id)), 'keys are real industries');
+  });
+
+  test('cards: the phone card asks what callers tell it (log item 35)', () => {
+    eq(E.cardQuestions('phone', {told: 'yes', acts: 'suggests'}).map(q => q.id), ['told', 'acts', 'data'], 'asks what goes in');
+    ok(!E.cardComplete('phone', {told: 'yes', acts: 'suggests'}), 'not complete before what goes in');
+    const ctx = {industry: 'healthcare'};
+    const r = E.evaluateCard('phone', {told: 'yes', acts: 'suggests', data: 'sensitive', account: 'business'}, ctx);
+    eq(r.light, 'check', 'patient details on a business plan: check, not go');
+    ok(r.hits.some(h => h.id === 'b.health.baa'), 'BAA overlay applies');
+  });
+
   test('cards: Dana, in about 4 minutes (1 go, 2 check, 2 stop)', () => {
     const ctx = {industry: 'finance'};
     const r = {

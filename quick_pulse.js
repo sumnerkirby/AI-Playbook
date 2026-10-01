@@ -248,7 +248,7 @@
         <p class="big" style="margin:0">${esc(big)}<small>${esc(small)}</small></p>
         <button class="btn primary" type="button" data-act="start">${st.state === 'done' ? 'Record something now' : 'Start this month’s check-in'}</button>
       </div>
-      ${!checkins.length && !hasBaseline() ? `<div class="callout" style="margin-top:14px;max-width:760px"><span class="k">Works best after the quick check</span><p>On its own, the monthly check-in finds only what is new. <a href="quick_check.html">The quick check</a> (5 minutes) finds what you already use.</p></div>` : ''}
+      ${!checkins.length && !hasBaseline() ? `<div class="callout" style="margin-top:14px;max-width:760px"><span class="k">Works best after the quick check</span><p>On its own, the monthly check-in finds only what is new. <a href="quick_check.html">The quick check</a> (10 minutes) finds what you already use.</p></div>` : ''}
       ${PU.backupDue(log, t) ? `<div class="callout" style="margin-top:14px;max-width:760px;--c:var(--check)"><span class="k">Time for a backup</span><p>Your check-ins are stored only in this browser. Download a copy and keep it with your other business records.</p><p><button class="btn" type="button" data-act="backup">Download a backup</button></p></div>` : ''}
 
       <h3 class="subhead">Reminders</h3>

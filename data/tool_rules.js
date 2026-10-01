@@ -107,11 +107,19 @@ var TOOL_RULES = {
      fix: `Switch off training on your data, or keep anything but public information out.`,
      allowed: ['public'], owner: 'it', how: {href: 'guide-data.html', label: `Keeping sensitive information out of AI tools`}},
     {id: 't.agreement.none', outcome: 'condition',
-     /* steps aside when the industry's own red line already covers it */
-     when: {all: [{q: 'agreement', in: ['no']}, {not: {all: [{q: '_industry', in: ['healthcare', 'finance']}, {q: 'special', in: ['yes']}]}}]},
+     /* steps aside when the industry's own red line already covers it, and
+        on a personal plan, which has no agreement to sign (next rule) */
+     when: {all: [{q: 'agreement', in: ['no']}, {not: {q: 'plan', in: ['free_personal', 'paid_personal']}},
+       {not: {all: [{q: '_industry', in: ['healthcare', 'finance']}, {q: 'special', in: ['yes']}]}}]},
      reason: `Personal or sensitive information goes in, with no data agreement.`,
      fix: `Sign the supplier's data agreement, or keep personal information out.`,
      allowed: ['public', 'internal'], owner: 'supplier', how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    {id: 't.agreement.personal', outcome: 'condition',
+     when: {all: [{q: 'agreement', in: ['no']}, {q: 'plan', in: ['free_personal', 'paid_personal']},
+       {not: {all: [{q: '_industry', in: ['healthcare', 'finance']}, {q: 'special', in: ['yes']}]}}]},
+     reason: `Personal or sensitive information goes in, with no data agreement.`,
+     fix: `Personal plans have no data agreement. Move to a business plan that offers one, or keep personal information out.`,
+     allowed: ['public', 'internal'], owner: 'you', how: {href: 'guide-data.html', label: `Keeping sensitive information out of AI tools`}},
     {id: 't.deletion.no', outcome: 'condition',
      when: {all: [{q: 'deletion', in: ['no']}, {q: 'data', in: ['personal', 'sensitive', 'regulated']}]},
      reason: `You cannot delete what goes in.`,

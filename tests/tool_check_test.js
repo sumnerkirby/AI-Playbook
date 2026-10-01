@@ -320,6 +320,16 @@ var ToolTestRun = (function(){
     eq(r.lines[0].light, 'red', 'light worked out from the answers, not the file');
   });
 
+  test('no data agreement: a personal plan is told to move plans, not to sign one (log item 39)', () => {
+    const base = Object.assign({}, CLEAN, {data: ['personal'], training: 'no_checked', deletion: 'yes', agreement: 'no', published: 'yes'});
+    const todo = (plan, id) => ev(Object.assign({}, base, {plan}), prof()).todos.find(t => t.id === id);
+    ok(todo('paid_personal', 't.agreement.personal'), 'paid personal: move-plans to-do');
+    ok(!todo('paid_personal', 't.agreement.none'), 'paid personal: no sign-the-agreement to-do');
+    eq(todo('free_personal', 't.agreement.personal').owner, 'You', 'the owner does it, not the supplier');
+    ok(todo('business', 't.agreement.none'), 'business plan: sign the agreement');
+    ok(!todo('business', 't.agreement.personal'), 'business plan: no move-plans to-do');
+  });
+
   /* ---------- where to look: vendor directions ---------- */
   test('vendor directions: each tool is recognized by its usual names, and lookalikes are not', () => {
     const id = tool => { const v = T.vendorHelp({tool, plan: 'business'}); return v && v.id; };

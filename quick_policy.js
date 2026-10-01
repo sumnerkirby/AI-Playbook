@@ -138,7 +138,7 @@
           ${hints.activities.length ? `<p>You said AI helps with:</p><ul>${hints.activities.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p>Which tools do those tasks?</p>` : ''}
           ${hints.personal ? `<p><b>Some work happens on personal or free accounts.</b> Add those tools too, and mark them Not yet.</p>` : ''}</div>` : ''}
         <div class="chiprow tools">${P.common_tools.map(t => `<button type="button" class="chip" data-tool="${esc(t)}" aria-pressed="${names.includes(t.toLowerCase())}">${esc(t)}</button>`).join('')}</div>
-        ${a.tools.length ? `<ul class="toolrows">${a.tools.map((t, i) => `<li class="toolrow"><span class="name">${esc(t.name)}</span>
+        ${a.tools.length ? `<ul class="approved-tools">${a.tools.map((t, i) => `<li class="approved-tool"><span class="name">${esc(t.name)}</span>
           <span class="seg" role="group" aria-label="Account for ${esc(t.name)}">${P.account_options.map(o => `<button type="button" class="${o.id === 'not_yet' ? 'notyet' : ''}" data-acct="${i}" data-val="${o.id}" aria-pressed="${t.account === o.id}">${esc(o.label)}</button>`).join('')}</span>
           <button type="button" class="x" data-rmtool="${i}" aria-label="Remove ${esc(t.name)}">&times;</button></li>`).join('')}</ul>` : ''}
         ${addField('tool', 'Add another tool, or AI built into software you use')}
@@ -236,7 +236,7 @@
               ${a.team === 'solo' ? '' : '<a class="card" href="guide-ai-policy.html#rollout" style="--c:var(--part1)"><span class="k">Guide</span><span class="t">Introducing it to the team</span><span class="d">Go through it together, and keep a note of who has read it.</span></a>'}
               <a class="card" href="quick_pulse.html" style="--c:var(--part3)"><span class="k">1 minute a month</span><span class="t">Monthly AI check-in</span><span class="d">Three questions a month keep this ${noun} and your AI list current.</span></a>
               <a class="card" href="playbook.html#step-3" style="--c:var(--part1)"><span class="k">Playbook step 3</span><span class="t">Write an AI policy</span><span class="d">What ${a.team === 'solo' ? 'these rules cover' : 'this policy covers'}, and when to update it.</span></a>
-              ${quick ? '' : '<a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">5 minutes</span><span class="t">Run the quick check</span><span class="d">Red flags, and what you use AI for. Its answers fill in parts of this.</span></a>'}
+              ${quick ? '' : '<a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">10 minutes</span><span class="t">Run the quick check</span><span class="d">Red flags, and what you use AI for. Its answers fill in parts of this.</span></a>'}
             </div>
           </div>
         </div>

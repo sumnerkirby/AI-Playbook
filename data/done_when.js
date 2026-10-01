@@ -58,6 +58,6 @@ var DONE_WHEN = {
     ]},
   ],
   /* one optional note per step: how the owner knows it's in place */
-  evidence: {label: `How do you know? (optional)`, placeholder: `For example: told the team on 5 June`},
+  evidence: {label: `How do you know? (optional)`, placeholder: `For example: checked and wrote it down on June 5`},
   max_length: 600,
 };

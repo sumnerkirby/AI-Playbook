@@ -141,7 +141,10 @@
     const vis = T.visible(a, P);
     const q = currentQ();
     if (!q){ view = {name: 'result', draft: Object.assign(d, {focus: null})}; history.replaceState({tc: clone(view)}, ''); return renderResult(); }
-    const idx = vis.findIndex(x => x.id === q.id) + 1;
+    /* progress by section (fixed at seven), moving a little within a section,
+       so an answer that opens more questions never sends the bar back */
+    const inStep = vis.filter(x => x.step === q.step);
+    const frac = (q.step + inStep.findIndex(x => x.id === q.id) / inStep.length) / Q.steps.length;
     const v = a[q.id];
     const ev = (a._evidence || {})[q.id];
     let body = '';
@@ -167,7 +170,7 @@
       }
     }
     main.innerHTML = `<section class="screen">
-      ${progressBar({left: `<b>Section ${q.step + 1} of ${Q.steps.length}</b> &middot; ${esc(Q.steps[q.step])}${a.mode ? ` &middot; ${a.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, n: idx, total: vis.length})}
+      ${progressBar({left: `<b>Section ${q.step + 1} of ${Q.steps.length}</b> &middot; ${esc(Q.steps[q.step])}${a.mode ? ` &middot; ${a.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, frac})}
       ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${a.use && q.id !== 'use' ? ' &middot; ' + esc(T.useLabel(a.use)) + passText(d) : ''}</p>` : ''}
       <h2>${esc(q.text)}</h2>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
       ${body}

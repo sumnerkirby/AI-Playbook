@@ -122,7 +122,7 @@ var TOOL_QUESTIONS = {
      show_if: {any: [{q: 'data', in: ['personal', 'sensitive', 'regulated']}, {q: 'special', in: ['yes']}]},
      text: `Is there a data agreement with the supplier that covers this?`,
      text_by_industry: {healthcare: `Is there a business associate agreement (BAA) that covers this AI feature?`},
-     hint: `A data processing addendum or confidentiality agreement. A BAA for healthcare.`,
+     hint: `A contract that limits what the supplier may do with your information, often called a data processing addendum (DPA). Healthcare businesses need a business associate agreement (BAA).`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
     {id: 'published', step: 2, kind: 'one', evidence: true,
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
