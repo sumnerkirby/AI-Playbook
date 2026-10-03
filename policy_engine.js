@@ -162,7 +162,7 @@ var PolicyEngine = (function(){
     const tb = [];
     if (business.length) tb.push(p(T.tools_intro), {ul: business.map(n => [n])});
     else if (!notYet.length) tb.push(p(T.tools_intro), {ul: [[{fill: P.blanks.tools}]]});
-    tb.push(p(T.tools_rule));
+    tb.push(p(T.tools_rule), p(T.tools_signin));
     notYet.forEach(n => tb.push(p(T.tools_not_yet, {tool: n})));
     tb.push(p(T.tools_other));
     sec('tools', T.tools_h, tb);

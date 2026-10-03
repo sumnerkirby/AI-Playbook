@@ -226,13 +226,14 @@
 
   /* Where to look: directions for the named tool, when it is one of the
      tools in the data, then the general places that apply to any tool. */
-  function lookHelp(a){
+  function lookHelp(a, topic){
     const list = items => `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
-    const v = T.vendorHelp(a);
-    if (!v) return list(Q.where_to_look.general);
+    const general = topic === 'mfa' ? Q.where_to_look.mfa_general : Q.where_to_look.general;
+    const v = T.vendorHelp(a, topic);
+    if (!v) return list(general);
     return `${v.sections.map(sec => `<p class="vh"><b>${esc(v.name)}</b> &middot; ${esc(sec.label)}</p>${list(sec.steps)}`).join('')}
       <p class="vh-src">From ${v.sources.map(x => `<a href="${esc(x.href)}" rel="noopener noreferrer">${esc(x.title)}</a>`).join('; ')}. Checked ${esc(U.fmtDate(v.checked))}. Settings change; where the tool shows something different, the vendor's current page is correct.</p>
-      <p class="vh"><b>Any tool</b></p>${list(Q.where_to_look.general)}`;
+      <p class="vh"><b>Any tool</b></p>${list(general)}`;
   }
 
   /* ================= results ================= */
@@ -260,7 +261,7 @@
             <p><label class="task" for="td-${esc(t.id)}">${t.cleanup ? '<b>Clean-up:</b> ' : ''}${esc(t.text)}</label> <span class="who">${esc(t.owner)}</span></p>
             <p class="why" id="tw-${esc(t.id)}">${esc(t.reason)}</p>
             ${t.flag ? `<p class="advice"><b>Get advice</b>${esc(t.flag_text || '')}</p>` : ''}
-            ${t.where_to_look ? `<details><summary>Where to look</summary>${lookHelp(a)}</details>` : ''}
+            ${t.where_to_look ? `<details><summary>Where to look</summary>${lookHelp(a, t.where_to_look)}</details>` : ''}
             ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}">I&rsquo;ve found out: change my answer</button></p>` : ''}
             ${t.standing && !t.done ? `<p class="small-note">Once done, this becomes a standing rule.</p>` : ''}
             <p><a href="${esc(t.how.href)}">${esc(t.how.label)}</a></p>

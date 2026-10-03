@@ -106,7 +106,7 @@ var PulseTestRun = (function(){
     ok(s.startsWith('BEGIN:VCALENDAR\r\n') && s.endsWith('END:VCALENDAR\r\n'), 'wrapped, with CRLF');
     ok(s.includes('\r\nRRULE:FREQ=MONTHLY\r\n'), 'monthly');
     ok(s.includes('DTSTART:20261028T090000'), 'the 31st moves to the 28th so no month is skipped');
-    ok(s.includes('Three questions: new AI tools\\, problems with AI\\,'), 'commas escaped');
+    ok(s.includes('New AI tools\\, problems with AI\\,'), 'commas escaped');
     s.split('\r\n').forEach(l => ok(l.length <= 75, 'line too long: ' + l));
     ok(s.replace(/\r\n /g, '').includes('URL:' + url), 'URL survives folding');
     ok(!/\n(?!.)/.test(s.replace(/\r\n/g, '')), 'no bare newlines');
@@ -171,6 +171,28 @@ var PulseTestRun = (function(){
   test('printable card: twelve months across the year end', () => {
     const m = PU.monthsFrom('2026-10-15', 12);
     eq([m[0], m[2], m[3], m[11]], ['October 2026', 'December 2026', 'January 2027', 'September 2027'], 'months');
+  });
+
+  /* ---------- joined or left (FIXES 1.2) ---------- */
+  test('joined or left: accounts not yet changed is a check, done is go, and it shows in the summary, CSV and worst light', () => {
+    eq(['yes', 'no', 'not_sure'].map(a => PU.peopleRule(a).light), ['go', 'check', 'check'], 'lights');
+    ok(PULSE.questions.people.accounts.every(o => PU.peopleRule(o.id) && PU.peopleRule(o.id).fix), 'every answer has a rule');
+    const c = checkin('2027-01-04', {people: {answer: 'yes', accounts: 'no', light: 'check'}});
+    eq(PU.worst(c), 'check', 'worst light');
+    ok(PU.summary(c).includes('someone joined or left, accounts to update'), 'summary');
+    const log = PU.emptyLog(); log.checkins.push(c);
+    ok(PU.csv(log).includes('joined or left'), 'CSV row');
+    eq(PU.worst(checkin('2027-01-04', {people: {answer: 'no'}})), 'go', 'nobody joined or left');
+    ok(PULSE.print_card.questions.some(q => /join or leave/.test(q)), 'on the printable card');
+  });
+  test('joined or left: restore keeps a valid answer, works the light out again, and drops junk', () => {
+    const log = PU.emptyLog();
+    log.checkins.push(checkin('2027-01-04', {people: {answer: 'yes', accounts: 'yes', light: 'stop'}}));
+    log.checkins.push(checkin('2027-02-01', {people: {answer: 'yes', accounts: 'maybe'}}));
+    log.checkins.push(checkin('2027-03-01'));
+    const r = PU.restore(JSON.parse(JSON.stringify(log)), ctx);
+    eq(r.log.checkins.map(c => c.people || null), [{answer: 'yes', accounts: 'yes', light: 'go'}, null, null], 'restored');
+    eq(r.dropped, 1, 'junk counted');
   });
 
   const failed = results.filter(r => r.fails.length);

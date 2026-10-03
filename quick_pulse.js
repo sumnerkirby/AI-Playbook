@@ -50,6 +50,10 @@
     return null;
   }
   const ctx = () => ({industry: industry()});
+  /* the joined-or-left question is for a business with more than one person */
+  function solo(){
+    try { return ProfileEngine.clean(JSON.parse(sget('localStorage', 'sb-ai-playbook:profile') || 'null')).team_size === 'solo'; } catch (e) { return false; }
+  }
   const hasBaseline = () => !!(sget('localStorage', 'sb-ai-playbook:quick') || sget('localStorage', 'sb-ai-playbook:policy'));
 
   /* ---------- the check-in in progress ---------- */
@@ -78,9 +82,10 @@
     firstRender = false;
   }
 
-  /* which of the three (or four) questions we're on */
+  /* which question we're on: three, plus people for a team, plus the statement every third month */
+  const sweepN = () => flow.ask_people ? 5 : 4;
   function progress(n){
-    const total = flow.sweep_due ? 4 : 3;
+    const total = 3 + (flow.ask_people ? 1 : 0) + (flow.sweep_due ? 1 : 0);
     return progressBar({left: '<b>Monthly check-in</b>', n, total});
   }
   const back = () => `<div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button><button class="btn quiet" type="button" data-act="home">Cancel</button></div>`;
@@ -166,14 +171,23 @@
       flow.draft.connections.push({name: flow.conn_name.trim(), approval: a, light: PU.connectionRule(a).light});
       goto(afterConn());
     }, `<p class="about">${esc(flow.conn_name)}</p>`),
-    q_sweep: () => ask(4, Q.sweep.text, Q.sweep.hint, Q.sweep.answers, a => {
+    q_people: () => ask(4, Q.people.text, Q.people.hint, PULSE.yes_no, a => {
+      if (a === 'yes') goto('people_accounts');
+      else { flow.draft.people = {answer: 'no'}; goto(afterPeople()); }
+    }),
+    people_accounts: () => ask(4, Q.people.accounts_text, '', Q.people.accounts, a => {
+      flow.draft.people = {answer: 'yes', accounts: a, light: PU.peopleRule(a).light};
+      goto(afterPeople());
+    }),
+    q_sweep: () => ask(sweepN(), Q.sweep.text, Q.sweep.hint, Q.sweep.answers, a => {
       flow.draft.sweep = {answer: a, found: []};
       if (a === 'yes'){ flow.sweep_text = ''; goto('sweep_found'); } else goto('done');
     }, `<p class="example" style="margin-top:6px"><b>${esc(Q.sweep.names_label)}</b></p><ul class="names">${PULSE.statement_names.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`),
-    sweep_found: () => textStep(4, Q.sweep.text, Q.sweep.found_label, 'For example: Otter.ai, Fireflies', 'sweep_text', 'done'),
+    sweep_found: () => textStep(sweepN(), Q.sweep.text, Q.sweep.found_label, 'For example: Otter.ai, Fireflies', 'sweep_text', 'done'),
     done: renderDone,
   };
-  const afterConn = () => flow.sweep_due ? 'q_sweep' : 'done';
+  const afterPeople = () => flow.sweep_due ? 'q_sweep' : 'done';
+  const afterConn = () => flow.ask_people ? 'q_people' : afterPeople();
 
   /* ---------- findings ---------- */
   const WHO = {you: 'You', it_provider: 'You or your IT provider', supplier: 'Ask your supplier', advisor: 'Ask your advisor or compliance consultant'};
@@ -188,6 +202,14 @@
         <p><a href="${h.how.href}">${esc(h.how.label)}</a></p></li>`).join('')}</ul>`
         : '<p>Nothing in your answers needs a change.</p><p class="small-note">Supplier not checked: the check-in does not ask what the supplier does with your information.</p>'}
     </div>`;
+  }
+  function peopleFinding(x){
+    const r = PU.peopleRule(x.accounts);
+    return `<div class="finding ${x.light}">${light(x.light)}
+      <h3>Someone joined or left</h3>
+      <p>${esc(r.reason)}</p>
+      <p class="fix"><b>Next:</b> ${esc(r.fix)}<span class="who">${esc(WHO.you)}</span></p>
+      <p><a href="${PULSE.people_how.href}">${esc(PULSE.people_how.label)}</a></p></div>`;
   }
   function connFinding(x){
     const r = PU.connectionRule(x.approval);
@@ -217,7 +239,7 @@
     const kept = log.checkins.some(c => c._id === _id);
     const saved = flow.saved === 'yes' && kept;
     const st = PU.status(log, today());
-    const nothing = !d.new_tools.length && !d.incidents.length && !d.connections.length && !(d.sweep && d.sweep.found.length);
+    const nothing = !d.new_tools.length && !d.incidents.length && !d.connections.length && !(d.sweep && d.sweep.found.length) && !(d.people && d.people.answer === 'yes');
     main.innerHTML = `<section class="screen">
       <p class="step-label"><b>Monthly check-in</b><span>${esc(PU.fmtDate(d.date))}</span></p>
       <h2>${nothing ? 'All clear this month' : 'Check-in recorded'}</h2>
@@ -225,6 +247,7 @@
       <p>${esc(PU.summary(d).charAt(0).toUpperCase() + PU.summary(d).slice(1))}.</p>
       ${d.new_tools.map(toolFinding).join('')}
       ${d.connections.map(connFinding).join('')}
+      ${d.people && d.people.answer === 'yes' ? peopleFinding(d.people) : ''}
       ${d.incidents.length ? `<div class="finding check"><span class="light none">Logged</span><h3>Things that went wrong</h3><ul>${d.incidents.map(i => `<li>${esc(i.text)}</li>`).join('')}</ul><p><a href="${PULSE.incident_card.how.href}">${esc(PULSE.incident_card.how.label)}</a></p></div>` : ''}
       ${d.sweep && d.sweep.found.length ? `<div class="finding"><span class="light none">To check</span><h3>Found on the statement</h3><p>${d.sweep.found.map(esc).join(', ')}</p><p>Check each one: what it is used for, and on which account. <a href="quick_check.html">The quick check</a> does this in a few minutes.</p></div>` : ''}
       ${d.sweep && d.sweep.answer === 'not_looked' ? '<p class="small-note">The statement question will come up again next month.</p>' : ''}
@@ -318,7 +341,7 @@
     if (b.dataset.card){ flow.pending.card = b.dataset.card; flow.pending.answers = {}; return goto('tool_q'); }
     switch (b.dataset.act){
       case 'start':
-        flow = {stage: 'q_new', draft: Object.assign({_id: String(Date.now())}, PU.newCheckin(today())), sweep_due: PU.sweepDue(log, today())};
+        flow = {stage: 'q_new', draft: Object.assign({_id: String(Date.now())}, PU.newCheckin(today())), sweep_due: PU.sweepDue(log, today()), ask_people: !solo()};
         return goto('q_new');
       case 'back': return history.back();
       case 'home': flow = {stage: 'home'}; return goto('home');

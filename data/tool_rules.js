@@ -18,13 +18,14 @@
      answer    for a "don't know": the question to answer again. It can't be
                ticked done; it closes only when the answer changes.
      cleanup   a clean-up to-do for something already in use
+     where_to_look  show directions: true for data settings, 'mfa' for sign-in
      flag      get_advice, with flag_text
    Legal points are flags to check with an advisor, never conclusions.
    Not yet verified for publication. */
 
 var TOOL_RULES = {
-  version: '2026.09.1-tool',
-  last_reviewed: '2026-10-01',
+  version: '2026.10.1-tool',
+  last_reviewed: '2026-10-03',
   verified: false,
   rules: [
     /* ================= universal red lines ================= */
@@ -208,6 +209,13 @@ var TOOL_RULES = {
      standing: `AI outputs that count as records are saved with the other records.`,
      flag: 'get_advice', flag_text: `Ask your compliance consultant which records rules apply.`,
      owner: 'advisor', how: {href: 'playbook.html#step-8', label: `Step 8: Prepare for incidents`}},
+    /* step 4: two-step sign-in on any account that holds more than public information */
+    {id: 't.mfa.no', outcome: 'condition',
+     when: {q: 'mfa', in: ['no']},
+     reason: `Two-step sign-in is off. Anyone who gets the password can read everything in this account.`,
+     fix: `Turn it on in the account's security settings. On some business plans, the administrator can require it for everyone.`,
+     standing: `Two-step sign-in is on for this account.`,
+     owner: 'it', where_to_look: 'mfa', how: {href: 'playbook.html#step-4', label: `Step 4: Protect sensitive information`}},
     /* a team hears about every approved tool */
     {id: 't.team.tell', outcome: 'condition',
      when: {q: '_team', in: ['small', 'medium', 'large']},
@@ -241,6 +249,10 @@ var TOOL_RULES = {
      reason: `You are not sure whether the supplier publishes how it handles data.`,
      fix: `Look for a trust, privacy or security page on the supplier's website.`,
      owner: 'you', where_to_look: true, how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    {id: 't.dk.mfa', outcome: 'condition', answer: 'mfa', when: {q: 'mfa', in: ['dont_know']},
+     reason: `You are not sure whether two-step sign-in is on.`,
+     fix: `Open the account's security settings and look for two-step verification or multi-factor authentication.`,
+     owner: 'it', where_to_look: 'mfa', how: {href: 'playbook.html#step-4', label: `Step 4: Protect sensitive information`}},
     {id: 't.dk.special', outcome: 'condition', answer: 'special', when: {q: 'special', in: ['dont_know']},
      reason: `You are not sure whether your industry's protected information goes in.`,
      fix: `Ask the people who use it, and check a few recent chats or uploads.`,

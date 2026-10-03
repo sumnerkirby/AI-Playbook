@@ -176,6 +176,14 @@ var PolicyTestRun = (function(){
     eq(c.finds.map(f => [f.name, f.tags.account]), [['ChatGPT', 'personal'], ['Microsoft Copilot', 'business']], 'finds');
   });
 
+  /* ---------- two-step sign-in (FIXES 1.2) ---------- */
+  test('the policy requires two-step sign-in, and a team policy removes accounts when someone leaves', () => {
+    const team = Object.assign(dana(), {team: 'team', decider: 'Dana'});
+    ok(secText(PE.build(team), 'tools').includes('Every AI account used for work has two-step sign-in turned on, and accounts are removed when someone leaves.'), 'team');
+    ok(secText(PE.build(dana()), 'tools').includes('Every AI account I use for work has two-step sign-in turned on.'), 'solo');
+    ok(secText(PE.build(dana()), 'settings').includes('Two-step sign-in: on'), 'solo settings checklist');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} policy tests passed`};
 })();

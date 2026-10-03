@@ -9,8 +9,8 @@
    {not: ...} negates. */
 
 var TOOL_QUESTIONS = {
-  version: '2026.09.1-tool',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-tool',
+  last_reviewed: '2026-10-03',
 
   data_classes: [
     {id: 'public',    label: `public information`},
@@ -20,7 +20,7 @@ var TOOL_QUESTIONS = {
     {id: 'regulated', label: `client-confidential or regulated information`},
   ],
 
-  steps: [`What is it?`, `What goes in?`, `The supplier`, `Where the output goes`, `What it can do`, `Tools you set up`, `What has already happened`],
+  steps: [`What is it?`, `What goes in?`, `The supplier and your account`, `Where the output goes`, `What it can do`, `Tools you set up`, `What has already happened`],
 
   questions: [
     /* ---------- 1. what is it ---------- */
@@ -128,6 +128,11 @@ var TOOL_QUESTIONS = {
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Does the supplier publish how it handles your data?`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
+    {id: 'mfa', step: 2, kind: 'one',
+     show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
+     text: `Is two-step sign-in turned on for this account?`,
+     hint: `Also called multi-factor authentication or 2-step verification: signing in needs a code from an app or a text message, or a passkey, as well as the password.`,
+     options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 4. where the output goes ---------- */
     {id: 'output', step: 3, kind: 'many', text: `Where does what it produces go?`,
@@ -203,13 +208,21 @@ var TOOL_QUESTIONS = {
      them again before that date is a quarter old. A tool is recognized when
      its name matches one of `match` (case-insensitive regular expressions).
      `plans` is keyed by plan group: personal (free or paid personal),
-     business (business or enterprise), or any (shown for every plan). */
+     business (business or enterprise), or any (shown for every plan).
+     `mfa` gives where each tool keeps two-step sign-in, keyed the same way,
+     checked on `mfa_checked` against `mfa_sources`; `mfa_general` applies
+     to any tool. */
   where_to_look: {
     general: [
       `In the tool's own settings, under Data, Privacy or Data controls.`,
       `On a business plan, in the administration console rather than your own settings.`,
       `On the supplier's trust, privacy or security page, and in the terms for your plan.`,
       `If you still cannot tell, ask the supplier in writing and keep the reply.`,
+    ],
+    mfa_general: [
+      `In the account's settings, under Security, Sign-in or Login, look for two-step verification, two-factor authentication or multi-factor authentication.`,
+      `If you sign in with a Google or Microsoft account, or through the business's own single sign-on, turn it on there. It then protects every tool you sign in to that way.`,
+      `On a business plan, ask the administrator whether it can be required for everyone.`,
     ],
     tools: {
       chatgpt: {
@@ -227,6 +240,14 @@ var TOOL_QUESTIONS = {
           ]},
         },
         sources: [{title: `OpenAI Help Center: Data controls in ChatGPT`, href: `https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt`}],
+        mfa: {
+          any: {label: `Every plan`, steps: [
+            `Open Settings, select Security and login, and under Multi-factor authentication (MFA) choose a method, such as an authenticator app or a passkey.`,
+            `OpenAI states that an administrator cannot currently require MFA for a whole workspace, so each person turns it on for their own account.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [{title: `OpenAI Help Center: Managing multi-factor authentication (MFA)`, href: `https://help.openai.com/en/articles/7967234-managing-multi-factor-authentication-mfa`}],
       },
       copilot: {
         name: `Microsoft Copilot`, match: ['^(?!.*github).*\\bcopilot\\b'], checked: '2026-10-01',
@@ -248,6 +269,19 @@ var TOOL_QUESTIONS = {
           {title: `Microsoft Support: Microsoft Copilot for individuals, your privacy controls and choices`, href: `https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls`},
           {title: `Microsoft Support: Data protection when using Microsoft Copilot Chat for work or school`, href: `https://support.microsoft.com/en-us/privacy/data-protection-when-using-microsoft-365-copilot-chat-for-work-or-school`},
         ],
+        mfa: {
+          personal: {label: `Signed in with a personal Microsoft account`, steps: [
+            `Sign in at account.microsoft.com/security, select Manage how I sign in, and under Additional security, turn on Two-step verification.`,
+          ]},
+          business: {label: `Signed in with a work or school account`, steps: [
+            `Your Microsoft administrator manages sign-in for work and school accounts. In the Microsoft Entra admin center, an administrator can turn on security defaults (Entra ID, Overview, Properties, Manage security defaults), which requires everyone to set up multi-factor authentication.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Microsoft Support: How to use two-step verification with your Microsoft account`, href: `https://support.microsoft.com/en-us/accounts-billing/security/how-to-use-two-step-verification-with-your-microsoft-account`},
+          {title: `Microsoft Learn: Security defaults in Microsoft Entra ID`, href: `https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults`},
+        ],
       },
       gemini: {
         name: `Google Gemini`, match: ['\\bgemini\\b', '\\bbard\\b'], checked: '2026-10-01',
@@ -268,6 +302,19 @@ var TOOL_QUESTIONS = {
           {title: `Gemini Apps Privacy Hub (last updated September 24, 2026)`, href: `https://support.google.com/gemini/answer/13594961`},
           {title: `Generative AI in Google Workspace Privacy Hub`, href: `https://support.google.com/a/answer/15706919`},
         ],
+        mfa: {
+          personal: {label: `Signed in with a personal Google account`, steps: [
+            `Open your Google Account, select Security & sign-in, and under How you sign in to Google, select Turn on 2-Step Verification.`,
+          ]},
+          business: {label: `Signed in with a Google Workspace account`, steps: [
+            `Your Workspace administrator decides. In the Google Admin console, under Security, Authentication, 2-step verification, an administrator can let people turn it on, and then enforce it for everyone.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Google Account Help: Turn on 2-Step Verification`, href: `https://support.google.com/accounts/answer/185839`},
+          {title: `Google Workspace Admin Help: Deploy 2-Step Verification`, href: `https://knowledge.workspace.google.com/admin/security/deploy-2-step-verification`},
+        ],
       },
       claude: {
         name: `Claude`, match: ['\\bclaude\\b', '\\banthropic\\b'], checked: '2026-10-01',
@@ -287,6 +334,20 @@ var TOOL_QUESTIONS = {
           {title: `Anthropic Privacy Center: Is my data used for model training? (commercial products)`, href: `https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training`},
           {title: `Claude Help Center: Delete or rename a conversation`, href: `https://support.claude.com/en/articles/8230524-delete-or-rename-a-conversation`},
         ],
+        mfa: {
+          personal: {label: `Free, Pro or Max`, steps: [
+            `Claude has no password of its own: you sign in with a Google account or with a link sent to your email. Turn on two-step sign-in for that Google or email account, because anyone who can open it can sign in to Claude.`,
+          ]},
+          business: {label: `Team or Enterprise`, steps: [
+            `An administrator can set up single sign-on, so that people sign in through the business's own system, such as Google Workspace or Microsoft Entra, and require two-step sign-in there.`,
+            `Without single sign-on, people sign in with Google or an email link, so protect each person's Google or email account.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Claude Help Center: Log in to your Claude account`, href: `https://support.claude.com/en/articles/13189465-log-in-to-your-claude-account`},
+          {title: `Claude Help Center: Set up single sign-on (SSO)`, href: `https://support.claude.com/en/articles/13132885-set-up-single-sign-on-sso`},
+        ],
       },
       meta_ai: {
         name: `Meta AI`, match: ['\\bmeta ai\\b', '\\bmeta\\.ai\\b'], checked: '2026-10-01',
@@ -301,6 +362,13 @@ var TOOL_QUESTIONS = {
           {title: `Meta Help Center: Remove posts, chats and media from Meta AI and Vibes`, href: `https://www.meta.com/help/artificial-intelligence/2457110494637611/`},
           {title: `Meta Privacy Center: How Meta uses information for generative AI models and features`, href: `https://www.facebook.com/privacy/genai/`},
         ],
+        mfa: {
+          any: {label: `All accounts`, steps: [
+            `Meta AI uses your Facebook, Instagram or Meta account. In Accounts Center, select Password and security, then Two-factor authentication, choose the account and follow the steps.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [{title: `Facebook Help Center: How two-factor authentication works on Facebook`, href: `https://www.facebook.com/help/148233965247823`}],
       },
     },
     verified: false,
@@ -320,6 +388,7 @@ var TOOL_QUESTIONS = {
     `Remove its access: disconnect it from email, files and accounts (connected apps in Google or Microsoft account settings).`,
     `Download anything you need to keep, then delete your data and chat history in the tool.`,
     `Remove shared links and anything you set up in it, such as custom assistants and automations.`,
+    `Remove each person from the business's AI workspace, and transfer anything they own.`,
     `Mark it retired on the AI list, with the date.`,
   ],
 };

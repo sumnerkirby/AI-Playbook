@@ -6,7 +6,7 @@
    A line on the AI list is one use of one tool:
      {id, answers, evidence: {question: {note, date}}, done: [rule ids],
       state_override, waiting: {until, note}, events: [{date, id, note}],
-      retire: [bool x5], retired_on, checked, recheck_by, light,
+      retire: [bool, one per retire_checklist item], retired_on, checked, recheck_by, light,
       rules_version, profile_version}
    The light is always worked out again from the answers and today's rules;
    the stored copy is only for sorting and export. */
@@ -146,7 +146,7 @@ var ToolEngine = (function(){
       reasons: stops.concat(conds).map(r => r.id),
       stops: stops.map(r => ({id: r.id, reason: r.reason, fix: r.fix, flag: r.flag, flag_text: r.flag_text, how: r.how, owner: ownerLabel(r.owner, profile)})),
       todos: conds.map(r => ({id: r.id, reason: r.reason, text: r.fix, owner: ownerLabel(r.owner, profile), done: isDone(r), answer: r.answer || null,
-        cleanup: !!r.cleanup, flag: r.flag, flag_text: r.flag_text, how: r.how, standing: r.standing || null, where_to_look: !!r.where_to_look, supplier: r.owner === 'supplier'})),
+        cleanup: !!r.cleanup, flag: r.flag, flag_text: r.flag_text, how: r.how, standing: r.standing || null, where_to_look: r.where_to_look || false, supplier: r.owner === 'supplier'})),
       standing: conds.filter(r => r.standing && isDone(r)).map(r => r.standing),
       allowed: allowed === null ? null : CLASSES.filter(c => allowed.includes(c)),
       allowed_notes: stops.concat(open).map(r => r.allowed_note).filter(Boolean),
@@ -202,18 +202,19 @@ var ToolEngine = (function(){
      the first tool whose name matches, with the plan groups that fit the
      plan answer. A personal plan shows personal steps, a business or
      enterprise plan business steps, anything else both. Null when no tool
-     matches. */
+     matches. topic 'mfa' gives where the tool keeps two-step sign-in. */
   const PLAN_GROUPS = {free_personal: ['personal'], paid_personal: ['personal'], business: ['business'], enterprise: ['business']};
-  function vendorHelp(answers){
+  function vendorHelp(answers, topic){
     const name = String((answers && answers.tool) || '').toLowerCase();
     if (!name.trim()) return null;
     const tools = Q.where_to_look.tools;
     const id = Object.keys(tools).find(k => tools[k].match.some(m => new RegExp(m, 'i').test(name)));
     if (!id) return null;
-    const t = tools[id];
-    const groups = t.plans.any ? ['any'] : (PLAN_GROUPS[answers.plan] || ['personal', 'business']);
-    return {id, name: t.name, checked: t.checked, sources: t.sources,
-      sections: groups.filter(g => t.plans[g]).map(g => ({group: g, label: t.plans[g].label, steps: t.plans[g].steps}))};
+    const t = tools[id], mfa = topic === 'mfa';
+    const plans = mfa ? t.mfa : t.plans;
+    const groups = plans.any ? ['any'] : (PLAN_GROUPS[answers.plan] || ['personal', 'business']);
+    return {id, name: t.name, checked: mfa ? t.mfa_checked : t.checked, sources: mfa ? t.mfa_sources : t.sources,
+      sections: groups.filter(g => plans[g]).map(g => ({group: g, label: plans[g].label, steps: plans[g].steps}))};
   }
 
   function name(line){ return line.answers.tool || 'Unnamed tool'; }
