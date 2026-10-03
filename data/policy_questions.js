@@ -8,8 +8,8 @@
    points appear only as things to check with an advisor. */
 
 var POLICY = {
-  version: '2026.09.1-policy',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-policy',
+  last_reviewed: '2026-10-03',
 
   /* ---------- the questions, in order ---------- */
   questions: [
@@ -138,6 +138,7 @@ var POLICY = {
       tools_h: `Approved tools`,
       tools_intro: `You may use these tools for work:`,
       tools_rule: `Use only your work account. Do not use personal or free AI accounts for work.`,
+      tools_signin: `Every AI account used for work has two-step sign-in turned on, and accounts are removed when someone leaves.`,
       tools_not_yet: `Being set up: {tool}. Do not use it for customer information until {date}.`,
       tools_other: `To use another AI tool, ask {decider} first.`,
       never_h: `Never put these into any AI tool`,
@@ -178,6 +179,7 @@ var POLICY = {
       tools_h: `The AI tools I use for work`,
       tools_intro: `I use these tools for work:`,
       tools_rule: `I use only business accounts for work, never a personal or free account.`,
+      tools_signin: `Every AI account I use for work has two-step sign-in turned on.`,
       tools_not_yet: `Moving to a business account: {tool}. I will not use it for client information until {date}.`,
       tools_other: `I check each new AI tool before I use it for work.`,
       never_h: `Never goes into any AI tool`,
@@ -210,6 +212,7 @@ var POLICY = {
       settings_h: `Settings to check on each tool`,
       settings: [
         `Signed in with my business account`,
+        `Two-step sign-in: on`,
         `Training on my data: off (checked on ______)`,
         `Chat history: deleted after ______, or switched off`,
         `Shared links: none left open`,

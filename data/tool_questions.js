@@ -9,8 +9,8 @@
    {not: ...} negates. */
 
 var TOOL_QUESTIONS = {
-  version: '2026.09.1-tool',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-tool',
+  last_reviewed: '2026-10-03',
 
   data_classes: [
     {id: 'public',    label: `public information`},
@@ -20,7 +20,7 @@ var TOOL_QUESTIONS = {
     {id: 'regulated', label: `client-confidential or regulated information`},
   ],
 
-  steps: [`What is it?`, `What goes in?`, `The supplier`, `Where the output goes`, `What it can do`, `Tools you set up`, `What has already happened`],
+  steps: [`What is it?`, `What goes in?`, `The supplier and your account`, `Where the output goes`, `What it can do`, `Tools you set up`, `What has already happened`],
 
   questions: [
     /* ---------- 1. what is it ---------- */
@@ -128,6 +128,20 @@ var TOOL_QUESTIONS = {
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Does the supplier publish how it handles your data?`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
+    {id: 'location', step: 2, kind: 'one',
+     show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
+     text: `Do you know which country this tool stores your data in?`,
+     hint: `Look in the supplier's privacy policy or trust page. Where a supplier is based, and where it stores data, decide which country's law applies.`,
+     options: [
+       {id: 'same',      label: `Yes, in the same country as us`},
+       {id: 'abroad',    label: `Yes, in another country`},
+       {id: 'dont_know', label: `Not sure`},
+     ]},
+    {id: 'mfa', step: 2, kind: 'one',
+     show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
+     text: `Is two-step sign-in turned on for this account?`,
+     hint: `Also called multi-factor authentication or 2-step verification: signing in needs a code from an app or a text message, or a passkey, as well as the password.`,
+     options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 4. where the output goes ---------- */
     {id: 'output', step: 3, kind: 'many', text: `Where does what it produces go?`,
@@ -203,7 +217,10 @@ var TOOL_QUESTIONS = {
      them again before that date is a quarter old. A tool is recognized when
      its name matches one of `match` (case-insensitive regular expressions).
      `plans` is keyed by plan group: personal (free or paid personal),
-     business (business or enterprise), or any (shown for every plan). */
+     business (business or enterprise), or any (shown for every plan).
+     `mfa` gives where each tool keeps two-step sign-in, keyed the same way,
+     checked on `mfa_checked` against `mfa_sources`; `mfa_general` applies
+     to any tool. */
   where_to_look: {
     general: [
       `In the tool's own settings, under Data, Privacy or Data controls.`,
@@ -211,9 +228,14 @@ var TOOL_QUESTIONS = {
       `On the supplier's trust, privacy or security page, and in the terms for your plan.`,
       `If you still cannot tell, ask the supplier in writing and keep the reply.`,
     ],
+    mfa_general: [
+      `In the account's settings, under Security, Sign-in or Login, look for two-step verification, two-factor authentication or multi-factor authentication.`,
+      `If you sign in with a Google or Microsoft account, or through the business's own single sign-on, turn it on there. It then protects every tool you sign in to that way.`,
+      `On a business plan, ask the administrator whether it can be required for everyone.`,
+    ],
     tools: {
       chatgpt: {
-        name: `ChatGPT`, match: ['\\bchat ?gpt\\b', '\\bopenai\\b'], checked: '2026-10-01',
+        name: `ChatGPT`, match: ['\\bchat ?gpt\\b', '\\bopenai\\b'], checked: '2026-10-03',
         plans: {
           personal: {label: `Free, Go, Plus or Pro`, steps: [
             `To stop new chats from being used for training, open Settings, select Data controls, and turn off Improve the model for everyone. In the phone app, open the sidebar and select your profile icon to reach Settings.`,
@@ -224,12 +246,26 @@ var TOOL_QUESTIONS = {
           business: {label: `Business, Enterprise or Edu`, steps: [
             `OpenAI does not train on content from Business, Enterprise or Edu workspaces by default.`,
             `Retention and other data settings are set for the whole workspace by its owner, not in your own settings.`,
+            `OpenAI offers a business associate agreement (BAA) for ChatGPT for Healthcare and for API healthcare customers. It does not state one for ChatGPT Business, so keep patient information out of a Business workspace.`,
+            `No training is not the same as deletion. From May 13 to September 26, 2025, a court order required OpenAI to keep deleted chats from ChatGPT Team (now Business) and personal plans. Enterprise and Edu were not covered.`,
           ]},
         },
-        sources: [{title: `OpenAI Help Center: Data controls in ChatGPT`, href: `https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt`}],
+        sources: [
+          {title: `OpenAI Help Center: Data controls in ChatGPT`, href: `https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt`},
+          {title: `OpenAI: Business data privacy, security and compliance`, href: `https://openai.com/business-data/`},
+          {title: `LLMs for Lawyers: NYT v OpenAI, the deleted ChatGPT chats order, explained`, href: `https://www.llms-for-lawyers.com/confidentiality/nyt-v-openai-deleted-chatgpt-chats-lawyers/`},
+        ],
+        mfa: {
+          any: {label: `Every plan`, steps: [
+            `Open Settings, select Security and login, and under Multi-factor authentication (MFA) choose a method, such as an authenticator app or a passkey.`,
+            `OpenAI states that an administrator cannot currently require MFA for a whole workspace, so each person turns it on for their own account.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [{title: `OpenAI Help Center: Managing multi-factor authentication (MFA)`, href: `https://help.openai.com/en/articles/7967234-managing-multi-factor-authentication-mfa`}],
       },
       copilot: {
-        name: `Microsoft Copilot`, match: ['^(?!.*github).*\\bcopilot\\b'], checked: '2026-10-01',
+        name: `Microsoft Copilot`, match: ['^(?!.*github).*\\bcopilot\\b'], checked: '2026-10-03',
         plans: {
           personal: {label: `Signed in with a personal Microsoft account`, steps: [
             `Microsoft states that prompts, responses and file contents in the Copilot app are not used to train its foundation models. This applies to the version of the app released on August 18, 2026; update the app if you have an older version.`,
@@ -240,17 +276,33 @@ var TOOL_QUESTIONS = {
             `With a work or school (Microsoft Entra) account, Copilot Chat has enterprise data protection: prompts and responses are not used to train foundation models. Your IT administrator can see a log of them.`,
             `The protection applies only when you are signed in with the work or school account. Check which account Copilot shows before you put in business information.`,
             `Microsoft 365 Copilot is now named Microsoft Copilot, and Microsoft 365 Copilot Chat is now Microsoft Copilot Chat. The data protection did not change.`,
-            `Web searches that Copilot makes for you are handled by Bing under separate terms.`,
+            `Web searches that Copilot makes for you go to Bing. Microsoft states that its data protection addendum, and its HIPAA compliance, do not apply to those search queries.`,
+            `Copilot can find any file the person using it can open. Check SharePoint and OneDrive sharing before turning it on for everyone.`,
           ]},
         },
         sources: [
           {title: `Microsoft Support: Microsoft Copilot for individuals, your activity history`, href: `https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history`},
           {title: `Microsoft Support: Microsoft Copilot for individuals, your privacy controls and choices`, href: `https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls`},
           {title: `Microsoft Support: Data protection when using Microsoft Copilot Chat for work or school`, href: `https://support.microsoft.com/en-us/privacy/data-protection-when-using-microsoft-365-copilot-chat-for-work-or-school`},
+          {title: `Microsoft Learn: Data, privacy and security for web search in Microsoft Copilot and Copilot Chat`, href: `https://learn.microsoft.com/en-us/microsoft-365/copilot/manage-public-web-access`},
+          {title: `Microsoft Learn: Data, privacy and security for Microsoft Copilot`, href: `https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy`},
+        ],
+        mfa: {
+          personal: {label: `Signed in with a personal Microsoft account`, steps: [
+            `Sign in at account.microsoft.com/security, select Manage how I sign in, and under Additional security, turn on Two-step verification.`,
+          ]},
+          business: {label: `Signed in with a work or school account`, steps: [
+            `Your Microsoft administrator manages sign-in for work and school accounts. In the Microsoft Entra admin center, an administrator can turn on security defaults (Entra ID, Overview, Properties, Manage security defaults), which requires everyone to set up multi-factor authentication.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Microsoft Support: How to use two-step verification with your Microsoft account`, href: `https://support.microsoft.com/en-us/accounts-billing/security/how-to-use-two-step-verification-with-your-microsoft-account`},
+          {title: `Microsoft Learn: Security defaults in Microsoft Entra ID`, href: `https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults`},
         ],
       },
       gemini: {
-        name: `Google Gemini`, match: ['\\bgemini\\b', '\\bbard\\b'], checked: '2026-10-01',
+        name: `Google Gemini`, match: ['\\bgemini\\b', '\\bbard\\b'], checked: '2026-10-03',
         plans: {
           personal: {label: `Signed in with a personal Google account`, steps: [
             `To stop future chats from being used to train Google's AI models, go to myactivity.google.com/product/gemini (Gemini Apps Activity) and turn off Keep Activity. Chats are still kept for 72 hours, and sending feedback allows that chat to be used.`,
@@ -262,15 +314,30 @@ var TOOL_QUESTIONS = {
             `Google states that with a Workspace account, your content is not reviewed by people or used to train generative AI models outside your organization without permission.`,
             `Your Workspace administrator decides in the Admin console whether Gemini conversations are saved and for how long.`,
             `Gemini in Workspace follows the Cloud Data Processing Addendum, which is part of your Workspace agreement.`,
+            `Gemini Notebook (formerly NotebookLM) and Gemini in Chrome are not covered by Google's business associate agreement (BAA), and your data region settings do not apply to Gemini Notebook. Keep patient information out of them.`,
+            `Gemini can reach any Workspace content the person using it can open. Check Drive sharing before turning it on for everyone.`,
           ]},
         },
         sources: [
           {title: `Gemini Apps Privacy Hub (last updated September 24, 2026)`, href: `https://support.google.com/gemini/answer/13594961`},
-          {title: `Generative AI in Google Workspace Privacy Hub`, href: `https://support.google.com/a/answer/15706919`},
+          {title: `Generative AI in Google Workspace Privacy Hub`, href: `https://knowledge.workspace.google.com/admin/generative-ai/generative-ai-in-google-workspace-privacy-hub`},
+        ],
+        mfa: {
+          personal: {label: `Signed in with a personal Google account`, steps: [
+            `Open your Google Account, select Security & sign-in, and under How you sign in to Google, select Turn on 2-Step Verification.`,
+          ]},
+          business: {label: `Signed in with a Google Workspace account`, steps: [
+            `Your Workspace administrator decides. In the Google Admin console, under Security, Authentication, 2-step verification, an administrator can let people turn it on, and then enforce it for everyone.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Google Account Help: Turn on 2-Step Verification`, href: `https://support.google.com/accounts/answer/185839`},
+          {title: `Google Workspace Admin Help: Deploy 2-Step Verification`, href: `https://knowledge.workspace.google.com/admin/security/deploy-2-step-verification`},
         ],
       },
       claude: {
-        name: `Claude`, match: ['\\bclaude\\b', '\\banthropic\\b'], checked: '2026-10-01',
+        name: `Claude`, match: ['\\bclaude\\b', '\\banthropic\\b'], checked: '2026-10-03',
         plans: {
           personal: {label: `Free, Pro or Max`, steps: [
             `To stop new chats and coding sessions from being used for training, open Settings, select Privacy, and turn off Help Improve our AI models.`,
@@ -280,12 +347,28 @@ var TOOL_QUESTIONS = {
           business: {label: `Team, Enterprise or API`, steps: [
             `Anthropic does not use inputs or outputs from commercial plans to train its models by default.`,
             `If someone rates a response with thumbs up or down, the whole conversation is kept for up to five years and may be used for training. An owner can turn off rating for the organization under Organization settings, Data and Privacy, Rate chats.`,
+            `Anthropic offers a business associate agreement (BAA) for Claude Enterprise, once the Primary Owner turns on its HIPAA settings, and for its own API. It does not cover Team plans, the Console, Cowork or features in beta, and data sent to other companies through connectors is not covered.`,
           ]},
         },
         sources: [
           {title: `Anthropic Privacy Center: How do I change my model improvement privacy settings?`, href: `https://privacy.claude.com/en/articles/12109829-how-do-i-change-my-model-improvement-privacy-settings`},
           {title: `Anthropic Privacy Center: Is my data used for model training? (commercial products)`, href: `https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training`},
           {title: `Claude Help Center: Delete or rename a conversation`, href: `https://support.claude.com/en/articles/8230524-delete-or-rename-a-conversation`},
+          {title: `Anthropic Privacy Center: Business associate agreements (BAA) for commercial customers`, href: `https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers`},
+        ],
+        mfa: {
+          personal: {label: `Free, Pro or Max`, steps: [
+            `Claude has no password of its own: you sign in with a Google account or with a link sent to your email. Turn on two-step sign-in for that Google or email account, because anyone who can open it can sign in to Claude.`,
+          ]},
+          business: {label: `Team or Enterprise`, steps: [
+            `An administrator can set up single sign-on, so that people sign in through the business's own system, such as Google Workspace or Microsoft Entra, and require two-step sign-in there.`,
+            `Without single sign-on, people sign in with Google or an email link, so protect each person's Google or email account.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [
+          {title: `Claude Help Center: Log in to your Claude account`, href: `https://support.claude.com/en/articles/13189465-log-in-to-your-claude-account`},
+          {title: `Claude Help Center: Set up single sign-on (SSO)`, href: `https://support.claude.com/en/articles/13132885-set-up-single-sign-on-sso`},
         ],
       },
       meta_ai: {
@@ -301,6 +384,13 @@ var TOOL_QUESTIONS = {
           {title: `Meta Help Center: Remove posts, chats and media from Meta AI and Vibes`, href: `https://www.meta.com/help/artificial-intelligence/2457110494637611/`},
           {title: `Meta Privacy Center: How Meta uses information for generative AI models and features`, href: `https://www.facebook.com/privacy/genai/`},
         ],
+        mfa: {
+          any: {label: `All accounts`, steps: [
+            `Meta AI uses your Facebook, Instagram or Meta account. In Accounts Center, select Password and security, then Two-factor authentication, choose the account and follow the steps.`,
+          ]},
+        },
+        mfa_checked: '2026-10-03',
+        mfa_sources: [{title: `Facebook Help Center: How two-factor authentication works on Facebook`, href: `https://www.facebook.com/help/148233965247823`}],
       },
     },
     verified: false,
@@ -320,6 +410,7 @@ var TOOL_QUESTIONS = {
     `Remove its access: disconnect it from email, files and accounts (connected apps in Google or Microsoft account settings).`,
     `Download anything you need to keep, then delete your data and chat history in the tool.`,
     `Remove shared links and anything you set up in it, such as custom assistants and automations.`,
+    `Remove each person from the business's AI workspace, and transfer anything they own.`,
     `Mark it retired on the AI list, with the date.`,
   ],
 };

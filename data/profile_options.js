@@ -95,18 +95,36 @@ var PROFILE_OPTIONS = {
   },
 
   /* Industry overlays: what's different, as things to check with an advisor,
-     never legal conclusions. Each needs verifying before publication. */
+     never legal conclusions. Each needs verifying before publication.
+     seek_advice and links: the Get advice banner for a regulated industry,
+     shown on step 0 of the playbook, the quick check result and the tool
+     check result (FIXES 1.4). Links go to government or standards bodies,
+     each opened and checked on the date in links_checked. */
   overlays_verified: false,
+  links_checked: '2026-10-03',
+  general_help: {
+    text: `Free help for any small business: the SBA's cybersecurity guidance, and the Small Business Development Center in your state.`,
+    links: [
+      {title: `SBA: Strengthen your cybersecurity`, href: `https://www.sba.gov/counseling/manage-your-business/#strengthen-your-cybersecurity`},
+      {title: `Oklahoma Small Business Development Centers`, href: `https://www.oksbdc.org/`},
+    ],
+  },
   overlays: {
     healthcare: {
-      last_reviewed: '2026-10-01',
+      last_reviewed: '2026-10-03',
       summary: `Patient information needs extra care.`,
       points: [
         `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans do not offer one.`,
         `A BAA for your main software may not cover a new AI feature inside it. Ask the supplier.`,
+        `Team-tier AI plans usually do not include a BAA. It is usually part of an enterprise or healthcare plan, so ask which plan, and which features, the BAA covers.`,
       ],
       red_line: `Patient information in a tool without a BAA.`,
       advice: `Ask your compliance advisor which of your tools count as business associates.`,
+      seek_advice: `Patient information has legal rules. Before patient information goes into any AI tool, confirm that a business associate agreement covers that tool and plan. Get advice from your compliance advisor.`,
+      links: [
+        {title: `HHS: Business associates`, href: `https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/business-associates/index.html`},
+        {title: `HHS: Guidance on HIPAA and cloud computing`, href: `https://www.hhs.gov/hipaa/for-professionals/special-topics/health-information-technology/cloud-computing/index.html`},
+      ],
     },
     professional: {
       last_reviewed: '2026-10-01',
@@ -117,6 +135,11 @@ var PROFILE_OPTIONS = {
       ],
       red_line: `Client-confidential material on a plan that may train on it.`,
       advice: `Check your professional association's guidance on AI, and your engagement letters.`,
+      seek_advice: `Client confidentiality rules apply to client files in AI tools. Check your professional body's guidance before using AI with client work.`,
+      links: [
+        {title: `American Bar Association: Formal Opinion 512, its first ethics guidance on AI tools`, href: `https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/`},
+        {title: `IRS: Publication 4557, Safeguarding taxpayer data (PDF)`, href: `https://www.irs.gov/pub/irs-pdf/p4557.pdf`},
+      ],
     },
     finance: {
       last_reviewed: '2026-10-01',
@@ -128,6 +151,10 @@ var PROFILE_OPTIONS = {
       ],
       red_line: `AI helping decide credit or cover with no person deciding.`,
       advice: `Ask your compliance consultant which rules apply to how you are registered.`,
+      seek_advice: `Customer financial information is covered by federal rules. Check your AI tools against the FTC Safeguards Rule, or your regulator's rules, with your compliance consultant.`,
+      links: [
+        {title: `FTC: Safeguards Rule, what your business needs to know`, href: `https://www.ftc.gov/business-guidance/resources/ftc-safeguards-rule-what-your-business-needs-know`},
+      ],
       subtype_points: {
         advice: `Advisers: check how AI-drafted client communications and meeting notes fit your record-keeping duties.`,
         insurance: `Insurance: some states have rules or bulletins on AI in underwriting and claims.`,
@@ -159,6 +186,11 @@ var PROFILE_OPTIONS = {
       ],
       red_line: `AI screening or ranking candidates with no person deciding.`,
       advice: `If you hire in New York City or Colorado, get advice before using AI in hiring.`,
+      seek_advice: `AI that screens or ranks people is regulated in some places. Get advice before using it in hiring, especially in New York City, Illinois or Colorado.`,
+      links: [
+        {title: `New York City: Automated employment decision tools`, href: `https://www.nyc.gov/site/dca/about/automated-employment-decision-tools.page`},
+        {title: `Illinois General Assembly: Public Act 103-0804, AI in employment decisions`, href: `https://www.ilga.gov/Legislation/publicacts/view/103-0804`},
+      ],
     },
     education: {
       last_reviewed: '2026-10-01',
@@ -169,15 +201,27 @@ var PROFILE_OPTIONS = {
       ],
       red_line: `Information about a named child on a free or personal plan.`,
       advice: `Check what your agreements with schools or parents say about sharing information.`,
+      seek_advice: `Children's and student information has its own rules. Check your agreements with schools and parents before using AI with it.`,
+      links: [
+        {title: `U.S. Department of Education: Protecting student privacy`, href: `https://studentprivacy.ed.gov/`},
+        {title: `FTC: Complying with COPPA, frequently asked questions`, href: `https://www.ftc.gov/business-guidance/resources/complying-coppa-frequently-asked-questions`},
+      ],
     },
     defense: {
-      last_reviewed: '2026-10-01',
+      last_reviewed: '2026-10-03',
       summary: `Controlled Unclassified Information (CUI) stays in approved systems.`,
       points: [
-        `DFARS 252.204-7012 and CMMC require CUI to stay in environments approved for it. General commercial AI plans usually are not.`,
+        `DFARS 252.204-7012 requires CUI to be protected under NIST SP 800-171, and in the cloud, by services that meet FedRAMP Moderate or equivalent. General commercial AI plans usually do not.`,
+        `CMMC: Phase 1 self-assessments are in effect. On July 13, 2026, the Department suspended Phase 2, which would have added third-party Level 2 certification from November 10, 2026, while it reviews the program. Check the DoD CIO CMMC page for the current status.`,
+        `Export-controlled technical data (ITAR or EAR) in a tool that stores data abroad, or that foreign persons can access, can count as an export. Check before it goes into any AI tool.`,
       ],
       red_line: `CUI in any tool not approved for CUI.`,
       advice: `Your contract may require you to report incidents quickly. Ask your contracting officer or advisor.`,
+      seek_advice: `Controlled Unclassified Information must stay in systems approved for it. Most commercial AI plans are not. Ask your contracting officer, or a no-cost APEX Accelerator advisor, before using AI with contract information.`,
+      links: [
+        {title: `DoD CIO: Cybersecurity Maturity Model Certification (CMMC)`, href: `https://dodcio.defense.gov/CMMC/`},
+        {title: `APEX Accelerators: no-cost help for government contractors`, href: `https://www.apexaccelerators.us/`},
+      ],
     },
     trades: {
       last_reviewed: '2026-10-01',

@@ -2,23 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple_touch_icon.png">
 <title>AI Playbook for small businesses</title>
 <meta name="description" content="Nine practical steps for small businesses to secure and govern their use of AI, based on the NIST AI Risk Management Framework and the OWASP Top 10 for LLM Applications.">
-<script>
-  /* The playbook used to be this page. Links to a step, the guides or the
-     library (index.html#step-6) go on to the same place on playbook.html. */
-  (function(){
-    function forward(){
-      var h = location.hash;
-      if (/^#(step-\d+|steps|atlas|guides|policies|framework|library)$/.test(h)) location.replace('playbook.html' + h);
-    }
-    forward();
-    window.addEventListener('hashchange', forward);
-  })();
-</script>
+<script src="home_forward.js"></script>
 <link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="site.css">
@@ -48,20 +39,10 @@
   <script src="sitebar.js"></script>
 
   <div class="about-split">
-    <div>
-      <header class="mast">
-        <p class="eyebrow">The AI Playbook Project &middot; University of Oklahoma Cybersecurity Clinic</p>
-        <h1>AI Playbook<span>for small businesses</span></h1>
-      </header>
-      <section class="about-text" aria-label="About this playbook">
-        <p>The AI Playbook Project is an initiative led by the University of Oklahoma Cybersecurity Clinic. Its purpose is to help small businesses identify, govern, and secure the artificial intelligence tools they use.</p>
-        <p>Most small businesses now use AI in some form. An employee might use a chat assistant to draft email, and an accounting or customer-service product might have added AI features in a recent update. In both cases the business sends its information to a system it did not build. The larger risk is usually not any one tool but the lack of a record: which tools are in use, what information goes into them, and who is responsible for them.</p>
-        <p>The playbook addresses this in nine steps. The steps cover assigning responsibility, listing the AI tools in use, setting rules for their use, protecting data, and responding when something goes wrong. The playbook assumes a business with no security staff and no compliance department.</p>
-        <p>The steps draw on two published sources: the AI Risk Management Framework from the National Institute of Standards and Technology (NIST), and the OWASP Top 10 for LLM Applications. Where a step relies on one of these sources, it quotes the passage verbatim and links to the original, so that you can compare the text with our reading of it.</p>
-        <p>The site runs entirely in your web browser. Anything you enter is stored in that browser only and is not sent to a server.</p>
-      </section>
-    </div>
-
+    <header class="mast">
+      <p class="eyebrow">The AI Playbook Project &middot; University of Oklahoma Cybersecurity Clinic</p>
+      <h1>AI Playbook<span>for small businesses</span></h1>
+    </header>
     <aside class="starts" aria-labelledby="h-starts">
       <p class="starts-head" id="h-starts">Two ways to begin</p>
       <div class="start primary" style="--c:var(--part2)">
@@ -77,12 +58,20 @@
         <a class="start-btn" href="quick_check.html">Start the quick check</a>
       </div>
     </aside>
+    <section class="about-text" aria-label="About this playbook">
+      <p>The AI Playbook Project is an initiative led by the University of Oklahoma Cybersecurity Clinic. Its purpose is to help small businesses identify, govern, and secure the artificial intelligence tools they use.</p>
+      <p>Most small businesses now use AI in some form. An employee might use a chat assistant to draft email, and an accounting or customer-service product might have added AI features in a recent update. In both cases the business sends its information to a system it did not build. The larger risk is usually not any one tool but the lack of a record: which tools are in use, what information goes into them, and who is responsible for them.</p>
+      <p>The playbook addresses this in nine steps. The steps cover assigning responsibility, listing the AI tools in use, setting rules for their use, protecting data, and responding when something goes wrong. The playbook assumes a business with no security staff and no compliance department.</p>
+      <p>The steps draw on two published sources: the AI Risk Management Framework from the National Institute of Standards and Technology (NIST), and the OWASP Top 10 for LLM Applications. Where a step relies on one of these sources, it quotes the passage verbatim and links to the original, so that you can compare the text with our reading of it.</p>
+      <p>The site runs in your web browser. Nothing you enter is sent to us or to anyone else. Answers stay in this browser, and the quick check also keeps them in the page address, so they appear in your browser history and in any link you copy. The site&rsquo;s host, GitHub Pages, receives ordinary page requests, as it would for any website. See <a href="privacy.html">privacy and your data</a>.</p>
+    </section>
   </div>
 
   <footer>
     AI Playbook for small businesses &middot; The AI Playbook Project, OUPI Cybersecurity Clinic &middot; educational material, not legal advice<br>
     Not a publication of NIST or OWASP, and not endorsed by either &middot; quoted passages are verbatim and link to their source &middot; the original publications are authoritative<br>
-    Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+    Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><br>
+    <a href="privacy.html">Privacy and your data</a>
   </footer>
 </div>
 </body>

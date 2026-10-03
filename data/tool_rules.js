@@ -18,13 +18,14 @@
      answer    for a "don't know": the question to answer again. It can't be
                ticked done; it closes only when the answer changes.
      cleanup   a clean-up to-do for something already in use
+     where_to_look  show directions: true for data settings, 'mfa' for sign-in
      flag      get_advice, with flag_text
    Legal points are flags to check with an advisor, never conclusions.
    Not yet verified for publication. */
 
 var TOOL_RULES = {
-  version: '2026.09.1-tool',
-  last_reviewed: '2026-10-01',
+  version: '2026.10.1-tool',
+  last_reviewed: '2026-10-03',
   verified: false,
   rules: [
     /* ================= universal red lines ================= */
@@ -208,6 +209,35 @@ var TOOL_RULES = {
      standing: `AI outputs that count as records are saved with the other records.`,
      flag: 'get_advice', flag_text: `Ask your compliance consultant which records rules apply.`,
      owner: 'advisor', how: {href: 'playbook.html#step-8', label: `Step 8: Prepare for incidents`}},
+    /* step 5: where the data is stored. A neutral check for everyone; stronger
+       only for CUI and export-controlled data (stop) and patient data (advice) */
+    {id: 't.location.defense', outcome: 'stop',
+     when: {all: [{q: '_industry', in: ['defense']}, {q: 'location', in: ['abroad', 'dont_know']},
+       {any: [{q: 'special', in: ['yes', 'dont_know']}, {q: 'data', in: ['regulated']}]}]},
+     reason: `Contract information may go into a tool that stores data in another country, or in a place you do not know.`,
+     fix: `CUI and export-controlled data must not go to a tool that stores data outside approved systems. Keep them out, or use a tool approved for them.`,
+     allowed: ['public', 'internal'],
+     flag: 'get_advice', flag_text: `Ask your contracting officer or advisor before contract or export-controlled data goes into this tool.`,
+     owner: 'you', how: {href: 'playbook.html#step-5', label: `Step 5: Evaluate AI suppliers`}},
+    {id: 't.location.abroad', outcome: 'condition',
+     when: {q: 'location', in: ['abroad']},
+     reason: `Your data is stored in another country, so that country's law may apply to it.`,
+     fix: `Record where it is stored and which law applies. Keep regulated data out until you have checked.`,
+     standing: `We know where this tool stores our data, and which law applies.`,
+     owner: 'you', how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    {id: 't.location.health', outcome: 'condition',
+     when: {all: [{q: '_industry', in: ['healthcare']}, {q: 'location', in: ['abroad', 'dont_know']}, {q: 'special', in: ['yes', 'dont_know']}]},
+     reason: `Patient information may be stored, or seen by support staff, outside the U.S.`,
+     fix: `Ask whether the BAA covers storage and support staff outside the U.S.`,
+     flag: 'get_advice', flag_text: `Ask your compliance advisor whether storage abroad is allowed for your patient information.`,
+     owner: 'supplier', how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    /* step 4: two-step sign-in on any account that holds more than public information */
+    {id: 't.mfa.no', outcome: 'condition',
+     when: {q: 'mfa', in: ['no']},
+     reason: `Two-step sign-in is off. Anyone who gets the password can read everything in this account.`,
+     fix: `Turn it on in the account's security settings. On some business plans, the administrator can require it for everyone.`,
+     standing: `Two-step sign-in is on for this account.`,
+     owner: 'it', where_to_look: 'mfa', how: {href: 'playbook.html#step-4', label: `Step 4: Protect sensitive information`}},
     /* a team hears about every approved tool */
     {id: 't.team.tell', outcome: 'condition',
      when: {q: '_team', in: ['small', 'medium', 'large']},
@@ -241,6 +271,14 @@ var TOOL_RULES = {
      reason: `You are not sure whether the supplier publishes how it handles data.`,
      fix: `Look for a trust, privacy or security page on the supplier's website.`,
      owner: 'you', where_to_look: true, how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    {id: 't.dk.location', outcome: 'condition', answer: 'location', when: {q: 'location', in: ['dont_know']},
+     reason: `You are not sure which country stores your data.`,
+     fix: `Find the supplier's data location in its privacy policy or trust page, or ask it.`,
+     owner: 'supplier', how: {href: 'policy-supplier-questions.html', label: `Questions for AI suppliers`}},
+    {id: 't.dk.mfa', outcome: 'condition', answer: 'mfa', when: {q: 'mfa', in: ['dont_know']},
+     reason: `You are not sure whether two-step sign-in is on.`,
+     fix: `Open the account's security settings and look for two-step verification or multi-factor authentication.`,
+     owner: 'it', where_to_look: 'mfa', how: {href: 'playbook.html#step-4', label: `Step 4: Protect sensitive information`}},
     {id: 't.dk.special', outcome: 'condition', answer: 'special', when: {q: 'special', in: ['dont_know']},
      reason: `You are not sure whether your industry's protected information goes in.`,
      fix: `Ask the people who use it, and check a few recent chats or uploads.`,

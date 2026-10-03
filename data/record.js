@@ -9,8 +9,8 @@
    only (the shareable summary waits for testing, decided 2026-09-29). */
 
 var RECORD = {
-  version: '2026.09.1-record',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-record',
+  last_reviewed: '2026-10-03',
   title: `AI use and risk record`,
 
   statement: `This record is a self-assessment made with a free online playbook. It is not a certification, an audit or legal advice. It states only what {business} recorded, and {business} is responsible for its accuracy. Anything not yet completed is marked as such.`,
@@ -74,7 +74,7 @@ var RECORD = {
     '1': [`AI RMF Playbook: GOVERN 2.3`],
     '2': [`AI RMF Playbook: GOVERN 1.6`, `Generative AI Profile: GOVERN 1.6`, `AI RMF Playbook: MAP 1.1`],
     '3': [`AI RMF Playbook: GOVERN 1.4`, `AI RMF Playbook: GOVERN 2.2`],
-    '4': [`Generative AI Profile: 2.4 Data Privacy`, `OWASP Top 10: LLM02:2026`],
+    '4': [`Generative AI Profile: 2.4 Data Privacy`, `OWASP Top 10: LLM02:2026`, `NIST SP 1300, CSF 2.0 Small Business Quick-Start Guide: Protect, p. 5`],
     '5': [`AI RMF Playbook: GOVERN 6.1`, `Generative AI Profile: 2.12 Value Chain and Component Integration`, `AI RMF Playbook: MAP 4.1`],
     '6': [`Generative AI Profile: 2.2 Confabulation`, `Generative AI Profile: 2.7 Human-AI Configuration`, `OWASP Top 10: LLM07:2026`, `AI RMF Playbook: MAP 3.5`],
     '7': [`OWASP Top 10: LLM01:2026`, `OWASP Top 10: LLM03:2026`, `OWASP Top 10: LLM06:2026`],

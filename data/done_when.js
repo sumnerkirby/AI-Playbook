@@ -9,8 +9,8 @@
    already answers a question, `from` points to it. */
 
 var DONE_WHEN = {
-  version: '2026.09.1-done-when',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-done-when',
+  last_reviewed: '2026-10-03',
   /* a control is Confirmed while its last re-confirmation is this recent */
   confirm_days: 92,
   steps: [
@@ -32,11 +32,13 @@ var DONE_WHEN = {
     {step: '4', control: `Sensitive information stays out`, questions: [
       {id: 's4.training', record: 'suppliers', text: `For each tool that receives customer information, do you know whether it’s used for training, and where the terms say so?`},
       {id: 's4.never', record: 'rules', text: `Does everyone know what must never be pasted into an AI tool?`},
-      {id: 's4.leaver', record: 'rules', text: `If someone left tomorrow, would their AI conversations about customers leave with them?`},
+      {id: 's4.mfa', record: 'controls', text: `Does every AI account that holds business information ask for a second sign-in step?`},
+      {id: 's4.leaver', record: 'rules', text: `If someone left tomorrow, who would remove their AI accounts, and would their conversations about customers leave with them?`},
     ]},
     {step: '5', control: `Suppliers are checked`, from: {href: 'tool_check.html', text: `The tool check keeps each supplier’s answers.`}, questions: [
       {id: 's5.show', record: 'suppliers', text: `For each important tool, could you show someone the supplier’s answers?`},
       {id: 's5.exit', record: 'suppliers', text: `What would you do if the supplier shut down, or changed its terms, tomorrow?`},
+      {id: 's5.law', record: 'suppliers', text: `For each tool that handles customer information, do you know which country stores it and which law applies?`},
     ]},
     {step: '6', control: `AI’s work is checked`, questions: [
       {id: 's6.human', record: 'rules', text: `Which kinds of work always get a human check, and does everyone know?`},

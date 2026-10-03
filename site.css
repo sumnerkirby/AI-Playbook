@@ -49,7 +49,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
 .sitebar ul{list-style:none;margin:0 0 0 auto;padding:0;display:flex;gap:4px 20px;flex-wrap:wrap}
 .sitebar ul a{
   font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink2);text-decoration:none;padding:3px 0;border-bottom:1.5px solid transparent
+  color:var(--ink2);text-decoration:none;padding:5px 0;border-bottom:1.5px solid transparent
 }
 .sitebar ul a:hover{color:var(--ink);border-bottom-color:var(--ink3)}
 .sitebar ul a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
@@ -58,10 +58,14 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
    phone it scrolls sideways (sitebar.js starts it at the current tool) ---------- */
 .toolrow{
   display:flex;gap:4px 18px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);
-  overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch
+  overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity
 }
+.toolrow > *{scroll-snap-align:start}
+/* while there is more to the right, the row fades out at its right edge
+   (sitebar.js sets .more), so it reads as something to scroll */
+.toolrow.more{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent)}
 .toolrow .k{flex:0 0 auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
-.toolrow a{flex:0 0 auto;font-size:14.5px;color:var(--ink2);text-decoration:none;border-bottom:1.5px solid transparent;padding:2px 0}
+.toolrow a{flex:0 0 auto;font-size:14.5px;color:var(--ink2);text-decoration:none;border-bottom:1.5px solid transparent;padding:4px 0}
 .toolrow a:hover{color:var(--ink);border-bottom-color:var(--ink3)}
 .toolrow a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
 /* the playbook leads the row as a filled tab, set apart from the tools */
@@ -198,6 +202,18 @@ section[id]{scroll-margin-top:80px}
 
 /* ---------- step 0: the business questions, before step 1 ---------- */
 .step-zero{margin-bottom:22px}
+.zero-advice:empty{display:none}
+.zero-advice{padding:0 18px 14px}
+
+/* ---------- Get advice banner (profile_engine.js adviceHTML) ---------- */
+.advice-banner{margin:12px 0 0;max-width:78ch;padding:11px 15px 12px;background:#FFF8E8;border:1px solid #EFD9A0;border-left:3px solid #B8861B;border-radius:3px;font-size:15px;line-height:1.5}
+.advice-banner .advice{margin:0 !important;padding:0;background:none;border:0;font-size:15.5px}
+.advice-banner .advice b{font-family:var(--mono);font-weight:600;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
+.advice-banner .ind{font-weight:600}
+.advice-links{margin:6px 0 10px;padding-left:20px}
+.advice-links li{margin-bottom:3px}
+.advice-banner a{color:var(--ink);text-decoration-color:var(--ink3);text-underline-offset:3px}
+.advice-help{margin:0;font-size:14px;color:var(--ink2)}
 .zero-intro{margin:0;max-width:70ch;color:var(--ink2);font-size:16px}
 .zero-q{border:0;margin:18px 0 0;padding:0;min-width:0}
 .zero-q legend{font-family:var(--display);font-weight:600;font-size:17px;padding:0;margin:0 0 2px}
@@ -432,8 +448,17 @@ section[id]{scroll-margin-top:80px}
 .profile-stub .btn{align-self:flex-start;padding:4px 0}
 
 /* ---------- about page (index.html): the about, and the two ways in ---------- */
-.about-split{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:36px;align-items:start;padding-top:40px}
-.about-split .mast{padding-top:0}
+.about-split{
+  display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-areas:"mast starts" "about starts";
+  gap:0 36px;align-items:start;padding-top:40px
+}
+.about-split .mast{padding-top:0;grid-area:mast}
+.about-split .starts{grid-area:starts}
+.about-split .about-text{grid-area:about}
+/* on a phone the two ways to begin come straight after the title, above the about (FIXES 1.6) */
+@media (max-width:700px){
+  .about-split{grid-template-columns:minmax(0,1fr);grid-template-areas:"mast" "starts" "about";row-gap:22px}
+}
 .about-text p{margin:0 0 14px;max-width:64ch;color:var(--ink2)}
 .about-text p:first-child{font-size:17px}
 .starts{display:flex;flex-direction:column;gap:14px}
@@ -520,6 +545,16 @@ footer a{color:var(--ink2)}
   .pager .next{grid-column:1}
   .about-split{grid-template-columns:1fr;gap:8px;padding-top:28px}
 }
+/* phones and touch screens: navigation taps of at least 44 by 44px
+   (WCAG 2.2 asks for 24; 44 is the touch guideline), and form fields at
+   16px so iPhone Safari does not zoom in on them (FIXES 1.6) */
+@media (max-width:640px),(pointer:coarse){
+  .brand,.sitebar ul a,.toolrow a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box}
+  .sitebar ul a,.toolrow a:not(.featured){min-width:44px;justify-content:center}
+  .sitebar{padding:4px 0}
+  .toolrow{padding:2px 0}
+}
+input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{font-size:16px !important}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 @media print{
   body{background:#fff}
@@ -530,4 +565,53 @@ footer a{color:var(--ink2)}
   body.print-one .fill{background:none;border-bottom:1px dotted #999}
   .profilebar,.profile-stub,.sitebar,.toolrow,.controls,.atlas,.pager,.template-head .btn,.stepfoot .mark{display:none !important}
   .panel,.content{display:block !important}
+}
+
+/* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
+   scripts/mono_labels.py from the rules above; run it again after adding one. */
+@media (max-width:640px){
+  .sitebar ul a,
+  .toolrow .k,
+  .eyebrow,
+  .atlas-label,
+  .cell b,
+  .atlas-note,
+  .btn,
+  .atlas-note .btn.quiet,
+  .tally,
+  .fn-head p,
+  .tag,
+  .meta,
+  .donepill,
+  .advice-banner .advice b,
+  .menu-btn,
+  .guidelink span,
+  .dw-part,
+  .dw-evidence span,
+  .meta .dw-count,
+  .quote figcaption,
+  .card .k,
+  .inshort h2,
+  .template-head,
+  .template-head .btn,
+  .grid th,
+  .fnmap .fnref,
+  .callout .k,
+  .pager span,
+  .profilebar .k,
+  .profilebar .count,
+  .profile-note .k,
+  .profile-note .advice b,
+  .profile-note .small-note,
+  .fornote,
+  .profile-tag,
+  .profile-stub .k,
+  .starts-head,
+  .start .k,
+  .start .start-btn,
+  .pbar-top,
+  details.fold > summary span,
+  footer,
+  .grid.stacked td:not(:first-child)::before{font-size:13px}
+  [style*="var(--mono)"]{font-size:13px !important}
 }

@@ -86,6 +86,10 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   font-family:var(--mono);font-size:11px;line-height:1.7;letter-spacing:.05em;color:var(--ink3)
 }
 .privacy b{color:var(--ink2);font-weight:500}
+.privacy a{color:var(--ink2);text-underline-offset:3px}
+.share-warn{margin:10px 0 0;max-width:68ch;font-size:15px;color:var(--ink2)}
+.share-warn .linkish{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px}
+.share-warn .linkish:hover{text-decoration-color:var(--ink)}
 .resume{margin:0 0 22px}
 
 /* ---------- lights ---------- */
@@ -259,3 +263,26 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
 .also .linkish{background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .also a:hover,.also .linkish:hover{text-decoration-color:var(--ink)}
 .also span{color:var(--ink3);font-size:14.5px}
+
+/* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
+   scripts/mono_labels.py from the rules above; run it again after adding one. */
+@media (max-width:640px){
+  .step-label,
+  .example b,
+  .part .k,
+  .btn.primary,
+  .privacy,
+  .light,
+  .who,
+  .advice b,
+  .basis,
+  .finding p.basis,
+  .honest,
+  .timing,
+  .from-quick,
+  .othertext label,
+  .small-note,
+  .finding p.small-note,
+  .finding .top .btn.quiet,
+  .status{font-size:13px}
+}

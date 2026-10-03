@@ -9,6 +9,7 @@
         new_tools:   [{name, card, answers, light, reasons}],
         incidents:   [{text}],
         connections: [{name, approval, light}],
+        people:      undefined (not asked) | {answer: yes|no, accounts: yes|no|not_sure, light},
         sweep:       undefined (not due) | {answer: yes|no|not_looked, found: [names]}}]}
    An empty list means the answer was no: "no, no, no" is still a dated
    check-in, which is the point. */
@@ -72,11 +73,12 @@ var PulseEngine = (function(){
     return {light: r.light, reasons: r.hits.map(h => h.id)};
   }
   function connectionRule(approval){ return P.connection_rules[approval] || null; }
+  function peopleRule(accounts){ return P.people_rules[accounts] || null; }
   function newCheckin(today){
     return {date: today, pulse_version: P.version, rules_version: RULES.version, new_tools: [], incidents: [], connections: []};
   }
   function worst(c){
-    const lights = c.new_tools.map(t => t.light).concat(c.connections.map(x => x.light));
+    const lights = c.new_tools.map(t => t.light).concat(c.connections.map(x => x.light), c.people && c.people.light ? [c.people.light] : []);
     return lights.reduce((w, l) => RANK[l] > RANK[w] ? l : w, 'go');
   }
   function summary(c){
@@ -84,6 +86,7 @@ var PulseEngine = (function(){
     parts.push(c.new_tools.length ? `${c.new_tools.length} new tool${c.new_tools.length > 1 ? 's' : ''}` : 'no new tools');
     parts.push(c.incidents.length ? `${c.incidents.length} thing${c.incidents.length > 1 ? 's' : ''} went wrong` : 'nothing went wrong');
     parts.push(c.connections.length ? `${c.connections.length} new connection${c.connections.length > 1 ? 's' : ''}` : 'no new connections');
+    if (c.people && c.people.answer === 'yes') parts.push(c.people.accounts === 'yes' ? 'someone joined or left, accounts updated' : 'someone joined or left, accounts to update');
     if (c.unreadable) parts.push(`${c.unreadable} ${c.unreadable === 1 ? 'entry' : 'entries'} couldn't be restored from a backup`);
     if (c.sweep) parts.push(c.sweep.answer === 'yes' ? `${c.sweep.found.length} found on the statement` : c.sweep.answer === 'no' ? 'statement checked' : 'statement not checked yet');
     return parts.join(', ');
@@ -158,6 +161,7 @@ var PulseEngine = (function(){
       c.new_tools.forEach(t => rows.push([c.date, 'new tool', t.name, label(t.card), t.light]));
       c.incidents.forEach(i => rows.push([c.date, 'something went wrong', '', i.text, '']));
       c.connections.forEach(x => rows.push([c.date, 'new connection', x.name, 'approval: ' + x.approval, x.light]));
+      if (c.people && c.people.answer === 'yes') rows.push([c.date, 'joined or left', '', 'AI accounts updated: ' + c.people.accounts, c.people.light]);
       if (c.sweep && c.sweep.answer === 'yes') c.sweep.found.forEach(n => rows.push([c.date, 'found on statement', n, '', 'to check']));
     });
     return rows.map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
@@ -192,6 +196,11 @@ var PulseEngine = (function(){
         if (!name || !rule){ dropped++; return; }
         out.connections.push({name, approval: x.approval, light: rule.light});
       });
+      if (c.people && c.people.answer === 'no') out.people = {answer: 'no'};
+      else if (c.people && c.people.answer === 'yes'){
+        const rule = peopleRule(c.people.accounts);
+        if (rule) out.people = {answer: 'yes', accounts: c.people.accounts, light: rule.light}; else dropped++;
+      }
       if (c.sweep && ['yes', 'no', 'not_looked'].includes(c.sweep.answer)){
         const raw = c.sweep.answer === 'yes' && Array.isArray(c.sweep.found) ? c.sweep.found : [];
         const found = raw.map(n => cleanText(n)).filter(Boolean);
@@ -229,7 +238,7 @@ var PulseEngine = (function(){
   return {
     daysBetween, monthsBetween, addMonths, fmtDate, monthsFrom, reminderStart,
     emptyLog, sorted, last, status, sweepDue, backupDue,
-    toolLight, connectionRule, newCheckin, worst, summary, aiList, incidents,
+    toolLight, connectionRule, peopleRule, newCheckin, worst, summary, aiList, incidents,
     ics, csv, restore, carryOver,
   };
 })();

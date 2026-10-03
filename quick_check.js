@@ -157,7 +157,7 @@
         <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 5 to 8 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
       </div>
       <div class="go-row"><button class="btn primary" type="button" data-act="start">${done0 ? 'Start part 1' : 'Start part 0'}</button><span class="small-note">No sign-up. No email.</span></div>
-      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> There are no accounts, no tracking and no uploads. The answers about your business are saved in this browser for the rest of the site. The other answers are kept in this page&rsquo;s address so that you can bookmark the result, and are saved in this browser only if you choose.</span></p>
+      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter is sent to us or to anyone else.</b> There are no accounts and no tracking. The answers about your business are saved in this browser for the rest of the site. The other answers are kept in this page&rsquo;s address, so that you can bookmark the result. That puts them in your browser history and in any link you copy. They are saved in this browser only if you choose. <a href="privacy.html">Privacy and your data</a></span></p>
     `);
     syncRedFlagCount();
   }
@@ -452,7 +452,8 @@
       ${breakdown}
       <p class="honest">Quick check, not a full review</p>
       ${time ? `<p class="timing">This took ${time}.</p>` : ''}
-      ${ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
+      ${ind && PR.adviceBanners([ind.id]).length ? PR.adviceHTML([ind.id], esc)
+        : ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
         : ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
 
       ${didB
@@ -477,6 +478,7 @@
         <button class="btn" type="button" data-act="copy">Copy link</button>
         <button class="btn" type="button" data-act="save">Save in this browser</button>
       </div>
+      <p class="share-warn">This link contains your answers. Anyone who opens it can read them. <button class="linkish" type="button" data-act="copy-plain">Copy the address without answers</button></p>
       <p class="status" id="status" role="status"></p>
       ${backRow()}
     `);
@@ -527,6 +529,15 @@
       say('Link copied. Anyone with it sees your answers, but not anything you typed.');
     } catch (e) {
       say('Copy the address from your browser’s address bar. Anyone with it sees your answers, but not anything you typed.');
+    }
+  }
+  async function copyPlain(){
+    const plain = location.href.split('#')[0];
+    try {
+      await navigator.clipboard.writeText(plain);
+      say('Address copied, without your answers.');
+    } catch (e) {
+      say('This browser blocked copying. The address without answers is ' + plain);
     }
   }
 
@@ -586,6 +597,7 @@
       case 'tap-continue': return go();
       case 'print': return window.print();
       case 'copy': return copyLink();
+      case 'copy-plain': return copyPlain();
       case 'save': return save();
       case 'save-go': return saveAndGo();
     }

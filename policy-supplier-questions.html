@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple_touch_icon.png">
 <title>Questions for AI suppliers</title>
-<meta name="description" content="Fifteen questions to ask an AI provider before trusting them with your information, with notes on reading the answers. A template for step 5 of the AI Playbook for small businesses.">
+<meta name="description" content="Seventeen questions to ask an AI provider before trusting them with your information, with notes on reading the answers. A template for step 5 of the AI Playbook for small businesses.">
 <link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="site.css">
@@ -36,9 +38,9 @@
   <script src="sitebar.js"></script>
 
   <header class="mast">
-    <p class="eyebrow">Policy template &middot; <a href="playbook.html#step-5">Step 5 of the playbook</a> &middot; 15 questions</p>
+    <p class="eyebrow">Policy template &middot; <a href="playbook.html#step-5">Step 5 of the playbook</a> &middot; 17 questions</p>
     <h1>Supplier questions<span>What to ask an AI provider</span></h1>
-    <p class="lede">Fifteen questions to ask an AI supplier before trusting it with your information, with notes on how to interpret the answers. Many providers answer most of these questions in published documents, so check those first.</p>
+    <p class="lede">Seventeen questions to ask an AI supplier before trusting it with your information, with notes on how to interpret the answers. Many providers answer most of these questions in published documents, so check those first.</p>
   </header>
 
   <section class="inshort" aria-labelledby="h-short">
@@ -70,21 +72,23 @@
           <li>Do any of your staff or contractors see our data, and in what circumstances?</li>
           <li>Which other companies process our data on your behalf, including whoever provides the underlying AI model?</li>
           <li>In which countries is our data stored and processed?</li>
+          <li>Where is your company headquartered, and under which country&rsquo;s law can a government require you to disclose our data?</li>
+          <li>Do any subprocessors outside <span class="fill">[our country]</span> receive our data, or have access to it? Please list them.</li>
         </ol>
         <h4>Security</h4>
-        <ol start="6">
+        <ol start="8">
           <li>What independent security certifications or audits do you have, for example ISO 27001 or SOC 2?</li>
           <li>Can we manage users centrally, require two-step sign-in, and remove access when someone leaves?</li>
           <li>How, and how quickly, would you tell us about a breach affecting our data?</li>
         </ol>
         <h4>The AI itself</h4>
-        <ol start="9">
+        <ol start="11">
           <li>Which AI model or models does the product use, and will you tell us if that changes?</li>
           <li>What are the product&rsquo;s known limitations, and what do you recommend customers check for themselves?</li>
           <li>If the product can connect to other systems or take actions, what control do we have over what it can reach and do?</li>
         </ol>
         <h4>Contract and leaving</h4>
-        <ol start="12">
+        <ol start="14">
           <li>Do you offer a data processing agreement, and can we see it before we sign up?</li>
           <li>How much notice do you give before changing your terms, or the way you use our data?</li>
           <li>If we stop using the product, how do we export our data, and how do you confirm it has been deleted?</li>
@@ -102,6 +106,7 @@
         <tbody>
           <tr><td>Training</td><td>Off by default for business customers, and stated in the contract</td><td>Only a setting each user has to find, or &ldquo;we may use your data to improve our services&rdquo;</td></tr>
           <tr><td>Keeping data</td><td>Clear time limits, and you can delete things yourself</td><td>&ldquo;As long as necessary&rdquo;, with no way to delete</td></tr>
+          <tr><td>Where data is held</td><td>A named country or region for storage and processing, the law that governs it, and where each subprocessor is</td><td>No answer on where data is held or which law applies</td></tr>
           <tr><td>Other companies</td><td>A published list of the companies that process your data</td><td>The supplier will not say who</td></tr>
           <tr><td>Security</td><td>An independent certification or audit you can ask to see</td><td>General reassurance only</td></tr>
           <tr><td>Breaches</td><td>A committed timescale for telling you, written into the contract</td><td>&ldquo;Promptly&rdquo;, with no commitment</td></tr>
@@ -147,7 +152,8 @@
     AI Playbook for small businesses &middot; The AI Playbook Project, OUPI Cybersecurity Clinic &middot; educational material, not legal advice<br>
     Not a publication of NIST or OWASP, and not endorsed by either &middot; quoted passages are verbatim and link to their source &middot; the original publications are authoritative<br>
     Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><br>
-    This template may be copied and adapted without credit (<a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>)
+    This template may be copied and adapted without credit (<a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>)<br>
+    <a href="privacy.html">Privacy and your data</a>
   </footer>
 </div>
 <script src="site.js"></script>

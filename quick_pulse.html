@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple_touch_icon.png">
 <title>Monthly AI check-in</title>
-<meta name="description" content="Three questions, once a month, about a minute: any new AI tools, anything go wrong, anything connected to your email, files, accounts or payments. Kept in your browser, with a calendar reminder and a printable card.">
+<meta name="description" content="Three or four questions, once a month, about a minute: any new AI tools, anything go wrong, anything connected to your email, files, accounts or payments. Kept in your browser, with a calendar reminder and a printable card.">
 <meta name="apple-mobile-web-app-title" content="AI check-in">
 <link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
@@ -40,19 +42,19 @@
 
   <header class="mast">
     <p class="eyebrow">Monthly check-in &middot; about 1 minute &middot; prototype</p>
-    <h1>Monthly AI check-in<span>three questions, once a month</span></h1>
-    <p class="lede">AI is often added one feature at a time, in software the business already uses. Three questions a month identify new AI soon after it appears. A year of answers produces a current list of your AI tools and a dated record showing that the business monitors its use of AI.</p>
+    <h1>Monthly AI check-in<span>three or four questions, once a month</span></h1>
+    <p class="lede">AI is often added one feature at a time, in software the business already uses. Three questions a month identify new AI soon after it appears. A business with staff gets a fourth, about AI accounts for anyone who joined or left. A year of answers produces a current list of your AI tools and a dated record showing that the business monitors its use of AI.</p>
   </header>
 
   <main id="main">
     <noscript>
-      <div class="callout"><p>This page requires JavaScript to keep your check-ins. The three questions also work on paper: Did you start using a new AI tool this month? Did anything go wrong? Was any AI tool connected to email, files, accounts or payments?</p></div>
+      <div class="callout"><p>This page requires JavaScript to keep your check-ins. The three questions also work on paper: Did you start using a new AI tool this month? Did anything go wrong? Was any AI tool connected to email, files, accounts or payments? Did anyone join or leave, and were their AI accounts added or removed?</p></div>
     </noscript>
   </main>
 
   <footer>
     Prototype. Check-in wording version <span id="pulse-version"></span>; new tools are rated with quick check rules <span id="rules-version"></span>, not yet verified for publication.<br>
-    Your check-ins are kept in this browser only, and nothing is sent anywhere. Download a backup from time to time, and keep it with your other business records.
+    Your check-ins are kept in this browser only. Nothing you enter is sent to us or to anyone else. The site&rsquo;s host, GitHub Pages, receives ordinary page requests, as it would for any website. Download a backup from time to time, and keep it with your other business records. <a href="privacy.html">Privacy and your data</a>
     <a href="tests/run_tests.html">How these rules are tested</a>
   </footer>
 </div>

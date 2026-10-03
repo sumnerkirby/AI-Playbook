@@ -7,8 +7,8 @@
    light it would get in the quick check. */
 
 var PULSE = {
-  version: '2026.09.1-pulse',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-pulse',
+  last_reviewed: '2026-10-03',
   sweep_every_months: 3,
   due_after_days: 30,
   overdue_after_days: 45,
@@ -38,6 +38,17 @@ var PULSE = {
         {id: 'all',      label: `Yes, every time`},
         {id: 'some',     label: `For some things`},
         {id: 'none',     label: `No`},
+        {id: 'not_sure', label: `Not sure`},
+      ],
+    },
+    /* not asked when the profile says the business is one person */
+    people: {
+      text: `Did anyone join or leave the business this month?`,
+      hint: `Staff, contractors, or anyone else who uses AI for the business.`,
+      accounts_text: `Were their AI accounts added or removed?`,
+      accounts: [
+        {id: 'yes',      label: `Yes`},
+        {id: 'no',       label: `Not yet`},
         {id: 'not_sure', label: `Not sure`},
       ],
     },
@@ -76,6 +87,17 @@ var PULSE = {
   },
   connection_how: {href: 'playbook.html#step-7', label: `Step 7: Limit what AI can do without approval`},
 
+  /* what the answer about people joining or leaving means */
+  people_rules: {
+    yes:      {light: 'go',    reason: `Their AI accounts were added or removed.`,
+               fix: `Keep doing this each time someone joins or leaves.`},
+    no:       {light: 'check', reason: `Someone joined or left, and their AI accounts have not been changed yet.`,
+               fix: `Remove the AI accounts of anyone who left, and transfer anything they own. Give anyone new a business account, with two-step sign-in turned on.`},
+    not_sure: {light: 'check', reason: `Someone joined or left, and you are not sure about their AI accounts.`,
+               fix: `Check each AI tool's list of users. Remove anyone who left, and transfer anything they own.`},
+  },
+  people_how: {href: 'playbook.html#step-4', label: `Step 4: Protect sensitive information`},
+
   incident_card: {
     title: `If something went wrong`,
     steps: [
@@ -90,7 +112,7 @@ var PULSE = {
 
   calendar: {
     summary: `AI check-in (1 minute)`,
-    description: `Three questions: new AI tools, problems with AI, and AI connected to email, files, accounts or payments.`,
+    description: `New AI tools, problems with AI, AI connected to email, files, accounts or payments, and, for a team, AI accounts for anyone who joined or left.`,
   },
 
   print_card: {
@@ -99,6 +121,7 @@ var PULSE = {
       `Did you start using any new AI tool or feature this month?`,
       `Did anything go wrong, or feel wrong, with AI this month?`,
       `Was any AI tool connected to email, files, accounts or payments?`,
+      `Did anyone join or leave? Were their AI accounts added or removed?`,
     ],
     sweep_note: `Every third month: check your card statement for AI subscriptions.`,
     after: `If any answer is yes, open the check-in page and record it.`,

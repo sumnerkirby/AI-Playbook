@@ -108,3 +108,15 @@
   .rec-watermark:not([hidden]){display:block;position:fixed;top:40%;left:0;right:0;text-align:center;transform:rotate(-30deg);
     font-family:var(--display);font-size:120pt;font-weight:700;color:rgba(174,102,54,.12);pointer-events:none;z-index:-1}
 }
+
+/* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
+   scripts/mono_labels.py from the rules above; run it again after adding one. */
+@media (max-width:640px){
+  .rec-business label,
+  .rec-kicker,
+  .rec-meta,
+  .rec-level,
+  .rec-table thead th,
+  .rec-grid .zl,
+  .rec-table:not(.rec-grid) td:not(:first-child)::before{font-size:13px}
+}

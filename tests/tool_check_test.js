@@ -361,6 +361,84 @@ var ToolTestRun = (function(){
     ok(!/[\u2013\u2014]/.test(JSON.stringify(Q.where_to_look)), 'no dashes');
   });
 
+  /* ---------- step 4: two-step sign-in (FIXES 1.2) ---------- */
+  test('two-step sign-in: No is a to-do with a standing rule, Not sure stays open until answered, Yes adds nothing', () => {
+    const base = Object.assign({}, CLEAN, {data: ['personal'], training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes'});
+    const todo = (mfa, done) => ev(Object.assign({}, base, {mfa}), prof(), done).todos.find(t => /mfa/.test(t.id));
+    const no = todo('no');
+    eq([no.id, no.owner, no.where_to_look], ['t.mfa.no', 'You', 'mfa'], 'No: a to-do for whoever looks after IT, with sign-in directions');
+    ok(/^Turn it on in the account's security settings\. On some business plans, /.test(no.text), 'does not claim every administrator can require it (OpenAI states it cannot)');
+    eq(ev(Object.assign({}, base, {mfa: 'no'}), prof(), ['t.mfa.no']).standing.includes('Two-step sign-in is on for this account.'), true, 'done: a standing rule');
+    const dk = todo('dont_know', ['t.dk.mfa']);
+    eq([dk.id, dk.done, dk.answer, dk.where_to_look], ['t.dk.mfa', false, 'mfa', 'mfa'], 'Not sure: cannot be ticked, closes when the answer changes');
+    eq(todo('yes'), undefined, 'Yes: nothing to do');
+    eq(ev(Object.assign({}, base, {mfa: 'no'}), prof()).light, 'amber', 'a to-do, never a red line');
+  });
+  test('two-step sign-in: asked only when more than public information goes in', () => {
+    const asked = data => T.visible(Object.assign({}, CLEAN, {data}), prof()).some(q => q.id === 'mfa');
+    eq([asked(['public']), asked(['internal']), asked(['personal']), asked(['dont_know'])], [false, true, true, true], 'shown');
+    eq(T.prune(Object.assign({}, CLEAN, {mfa: 'no'}), prof()).mfa, undefined, 'an answer for public-only use is dropped');
+  });
+  test('two-step sign-in: directions for each of the five tools, by plan, sourced and dated', () => {
+    const tools = Q.where_to_look.tools;
+    Object.keys(tools).forEach(k => {
+      const t = tools[k];
+      ok(t.mfa && Object.values(t.mfa).every(p => p.label && p.steps.length), `${k}: sign-in directions`);
+      ok(/^\d{4}-\d{2}-\d{2}$/.test(t.mfa_checked), `${k}: checked date`);
+      ok(t.mfa_sources.length && t.mfa_sources.every(x => /^https:\/\//.test(x.href) && x.title), `${k}: sources`);
+    });
+    const groups = (tool, plan) => T.vendorHelp({tool, plan}, 'mfa').sections.map(s => s.group);
+    eq([groups('ChatGPT', 'business'), groups('Copilot', 'business'), groups('Gemini', 'free_personal'), groups('Claude', 'dont_know')],
+      [['any'], ['business'], ['personal'], ['personal', 'business']], 'the plan picks the steps');
+    ok(T.vendorHelp({tool: 'ChatGPT', plan: 'business'}, 'mfa').sections[0].steps.some(s => /cannot currently require MFA/.test(s)), 'ChatGPT says an admin cannot require it');
+    ok(T.vendorHelp({tool: 'ChatGPT', plan: 'business'}).sections[0].steps.every(s => !/MFA/.test(s)), 'the data directions are unchanged');
+    ok(Q.where_to_look.mfa_general.length >= 2, 'general sign-in directions for any other tool');
+  });
+  test('retiring a tool includes removing people from the AI workspace', () => {
+    ok(Q.retire_checklist.some(s => /Remove each person from the business's AI workspace, and transfer anything they own/.test(s)), 'retire step');
+    const l = T.makeLine(CLEAN, prof(), TODAY);
+    eq(l.retire.length, Q.retire_checklist.length, 'one box per step');
+    const old = JSON.parse(JSON.stringify(l)); old.retire = [true, true, true, true, true]; old.retired_on = '2026-09-01';
+    eq(T.restore({lines: [old]}, prof(), TODAY).lines[0].retired_on, '2026-09-01', 'a tool retired before the new step stays retired');
+  });
+
+  /* ---------- FIXES 1.3: what a business plan does not provide ---------- */
+  test('business directions say what each plan does not cover', () => {
+    const biz = tool => T.vendorHelp({tool, plan: 'business'}).sections[0].steps.join(' ');
+    ok(/does not state one for ChatGPT Business/.test(biz('ChatGPT')) && /court order/.test(biz('ChatGPT')), 'ChatGPT: no BAA on Business, and the preservation order');
+    ok(/HIPAA compliance, do not apply to those search queries/.test(biz('Copilot')) && /any file the person using it can open/.test(biz('Copilot')), 'Copilot: web search terms, and permissions');
+    ok(/Gemini Notebook/.test(biz('Gemini')) && /data region settings do not apply/.test(biz('Gemini')), 'Gemini: Notebook and data regions');
+    ok(/does not cover Team plans/.test(biz('Claude')) && /five years/.test(biz('Claude')), 'Claude: BAA limits, and rated chats');
+    ok(PROFILE_OPTIONS.overlays.healthcare.points.some(x => /^Team-tier AI plans usually do not include a BAA/.test(x)), 'healthcare note');
+  });
+
+  /* ---------- FIXES 1.5: where the data is stored ---------- */
+  const LOC = Object.assign({}, CLEAN, {data: ['internal'], training: 'no_checked', deletion: 'yes', published: 'yes', mfa: 'yes'});
+  const locRules = (extra, p) => { const r = ev(Object.assign({}, LOC, extra), p || prof()); return {light: r.light, ids: r.reasons.filter(id => /location/.test(id)).sort(), r}; };
+  test('data location: a neutral check for everyone, and Not sure stays open until answered', () => {
+    eq(T.visible(Object.assign({}, CLEAN), prof()).some(q => q.id === 'location'), false, 'not asked for public information');
+    eq(T.visible(LOC, prof()).some(q => q.id === 'location'), true, 'asked when more goes in');
+    eq(locRules({location: 'same'}).ids, [], 'same country: nothing');
+    const abroad = locRules({location: 'abroad'});
+    eq([abroad.ids, abroad.light], [['t.location.abroad'], 'amber'], 'another country: a check, never a stop');
+    ok(abroad.r.todos.find(t => t.id === 't.location.abroad').text === 'Record where it is stored and which law applies. Keep regulated data out until you have checked.', 'the fix');
+    ok(!abroad.r.todos.some(t => t.flag), 'no Get advice for an ordinary business');
+    const dk = locRules({location: 'dont_know'});
+    eq(dk.ids, ['t.dk.location'], 'not sure: find out');
+    eq(ev(Object.assign({}, LOC, {location: 'dont_know'}), prof(), ['t.dk.location']).todos.find(t => t.id === 't.dk.location').done, false, 'cannot be ticked away');
+  });
+  test('data location: stronger only for CUI or export-controlled data, and patient data', () => {
+    const D = prof({industry: ['defense']}), H = prof({industry: ['healthcare']});
+    eq(locRules({location: 'abroad', special: 'dont_know'}, D).light, 'red', 'defense, CUI not ruled out, stored abroad: stop');
+    eq(locRules({location: 'dont_know', data: ['regulated'], special: 'no', agreement: 'yes'}, D).ids.includes('t.location.defense'), true, 'defense, contract information, location unknown: stop');
+    eq(locRules({location: 'abroad', special: 'no'}, D).ids, ['t.location.abroad'], 'defense, no CUI: the ordinary check only');
+    const h = locRules({location: 'abroad', special: 'yes', agreement: 'yes'}, H);
+    eq([h.ids, h.light], [['t.location.abroad', 't.location.health'], 'amber'], 'healthcare, patient information abroad: a check');
+    ok(h.r.todos.find(t => t.id === 't.location.health').flag === 'get_advice', 'with Get advice');
+    eq(locRules({location: 'abroad', special: 'no'}, H).ids, ['t.location.abroad'], 'healthcare, no patient information: the ordinary check only');
+    eq(locRules({location: 'abroad', data: ['personal'], agreement: 'yes'}, prof({industry: ['retail']})).light, 'amber', 'retail: never a stop');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} tool check tests passed`};
 })();

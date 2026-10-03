@@ -10,7 +10,9 @@ A prototype, published for testing with small business owners. The rules and ind
 
 ## Privacy
 
-Everything runs in your browser. Nothing you enter is sent anywhere: no accounts, no analytics, and no requests to other sites (the fonts are part of the site). Your answers are kept in your browser only if you choose to save them, and you can delete them there.
+Nothing you enter is sent to us or to anyone else. There are no accounts and no analytics, and the pages load nothing from other sites (the fonts are part of the site). Answers stay in this browser, and in the page address when you choose to save or share a link; the quick check keeps its answers in the address as you go, so they also appear in your browser history. The site's host, GitHub Pages, receives ordinary page requests, as it would for any website.
+
+Every page carries a Content-Security-Policy that stops its scripts from connecting to any server, so the browser enforces this. The [privacy page](https://sumnerkirby.github.io/AI-Playbook/privacy.html) lists everything the site saves, under which key and for how long, and has one button that deletes all of it.
 
 ## Sources
 
@@ -22,7 +24,7 @@ Archivo, IBM Plex Mono and Source Serif 4, under the SIL Open Font License. The 
 
 ## Tests
 
-The rules are tested. Open `tests/run_tests.html` on the site to run the tests in your browser.
+The rules are tested. Open `tests/run_tests.html` on the site to run the tests in your browser, or run `tests/run_tests.sh` on a Mac. The privacy tests read the site's own files, so in a browser they work only on the site, not from a copy opened from disk.
 
 ## License
 

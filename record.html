@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple_touch_icon.png">
 <title>AI use and risk record</title>
-<meta name="description" content="One document from everything you've done on the playbook: who is responsible, what AI you use, the rules, suppliers, risks, controls and open actions. Made in your browser; nothing is sent anywhere.">
+<meta name="description" content="One document from everything you've done on the playbook: who is responsible, what AI you use, the rules, suppliers, risks, controls and open actions. Made in your browser; nothing you enter is sent to us or to anyone else.">
 <link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="site.css">
@@ -52,7 +54,7 @@
 
   <footer>
     Prototype. Record version <span id="record-version"></span>. A self-assessment, not a certification, audit or legal advice.<br>
-    Kept in this browser only. Nothing is sent anywhere.
+    Kept in this browser only. Nothing you enter is sent to us or to anyone else. The site&rsquo;s host, GitHub Pages, receives ordinary page requests, as it would for any website. <a href="privacy.html">Privacy and your data</a>
     <a href="tests/run_tests.html">How these rules are tested</a>
   </footer>
 </div>
