@@ -66,3 +66,12 @@
   body.printing .print-target,body.printing .print-target *{visibility:visible}
   body.printing .print-target{display:block !important;position:absolute;left:0;top:0;width:100%}
 }
+
+/* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
+   scripts/mono_labels.py from the rules above; run it again after adding one. */
+@media (max-width:640px){
+  .zbadge,
+  .ritem .num,
+  .ritem summary,
+  .ritem label.lab{font-size:13px}
+}

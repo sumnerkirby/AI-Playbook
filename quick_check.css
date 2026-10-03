@@ -263,3 +263,26 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
 .also .linkish{background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .also a:hover,.also .linkish:hover{text-decoration-color:var(--ink)}
 .also span{color:var(--ink3);font-size:14.5px}
+
+/* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
+   scripts/mono_labels.py from the rules above; run it again after adding one. */
+@media (max-width:640px){
+  .step-label,
+  .example b,
+  .part .k,
+  .btn.primary,
+  .privacy,
+  .light,
+  .who,
+  .advice b,
+  .basis,
+  .finding p.basis,
+  .honest,
+  .timing,
+  .from-quick,
+  .othertext label,
+  .small-note,
+  .finding p.small-note,
+  .finding .top .btn.quiet,
+  .status{font-size:13px}
+}
