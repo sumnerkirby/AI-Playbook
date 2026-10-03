@@ -250,6 +250,7 @@
         <p class="sub">${esc(sub)}</p>
         ${light !== 'green' && (allowed || notes.length) ? `<p class="allowed"><b>Allowed right now</b>${esc([allowed].concat(notes).filter(Boolean).join(' '))}</p>` : ''}
       </div>
+      ${PR.adviceHTML(P.industry, esc)}
       ${r.stops.length ? `<h3 class="subhead">Why it&rsquo;s red</h3>${r.stops.map(s => `<div class="finding stop">${U.light('red', 'Stop')}
         <p>${esc(s.reason)}</p><p class="fix"><b>What would change it:</b> ${esc(s.fix)}<span class="who">${esc(s.owner)}</span></p>
         ${s.flag ? `<p class="advice"><b>Get advice</b>${esc(s.flag_text || '')}</p>` : ''}

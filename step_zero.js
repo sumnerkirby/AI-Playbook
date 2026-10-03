@@ -9,7 +9,7 @@
   const PR = ProfileEngine, esc = UI.esc;
   const KEY = 'sb-ai-playbook:profile';
   const $ = (s, r) => (r || document).querySelector(s);
-  const el = $('#step-0'), box = $('#zero');
+  const el = $('#step-0'), box = $('#zero'), adv = $('#zero-advice');
   if (!el || !box) return;
   const ASK = $('.title small', el).textContent;
   let p = PR.clean(UI.store.get(KEY));
@@ -25,6 +25,8 @@
     const done = PR.zeroComplete(p);
     $('.donepill', el).hidden = !done;
     $('.title small', el).textContent = done ? PR.summary(p).join(' · ') : ASK;
+    /* regulated industries get the Get advice banner under the summary, open or closed */
+    if (adv) adv.innerHTML = PR.adviceHTML(p.industry, esc);
   }
   function draw(focusSel){
     const done = PR.zeroComplete(p);

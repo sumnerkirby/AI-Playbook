@@ -452,7 +452,8 @@
       ${breakdown}
       <p class="honest">Quick check, not a full review</p>
       ${time ? `<p class="timing">This took ${time}.</p>` : ''}
-      ${ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
+      ${ind && PR.adviceBanners([ind.id]).length ? PR.adviceHTML([ind.id], esc)
+        : ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
         : ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}
 
       ${didB

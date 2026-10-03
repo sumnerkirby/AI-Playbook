@@ -190,6 +190,24 @@ var ProfileEngine = (function(){
     };
   }
 
-  return {fmtDate, blank, path, complete, clean, encode, decode, summary, actsFromSaved, facts, matches, effectsFor, allEffects, describe, overlays, forTools,
+  /* The Get advice banner for regulated industries (FIXES 1.4), on step 0
+     of the playbook, the quick check result and the tool check result.
+     One entry per industry in the list that has one, in the list's order. */
+  function adviceBanners(industries){
+    return (industries || []).filter((i, n, a) => O.overlays[i] && O.overlays[i].seek_advice && a.indexOf(i) === n).map(i => ({
+      industry: i, label: O.industry.options.find(x => x.id === i).label, text: O.overlays[i].seek_advice, links: O.overlays[i].links || []}));
+  }
+  /* the same markup on every page; esc is the page's own escaping */
+  function adviceHTML(industries, esc){
+    const b = adviceBanners(industries);
+    if (!b.length) return '';
+    const link = l => `<a href="${esc(l.href)}" rel="noopener">${esc(l.title)}</a>`;
+    const h = O.general_help;
+    return `<div class="advice-banner" role="note">${b.map(x => `<p class="advice"><b>Get advice</b>${b.length > 1 ? `<span class="ind">${esc(x.label)}.</span> ` : ''}${esc(x.text)}</p>
+      <ul class="advice-links">${x.links.map(l => `<li>${link(l)}</li>`).join('')}</ul>`).join('')}
+      <p class="advice-help">${esc(h.text)} ${h.links.map(link).join(' &middot; ')}</p></div>`;
+  }
+
+  return {adviceBanners, adviceHTML, fmtDate, blank, path, complete, clean, encode, decode, summary, actsFromSaved, facts, matches, effectsFor, allEffects, describe, overlays, forTools,
     zeroSteps, zeroQuestion, zeroValue, zeroAnswer, zeroComplete};
 })();
