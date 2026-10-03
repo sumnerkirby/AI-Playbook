@@ -51,6 +51,10 @@
 .answer:hover{border-color:var(--ink3)}
 .answer[aria-pressed=true]{border:2px solid var(--ink);padding:13px 17px;background:var(--pressed)}
 .answer.unsure{background:transparent;border-style:dashed}
+/* several answers allowed: a tick marks each one chosen */
+.answers.multi .answer{position:relative;padding-right:44px}
+.answers.multi .answer[aria-pressed=true]{padding-right:43px}
+.answers.multi .answer[aria-pressed=true]::after{content:"\2713";position:absolute;right:16px;top:14px;font-size:16px}
 .backrow{display:flex;gap:10px;align-items:center;margin-top:22px}
 
 /* ---------- intro ---------- */
@@ -59,6 +63,9 @@
 .part .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
 .part .t{display:block;font-family:var(--display);font-weight:600;font-size:17px;margin:3px 0 2px}
 .part p{margin:0;color:var(--ink2);font-size:15px}
+.parts.three{max-width:none;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.part .linkish{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px}
+.part .linkish:hover{text-decoration-color:var(--ink)}
 fieldset.chips{border:0;margin:0 0 22px;padding:0;max-width:760px}
 fieldset.chips legend{font-family:var(--display);font-weight:600;font-size:17px;padding:0;margin:0 0 3px}
 fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}

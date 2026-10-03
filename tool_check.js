@@ -40,15 +40,36 @@
   let view = {name: 'list'};
   let firstRender = true;
   const clone = o => JSON.parse(JSON.stringify(o));
+  /* Each check has a key, and the keys of saved checks are kept for this
+     tab. Back and Forward step over the questions of a check that is already
+     saved, because answering them again would save it a second time. Each
+     history entry carries its position, which tells Back from Forward. */
+  let pos = 0;
+  const SAVED_KEY = 'sb-ai-playbook:tool-saved';
+  const savedChecks = () => U.store.get(SAVED_KEY, 'sessionStorage') || {};
+  const newKey = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const savedLine = v => (v.name === 'ask' || v.name === 'result') && v.draft && v.draft.key ? savedChecks()[v.draft.key] : null;
+  const put = v => history.replaceState({tc: clone(v), i: pos}, '');
   function goto(v, push = true){
     view = v;
-    if (push) history.pushState({tc: clone(view)}, '');
-    else history.replaceState({tc: clone(view)}, '');
+    if (push){ pos++; history.pushState({tc: clone(view), i: pos}, ''); }
+    else put(view);
     render();
   }
-  window.addEventListener('popstate', e => { if (e.state && e.state.tc){ view = e.state.tc; list = loadList(); render(); } });
-  if (history.state && history.state.tc) view = history.state.tc;
-  else history.replaceState({tc: clone(view)}, '');
+  window.addEventListener('popstate', e => {
+    if (!e.state || !e.state.tc) return;
+    const back = (e.state.i || 0) < pos;
+    pos = e.state.i || 0;
+    list = loadList();
+    if (savedLine(e.state.tc)) return back ? history.back() : history.forward();
+    view = e.state.tc;
+    render();
+  });
+  if (history.state && history.state.tc){ view = history.state.tc; pos = history.state.i || 0; }
+  /* reloaded on a check that is already saved: show the saved use */
+  const id0 = savedLine(view);
+  if (id0) view = lineById(id0) ? {name: 'line', lineId: id0} : {name: 'list'};
+  put(view);
 
   function render(focusSel){
     root.classList.toggle('started', view.name !== 'list');
@@ -140,7 +161,7 @@
     const d = view.draft, a = d.answers;
     const vis = T.visible(a, P);
     const q = currentQ();
-    if (!q){ view = {name: 'result', draft: Object.assign(d, {focus: null})}; history.replaceState({tc: clone(view)}, ''); return renderResult(); }
+    if (!q){ view = {name: 'result', draft: Object.assign(d, {focus: null})}; put(view); return renderResult(); }
     /* progress by section (fixed at seven), moving a little within a section,
        so an answer that opens more questions never sends the bar back */
     const inStep = vis.filter(x => x.step === q.step);
@@ -316,7 +337,7 @@
 
   /* ---------- starting a check ---------- */
   function startCheck(answers, extra){
-    goto({name: 'ask', draft: Object.assign({answers: Object.assign({_evidence: {}}, answers), done: []}, extra || {})});
+    goto({name: 'ask', draft: Object.assign({answers: Object.assign({_evidence: {}}, answers), done: [], key: newKey()}, extra || {})});
   }
 
   /* ================= events ================= */
@@ -329,7 +350,7 @@
       const q = currentQ();
       view.draft.answers[q.id] = d.one;
       /* supplier answers stay on screen for "How do you know?" */
-      if (q.evidence){ view.draft.focus = q.id; history.replaceState({tc: clone(view)}, ''); return render(d.one === 'dont_know' ? '[data-act="ev-next"]' : '#ev-in'); }
+      if (q.evidence){ view.draft.focus = q.id; put(view); return render(d.one === 'dont_know' ? '[data-act="ev-next"]' : '#ev-in'); }
       return answerAndGo(q.id);
     }
     if (d.usepick){
@@ -337,7 +358,7 @@
       const sel = pickedUses(view.draft);
       view.draft.sel = sel.includes(d.usepick) ? sel.filter(x => x !== d.usepick) : sel.concat(d.usepick);
       view.draft.focus = q.id;
-      history.replaceState({tc: clone(view)}, '');
+      put(view);
       return render(`[data-usepick="${d.usepick}"]`);
     }
     if (d.many){
@@ -347,7 +368,7 @@
       view.draft.answers[q.id] = cur.includes(d.many) ? cur.filter(x => x !== d.many)
         : excl.includes(d.many) ? [d.many] : cur.filter(x => !excl.includes(x)).concat(d.many);
       view.draft.focus = q.id;   // stay here until Next
-      history.replaceState({tc: clone(view)}, '');
+      put(view);
       return render(`[data-many="${d.many}"]`);
     }
     if (d.focus){
@@ -378,7 +399,7 @@
         /* so Back returns to this question, with the name filled in */
         const snap = clone(view);
         snap.draft.focus = 'tool';
-        history.replaceState({tc: snap}, '');
+        put(snap);
         return answerAndGo('tool');
       }
       case 'many-next': return answerAndGo(currentQ().id);
@@ -400,6 +421,8 @@
       }
       case 'save': {
         const dr = view.draft, today = U.today();
+        const already = dr.key && savedChecks()[dr.key];
+        if (already) return goto(lineById(already) ? {name: 'line', lineId: already} : {name: 'list'}, false);
         let line;
         if (dr.lineId){
           line = lineById(dr.lineId);
@@ -412,10 +435,11 @@
           list.lines.push(line);
         }
         if (!saveList()) announce('This browser is blocking storage, so the list lasts only while this page is open.');
+        if (dr.key) U.store.set(SAVED_KEY, Object.assign(savedChecks(), {[dr.key]: line.id}), 'sessionStorage');
         if (!dr.lineId && (dr.pending || []).length){
           const a = T.anotherUse(line);
           a.use = dr.pending[0];
-          return goto({name: 'ask', draft: {answers: Object.assign({_evidence: {}}, a), done: [], pending: dr.pending.slice(1), pass: (dr.pass || 1) + 1}}, false);
+          return goto({name: 'ask', draft: {answers: Object.assign({_evidence: {}}, a), done: [], pending: dr.pending.slice(1), pass: (dr.pass || 1) + 1, key: newKey()}}, false);
         }
         return goto({name: 'line', lineId: line.id}, false);
       }
@@ -475,7 +499,7 @@
         if (r.light !== before) target.recheck_by = T.recheckBy(r, U.today());
         saveList();
       } else {
-        history.replaceState({tc: clone(view)}, '');
+        put(view);
         r = T.evaluate(view.draft.answers, P, view.draft.done);
       }
       render(`[data-todo="${CSS.escape(id)}"]`);

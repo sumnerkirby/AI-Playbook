@@ -41,14 +41,22 @@
     if (pt.industry && !a.industry){ PE.setIndustry(a, pt.industry); a.from_profile.push('industry'); }
     return a;
   }
+  /* the draft notes which quick check it has taken in, so arriving from a
+     different one fills in its answers on top of what was typed */
+  let quickKey = quick ? QuickEngine.encode(quick) : null, merged = false;
   try {
     const d = JSON.parse(sget('sessionStorage', DRAFT_KEY) || 'null');
-    if (d && d.a){ a = d.a; step = d.step; }
+    if (d && d.a){
+      a = d.a; step = d.step;
+      if (!quick) quickKey = d.quick || null;
+      else if (d.quick !== quickKey){ PE.fromQuick(quick, a); step = 0; merged = true; }
+    }
   } catch (e) {}
   if (!a){ a = fresh(); step = 0; }
   /* after a reload, the back button reloads the page with an older step */
-  if (history.state && 'pol' in history.state) step = history.state.pol;
-  const persist = () => sset('sessionStorage', DRAFT_KEY, JSON.stringify({a, step}));
+  if (history.state && 'pol' in history.state && !merged) step = history.state.pol;
+  const persist = () => sset('sessionStorage', DRAFT_KEY, JSON.stringify({a, step, quick: quickKey}));
+  if (merged) persist();
   const qs = () => PE.visibleQuestions(a);
   function touched(key){ a.prefilled = a.prefilled.filter(k => k !== key); }
 

@@ -202,19 +202,26 @@
   function renderDone(){
     const d = flow.draft;
     if (d.sweep && d.sweep.answer === 'yes') d.sweep.found = (flow.sweep_text || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 30);
-    /* save once; going back and finishing again replaces it */
+    /* save once, when the check-in is finished; going back and finishing
+       again replaces it. Returning to this screen with Back or Forward saves
+       nothing, so a check-in deleted or replaced since stays that way. */
     const {_id, ...record} = d;
-    log.checkins = log.checkins.filter(c => c._id !== _id);
-    log.checkins.push(Object.assign({_id}, record));
-    log.checkins = PU.sorted(log);
-    if (!log.industry) log.industry = industry();
-    const saved = saveLog();
+    if (!flow.saved){
+      log.checkins = log.checkins.filter(c => c._id !== _id);
+      log.checkins.push(Object.assign({_id}, record));
+      log.checkins = PU.sorted(log);
+      if (!log.industry) log.industry = industry();
+      flow.saved = saveLog() ? 'yes' : 'no';
+      history.replaceState({pulse: clone(flow)}, '');
+    }
+    const kept = log.checkins.some(c => c._id === _id);
+    const saved = flow.saved === 'yes' && kept;
     const st = PU.status(log, today());
     const nothing = !d.new_tools.length && !d.incidents.length && !d.connections.length && !(d.sweep && d.sweep.found.length);
     main.innerHTML = `<section class="screen">
       <p class="step-label"><b>Monthly check-in</b><span>${esc(PU.fmtDate(d.date))}</span></p>
       <h2>${nothing ? 'All clear this month' : 'Check-in recorded'}</h2>
-      <p class="honest">${saved ? 'Saved in this browser' : 'Not saved: this browser is blocking storage'}</p>
+      <p class="honest">${saved ? 'Saved in this browser' : flow.saved === 'yes' ? 'No longer in this browser: deleted or replaced since' : 'Not saved: this browser is blocking storage'}</p>
       <p>${esc(PU.summary(d).charAt(0).toUpperCase() + PU.summary(d).slice(1))}.</p>
       ${d.new_tools.map(toolFinding).join('')}
       ${d.connections.map(connFinding).join('')}

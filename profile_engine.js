@@ -142,6 +142,46 @@ var ProfileEngine = (function(){
     });
   }
 
+  /* ---------- step 0: the questions asked before the playbook and the quick check ----------
+     The three profile questions, plus what kind of finance (and how an adviser
+     is registered) when they apply. Who looks after IT stays on the profile
+     page, where it is optional. Step 0 sits outside the nine steps and the
+     quick check's two parts, so it changes neither count. */
+  function zeroSteps(p){
+    const s = ['team', 'use', 'industry'];
+    if (p.industry.includes('finance')) s.push('finance_sub');
+    if (p.industry.includes('finance') && p.finance_subtype === 'advice') s.push('registration');
+    return s;
+  }
+  function zeroQuestion(id){
+    const fin = finance(), withDetail = o => ({id: o.id, label: o.label, detail: o.examples || ''});
+    return {
+      team: {id, label: O.team_size.label, why: O.team_size.why, options: O.team_size.options.map(withDetail)},
+      use: {id, multi: true, label: O.ai_use.label, why: `Select all that apply. ${O.ai_use.why}`, options: O.ai_use.options.map(withDetail)},
+      industry: {id, label: O.industry.label, why: O.industry.why, options: O.industry.options.map(withDetail)},
+      finance_sub: {id, label: `What kind of finance or insurance?`, why: `The rules differ for advice, insurance and lending.`, options: fin.subtypes.map(withDetail)},
+      registration: {id, label: fin.registration.label, why: `It decides which privacy and record-keeping rules apply.`, options: fin.registration.options.map(withDetail)},
+    }[id] || null;
+  }
+  /* what is chosen now, always as a list (the first industry only: a
+     second one is kept, and is changed on the profile page) */
+  function zeroValue(p, id){
+    return ({team: [p.team_size], use: p.ai_use, industry: p.industry.slice(0, 1),
+      finance_sub: [p.finance_subtype], registration: [p.registration]}[id] || []).filter(Boolean);
+  }
+  /* choosing an answer gives a new profile; on the multiple-choice question
+     it adds or removes the answer, and "We do not use AI" stands alone */
+  function zeroAnswer(p, id, v){
+    const n = clean(p);
+    if (id === 'team') n.team_size = v;
+    else if (id === 'use') n.ai_use = n.ai_use.includes(v) ? n.ai_use.filter(x => x !== v) : v === 'none' ? ['none'] : n.ai_use.filter(x => x !== 'none').concat(v);
+    else if (id === 'industry') n.industry = [v].concat(n.industry.slice(1).filter(x => x !== v));
+    else if (id === 'finance_sub') n.finance_subtype = v;
+    else if (id === 'registration') n.registration = v;
+    return clean(n);
+  }
+  const zeroComplete = p => zeroSteps(p).every(id => zeroValue(p, id).length > 0);
+
   /* what the other tools can start from */
   function forTools(p){
     return {
@@ -150,5 +190,6 @@ var ProfileEngine = (function(){
     };
   }
 
-  return {fmtDate, blank, path, complete, clean, encode, decode, summary, actsFromSaved, facts, matches, effectsFor, allEffects, describe, overlays, forTools};
+  return {fmtDate, blank, path, complete, clean, encode, decode, summary, actsFromSaved, facts, matches, effectsFor, allEffects, describe, overlays, forTools,
+    zeroSteps, zeroQuestion, zeroValue, zeroAnswer, zeroComplete};
 })();

@@ -156,6 +156,41 @@ var ProfileTestRun = (function(){
     eq(PR.forTools(P({team_size: 'small', ai_use: ['use'], industry: ['retail']})).policy_team, 'team', 'team');
   });
 
+  /* ---------- step 0 ---------- */
+  test('step 0: three questions, and finance adds what kind and how registered', () => {
+    eq(PR.zeroSteps(PR.blank()), ['team', 'use', 'industry'], 'blank');
+    eq(PR.zeroSteps(P({industry: ['retail']})), ['team', 'use', 'industry'], 'retail');
+    eq(PR.zeroSteps(P({industry: ['finance'], finance_subtype: 'insurance'})), ['team', 'use', 'industry', 'finance_sub'], 'insurance');
+    eq(PR.zeroSteps(DANA), ['team', 'use', 'industry', 'finance_sub', 'registration'], 'Dana');
+    PR.zeroSteps(DANA).forEach(id => ok(PR.zeroQuestion(id) && PR.zeroQuestion(id).options.length, id + ': has options'));
+  });
+  test('step 0: answers build a clean profile, one question at a time', () => {
+    let p = PR.blank();
+    p = PR.zeroAnswer(p, 'team', 'solo');
+    p = PR.zeroAnswer(p, 'use', 'use');
+    p = PR.zeroAnswer(p, 'use', 'configure');
+    eq(p.ai_use, ['use', 'configure'], 'several uses');
+    eq(PR.zeroAnswer(p, 'use', 'none').ai_use, ['none'], 'none stands alone');
+    eq(PR.zeroAnswer(PR.zeroAnswer(p, 'use', 'none'), 'use', 'build').ai_use, ['build'], 'an answer replaces none');
+    eq(PR.zeroAnswer(p, 'use', 'use').ai_use, ['configure'], 'choosing again removes it');
+    ok(!PR.zeroComplete(p), 'no industry yet');
+    p = PR.zeroAnswer(p, 'industry', 'finance');
+    ok(PR.complete(p) && !PR.zeroComplete(p), 'finance still needs what kind');
+    p = PR.zeroAnswer(p, 'finance_sub', 'advice');
+    ok(!PR.zeroComplete(p), 'advice still needs registration');
+    p = PR.zeroAnswer(p, 'registration', 'sec');
+    ok(PR.zeroComplete(p), 'complete');
+    p = PR.zeroAnswer(p, 'industry', 'retail');
+    eq([p.industry, p.finance_subtype, p.registration], [['retail'], null, null], 'leaving finance clears its answers');
+  });
+  test('step 0: changing the first industry keeps a second one, and IT support stays', () => {
+    const two = P({team_size: 'small', ai_use: ['use'], industry: ['professional', 'finance'], finance_subtype: 'lending', it_support: 'provider'});
+    eq(PR.zeroValue(two, 'industry'), ['professional'], 'shows the first');
+    const n = PR.zeroAnswer(two, 'industry', 'healthcare');
+    eq([n.industry, n.finance_subtype, n.it_support], [['healthcare', 'finance'], 'lending', 'provider'], 'second industry and IT kept');
+    eq(PR.zeroAnswer(two, 'industry', 'finance').industry, ['finance'], 'picking the second as the first leaves one');
+  });
+
   const failed = results.filter(r => r.fails.length);
   const skipped = results.filter(r => r.skipped);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} profile tests passed${skipped.length ? ` (${skipped.length} terminal only, skipped here)` : ''}`};

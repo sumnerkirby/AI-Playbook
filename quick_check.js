@@ -92,8 +92,9 @@
 
   /* ---------- routing: the state decides the screen ---------- */
   function render(){
-    root.classList.toggle('started', !!state);
-    if (!state) return showIntro();
+    const z = !state && zeroHere();
+    root.classList.toggle('started', !!state || !!z);
+    if (!state) return z ? showZero(z.zero, z.then) : showIntro();
     const c = ctx();
     if (!E.screenerComplete(c, state.screener)) return showScreenerQuestion();
     if (extra.s === 'tap') return showTap();
@@ -120,19 +121,20 @@
     try { const s = JSON.parse(sget('localStorage', SAVE_KEY) || 'null'); return s && s.hash ? s : null; }
     catch (e) { return null; }
   }
-  /* start from the business profile's industry, if there is one */
-  const profileTools = (() => {
-    try { return ProfileEngine.forTools(ProfileEngine.clean(JSON.parse(localStorage.getItem('sb-ai-playbook:profile') || 'null'))); }
-    catch (e) { return {industry: null, policy_team: null}; }
-  })();
-  let chosenIndustry = profileTools.industry;
+  /* ---------- part 0: the business ----------
+     The same questions as step 0 of the playbook (profile_engine.js), saved
+     as the business profile. They come before part 1 until they have been
+     answered, here or in the playbook, and part 1 takes its industry from
+     them. Part 0 is not counted in the two parts or in part 1's questions.
+     The question on screen is kept in its history entry, so Back works. */
+  const PR = ProfileEngine, PROFILE_KEY = 'sb-ai-playbook:profile';
+  let prof = (() => { try { return PR.clean(JSON.parse(sget('localStorage', PROFILE_KEY) || 'null')); } catch (e) { return PR.blank(); } })();
+  let chosenIndustry = prof.industry[0] || null;
+  let zeroAt = null;   // {id, then}: the part 0 question on screen, and where it leads
+  const zeroHere = () => history.state && history.state.zero ? history.state : null;
   /* does this industry get a question or card of its own? */
   const industryHasExtras = id => SCREENER.questions.concat(CARDS.cards)
     .some(x => x.applies_to && [].concat(x.applies_to.industry || []).includes(id));
-  function industryExamples(){
-    const o = PROFILE_OPTIONS.industry.options.find(x => x.id === chosenIndustry);
-    return o && o.examples ? 'Includes: ' + esc(o.examples) : '';
-  }
   /* part 1's length depends on the industry (some add a question), so the intro says the exact number */
   const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
   const redFlagCount = () => WORDS[E.screenerQuestions({industry: chosenIndustry}, {}).length] || 'Several';
@@ -142,25 +144,76 @@
   }
   function showIntro(){
     const saved = loadSaved();
-    const opts = PROFILE_OPTIONS.industry.options;
+    const done0 = PR.zeroComplete(prof);
     screen(`
       ${saved ? `<div class="callout resume"><span class="k">Saved in this browser</span>
         <p>You saved a quick check on ${esc(fmtDate(saved.saved_on))}.${saved.rules_version !== RULES.version ? ' The rules have changed since then, so it will be checked again against the current rules.' : ''}</p>
         <p><button class="btn" type="button" data-act="resume">Open it</button> <button class="btn quiet" type="button" data-act="forget">Delete it</button></p></div>` : ''}
-      <div class="parts">
+      <div class="parts three">
+        <div class="part" style="--c:var(--ink)"><span class="k">Part 0 &middot; under a minute</span><span class="t">Your business</span>${done0
+          ? `<p>Answered: ${esc(PR.summary(prof).join(' · '))}. <button class="linkish" type="button" data-act="zero-change">Change</button></p>`
+          : `<p>Three questions, asked once. The playbook and the other tools use the same answers.</p>`}</div>
         <div class="part" style="--c:var(--part3)"><span class="k">Part 1 &middot; 2 minutes</span><span class="t">Red flags</span><p><span class="q-count cap">${redFlagCount()}</span> questions, each answered yes, no or not sure, about the situations most likely to cause harm.</p></div>
         <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 5 to 8 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
       </div>
-      <fieldset class="chips">
-        <legend>${esc(PROFILE_OPTIONS.industry.label)} <span class="small-note">Optional</span></legend>
-        <p class="why">${esc(PROFILE_OPTIONS.industry.why)}</p>
-        <div class="chiprow">${opts.map(o => `<button type="button" class="chip" data-ind="${o.id}" aria-pressed="${o.id === chosenIndustry}">${esc(o.label)}</button>`).join('')}</div>
-        <p class="small-note ind-examples" aria-live="polite">${industryExamples()}</p>
-      </fieldset>
-      <div class="go-row"><button class="btn primary" type="button" data-act="start">Start part 1</button><span class="small-note">No sign-up. No email.</span></div>
-      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> There are no accounts, no tracking and no uploads. Your answers are kept in this page&rsquo;s address so that you can bookmark the result, and are saved in this browser only if you choose.</span></p>
+      <div class="go-row"><button class="btn primary" type="button" data-act="start">${done0 ? 'Start part 1' : 'Start part 0'}</button><span class="small-note">No sign-up. No email.</span></div>
+      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter leaves this browser.</b> There are no accounts, no tracking and no uploads. The answers about your business are saved in this browser for the rest of the site. The other answers are kept in this page&rsquo;s address so that you can bookmark the result, and are saved in this browser only if you choose.</span></p>
     `);
     syncRedFlagCount();
+  }
+
+  /* ---------- part 0: one question per screen ---------- */
+  function showZero(id, then){
+    const q = PR.zeroQuestion(id), list = PR.zeroSteps(prof);
+    if (!q || !list.includes(id)) return showIntro();
+    const chosen = PR.zeroValue(prof, id);
+    zeroAt = {id, then};
+    onAnswer = null;
+    screen(`
+      ${progressBar({left: '<b>Part 0</b> &middot; Your business', n: list.indexOf(id) + 1, total: list.length})}
+      <div class="qhead"><h2>${esc(q.label)}</h2></div>
+      <p class="example">${esc(q.why)}</p>
+      <div class="answers${q.multi ? ' multi' : ''}" role="group" aria-label="Answers">
+        ${q.options.map(o => `<button type="button" class="answer" data-zero="${o.id}" aria-pressed="${chosen.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}
+      </div>
+      ${q.multi ? `<div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="zero-next"${chosen.length ? '' : ' disabled'}>Next</button></div>` : ''}
+      ${backRow()}
+    `);
+  }
+  function goZero(id, then){
+    history.pushState({qc: depth() + 1, zero: id, then}, '', hashFor());
+    render();
+  }
+  function answerZero(v){
+    const {id} = zeroAt, q = PR.zeroQuestion(id);
+    prof = PR.zeroAnswer(prof, id, v);
+    sset('localStorage', PROFILE_KEY, JSON.stringify(prof));
+    chosenIndustry = prof.industry[0] || null;
+    syncRedFlagCount();
+    if (window.ProfileBar) ProfileBar.refresh();
+    /* several answers: stay on this question until Next */
+    if (q.multi){
+      const chosen = PR.zeroValue(prof, id);
+      $$('[data-zero]', main).forEach(b => b.setAttribute('aria-pressed', chosen.includes(b.dataset.zero)));
+      $('[data-act="zero-next"]', main).disabled = !chosen.length;
+      return;
+    }
+    nextZero();
+  }
+  /* changing the answers walks through every question; starting asks only what is missing */
+  function nextZero(){
+    const {id, then} = zeroAt, list = PR.zeroSteps(prof);
+    const next = then === 'intro' ? list[list.indexOf(id) + 1] : list.find(x => !PR.zeroValue(prof, x).length);
+    if (next) return goZero(next, then);
+    if (then === 'intro'){ history.pushState({qc: depth() + 1}, '', hashFor()); return render(); }
+    startPart1();
+  }
+  function startPart1(){
+    state = {industry: chosenIndustry, screener: {}, cards: [], none: false};
+    extra = {};
+    Object.keys(times).forEach(k => delete times[k]);
+    times.start = Date.now();
+    go();
   }
 
   /* ---------- one question per screen ---------- */
@@ -482,13 +535,7 @@
     const t = e.target.closest('button');
     if (!t) return;
     if (t.dataset.answer && onAnswer) return onAnswer(t.dataset.answer);
-    if (t.dataset.ind){
-      chosenIndustry = chosenIndustry === t.dataset.ind ? null : t.dataset.ind;
-      $$('[data-ind]', main).forEach(b => b.setAttribute('aria-pressed', b.dataset.ind === chosenIndustry));
-      $('.ind-examples', main).innerHTML = industryExamples();
-      syncRedFlagCount();
-      return;
-    }
+    if (t.dataset.zero && zeroAt) return answerZero(t.dataset.zero);
     if (t.dataset.card) return toggleCard(t.dataset.card);
     if (t.hasAttribute('data-other')) return toggleOther();
     if (t.hasAttribute('data-none')){
@@ -510,16 +557,16 @@
       return go();
     }
     switch (t.dataset.act){
-      case 'start':
-        state = {industry: chosenIndustry, screener: {}, cards: [], none: false};
-        extra = {};
-        Object.keys(times).forEach(k => delete times[k]);
-        times.start = Date.now();
-        return go();
+      case 'start': {
+        const missing = PR.zeroSteps(prof).find(x => !PR.zeroValue(prof, x).length);
+        return missing ? goZero(missing, 'part1') : startPart1();
+      }
+      case 'zero-change': return goZero('team', 'intro');
+      case 'zero-next': return nextZero();
       case 'resume': {
         const saved = loadSaved();
         otherText = saved.other || '';
-        history.pushState({qc: depth() + 1}, '', saved.hash);
+        history.pushState({qc: depth() + 1}, '', '#' + saved.hash.replace(/^#/, ''));
         readHash();
         return render();
       }
