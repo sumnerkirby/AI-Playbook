@@ -412,6 +412,33 @@ var ToolTestRun = (function(){
     ok(PROFILE_OPTIONS.overlays.healthcare.points.some(x => /^Team-tier AI plans usually do not include a BAA/.test(x)), 'healthcare note');
   });
 
+  /* ---------- FIXES 1.5: where the data is stored ---------- */
+  const LOC = Object.assign({}, CLEAN, {data: ['internal'], training: 'no_checked', deletion: 'yes', published: 'yes', mfa: 'yes'});
+  const locRules = (extra, p) => { const r = ev(Object.assign({}, LOC, extra), p || prof()); return {light: r.light, ids: r.reasons.filter(id => /location/.test(id)).sort(), r}; };
+  test('data location: a neutral check for everyone, and Not sure stays open until answered', () => {
+    eq(T.visible(Object.assign({}, CLEAN), prof()).some(q => q.id === 'location'), false, 'not asked for public information');
+    eq(T.visible(LOC, prof()).some(q => q.id === 'location'), true, 'asked when more goes in');
+    eq(locRules({location: 'same'}).ids, [], 'same country: nothing');
+    const abroad = locRules({location: 'abroad'});
+    eq([abroad.ids, abroad.light], [['t.location.abroad'], 'amber'], 'another country: a check, never a stop');
+    ok(abroad.r.todos.find(t => t.id === 't.location.abroad').text === 'Record where it is stored and which law applies. Keep regulated data out until you have checked.', 'the fix');
+    ok(!abroad.r.todos.some(t => t.flag), 'no Get advice for an ordinary business');
+    const dk = locRules({location: 'dont_know'});
+    eq(dk.ids, ['t.dk.location'], 'not sure: find out');
+    eq(ev(Object.assign({}, LOC, {location: 'dont_know'}), prof(), ['t.dk.location']).todos.find(t => t.id === 't.dk.location').done, false, 'cannot be ticked away');
+  });
+  test('data location: stronger only for CUI or export-controlled data, and patient data', () => {
+    const D = prof({industry: ['defense']}), H = prof({industry: ['healthcare']});
+    eq(locRules({location: 'abroad', special: 'dont_know'}, D).light, 'red', 'defense, CUI not ruled out, stored abroad: stop');
+    eq(locRules({location: 'dont_know', data: ['regulated'], special: 'no', agreement: 'yes'}, D).ids.includes('t.location.defense'), true, 'defense, contract information, location unknown: stop');
+    eq(locRules({location: 'abroad', special: 'no'}, D).ids, ['t.location.abroad'], 'defense, no CUI: the ordinary check only');
+    const h = locRules({location: 'abroad', special: 'yes', agreement: 'yes'}, H);
+    eq([h.ids, h.light], [['t.location.abroad', 't.location.health'], 'amber'], 'healthcare, patient information abroad: a check');
+    ok(h.r.todos.find(t => t.id === 't.location.health').flag === 'get_advice', 'with Get advice');
+    eq(locRules({location: 'abroad', special: 'no'}, H).ids, ['t.location.abroad'], 'healthcare, no patient information: the ordinary check only');
+    eq(locRules({location: 'abroad', data: ['personal'], agreement: 'yes'}, prof({industry: ['retail']})).light, 'amber', 'retail: never a stop');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} tool check tests passed`};
 })();

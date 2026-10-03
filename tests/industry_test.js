@@ -88,6 +88,19 @@ var IndustryTestRun = (function(){
     ok(!/DFARS 252.204-7012 and CMMC require CUI to stay/.test(pts), 'the old wording is gone');
   });
 
+  /* ---------- FIXES 1.5: foreign AI tools, a neutral check ---------- */
+  test('step 5 asks where a supplier is based and which law applies; step 7 covers phone apps', () => {
+    const page = FakePage.need('playbook.html'), tpl = FakePage.need('policy-supplier-questions.html');
+    ok(page.includes('where the company is based, where the data is stored and processed and which law governs it'), 'step 5, action 1');
+    ok(page.includes('including whether a government there can require the supplier to hand data over'), 'step 5, why it matters');
+    ok(page.includes('connectors and phone apps from developers you have not checked'), 'step 7, phone apps');
+    ok(tpl.includes('under which country&rsquo;s law can a government require you to disclose our data?') && tpl.includes('Do any subprocessors outside'), 'two new supplier questions');
+    const lists = tpl.split('<ol').slice(1).map(x => (x.split('</ol>')[0].match(/<li>/g) || []).length);
+    eq([lists.reduce((a, b) => a + b, 0), (tpl.match(/<ol start="(\d+)">/g) || []).join(' ')], [17, '<ol start="8"> <ol start="11"> <ol start="14">'], 'seventeen questions, numbered in order');
+    ok(tpl.includes('17 questions') && tpl.includes('Seventeen questions') && !/15 questions|Fifteen/.test(tpl), 'the count says 17');
+    ok(FakePage.need('policies.html').includes('Step 5 &middot; 17 questions'), 'the templates page agrees');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} industry tests passed`};
 })();

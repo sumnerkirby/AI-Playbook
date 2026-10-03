@@ -38,6 +38,7 @@ var DONE_WHEN = {
     {step: '5', control: `Suppliers are checked`, from: {href: 'tool_check.html', text: `The tool check keeps each supplier’s answers.`}, questions: [
       {id: 's5.show', record: 'suppliers', text: `For each important tool, could you show someone the supplier’s answers?`},
       {id: 's5.exit', record: 'suppliers', text: `What would you do if the supplier shut down, or changed its terms, tomorrow?`},
+      {id: 's5.law', record: 'suppliers', text: `For each tool that handles customer information, do you know which country stores it and which law applies?`},
     ]},
     {step: '6', control: `AI’s work is checked`, questions: [
       {id: 's6.human', record: 'rules', text: `Which kinds of work always get a human check, and does everyone know?`},

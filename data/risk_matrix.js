@@ -8,8 +8,8 @@
    pilot, not validated values. */
 
 var RISK = {
-  version: '2026.09.2-risk',
-  last_reviewed: '2026-09-29',
+  version: '2026.10.1-risk',
+  last_reviewed: '2026-10-03',
   levels: ['low', 'moderate', 'high'],
   level_labels: {low: `Low`, moderate: `Moderate`, high: `High`},
 
@@ -47,7 +47,7 @@ var RISK = {
      when: {all: [{q: 'plan', in: ['free_personal', 'paid_personal']}, {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']}]}},
     {id: 'dont_know', why: `A Not sure answer to a supplier or plan question`, when: {any: [
       {q: 'plan', in: ['dont_know']}, {q: 'training', in: ['dont_know']}, {q: 'deletion', in: ['dont_know']},
-      {q: 'agreement', in: ['dont_know']}, {q: 'published', in: ['dont_know']}]}},
+      {q: 'agreement', in: ['dont_know']}, {q: 'published', in: ['dont_know']}, {q: 'location', in: ['dont_know']}]}},
     {id: 'acts_unapproved', why: `Can act, and not every risky action needs approval`, when: {all: [{q: 'acts', in: ['acts']}, {q: 'approval', in: ['some', 'none', 'dont_know']}]}},
     {id: 'public', why: `Public-facing, or shared by a public link`, when: {any: [{q: 'direct', in: ['yes']}, {q: 'own_access', in: ['public']}]}},
     {id: 'unpublished', why: `Browser add-on, or a supplier that does not publish its data handling`, when: {any: [{q: 'access', in: ['extension']}, {q: 'published', in: ['no']}]}},
