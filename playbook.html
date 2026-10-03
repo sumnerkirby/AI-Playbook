@@ -284,7 +284,7 @@
     <article class="item" id="step-4" data-step="4" data-part="2" style="--c:var(--part2)">
       <h3><button class="item-btn" type="button" aria-expanded="true" aria-controls="step-4-panel">
         <span class="tag">Step 4</span>
-        <span class="title">Protect sensitive information<small>Decide what must never go into an AI tool, and find out what each tool does with the information it receives.</small></span>
+        <span class="title">Protect sensitive information<small>Decide what must never go into an AI tool, find out what each tool does with it, and lock the accounts that hold it.</small></span>
         <span class="meta">1&ndash;2 hours</span>
         <span class="donepill" hidden>Done</span>
         <svg class="caret" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3l4 4-4 4"/></svg>
@@ -295,7 +295,7 @@
             <h4><button class="menu-btn" type="button" aria-expanded="true"><span class="plus" aria-hidden="true"></span>Why it matters</button></h4>
             <div class="content prose">
               <p>The most common AI mistake in a small business is an ordinary one. An employee pastes a customer list, a contract or a colleague&rsquo;s medical note into a chat assistant to save ten minutes. Depending on the tool and the plan, that information may be stored, read by the provider&rsquo;s staff, or used to train future versions of the model.</p>
-              <p>Privacy law, professional confidentiality rules or contracts with customers may also limit where that information can go. An AI tool is one more place your data is sent, and it requires the same care as any other.</p>
+              <p>Privacy law, professional confidentiality rules or contracts with customers may also limit where that information can go. An AI tool is one more place your data is sent, and it requires the same care as any other. An AI account holds every conversation and file put into it. If someone signs in with a stolen password, they can read all of it.</p>
             </div>
           </section>
           <section class="sec sec-actions" data-open="true">
@@ -304,7 +304,7 @@
               <li>Sort your information into three groups: what must never go into an AI tool, what may go only into approved business tools, and what may go into any tool.</li>
               <li>For each tool on your list, find out whether what you type is used for training, how long it is kept, and whether you can turn either of these off.</li>
               <li>If staff need AI for work involving customer information, pay for a business plan whose terms state that your data will not be used for training, and make sure that such work is not done on personal accounts.</li>
-              <li>Turn on the available privacy settings, and write down what you chose so that you can check it later.</li>
+              <li>Turn on two-step sign-in (multi-factor authentication) for every AI account used for work, starting with those that hold customer information. Then turn on the available privacy settings, and write down what you chose.</li>
             </ul></div>
           </section>
           <section class="sec sec-document" data-open="true">
@@ -312,7 +312,8 @@
             <div class="content prose"><ul>
               <li>For each tool that receives customer information, do you know whether it&rsquo;s used for training, and where the terms say so?</li>
               <li>Does everyone know what must never be pasted into an AI tool?</li>
-              <li>If someone left tomorrow, would their AI conversations about customers leave with them?</li>
+              <li>Does every AI account that holds business information ask for a second sign-in step?</li>
+              <li>If someone left tomorrow, who would remove their AI accounts, and would their conversations about customers leave with them?</li>
             </ul></div>
           </section>
           <section class="sec sec-sources">
@@ -326,6 +327,14 @@
               <figure class="quote">
                 <figcaption><span>OWASP Top 10 &middot; <b>LLM02:2026</b></span><a href="owasp-llm-top-10-2026.html#s-LLM02-2026">Read in context</a></figcaption>
                 <blockquote>Sensitive information disclosure occurs when an LLM-integrated system exposes confidential, regulated, privileged, or proprietary data through a channel the data subject, controller, or system owner did not authorize.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>NIST SP 1300, CSF 2.0 Small Business Quick-Start Guide &middot; <b>Protect, p. 5</b></span><a href="https://csrc.nist.gov/pubs/sp/1300/final" rel="noopener">Read the guide at NIST</a></figcaption>
+                <blockquote>Enabling multi-factor authentication (MFA) is one of the fastest, cheapest ways you can protect your data. Start with accounts that can access the most sensitive information.</blockquote>
+              </figure>
+              <figure class="quote">
+                <figcaption><span>NIST SP 1300, CSF 2.0 Small Business Quick-Start Guide &middot; <b>Protect, p. 5</b></span><a href="https://csrc.nist.gov/pubs/sp/1300/final" rel="noopener">Read the guide at NIST</a></figcaption>
+                <blockquote>Prioritize requiring multi-factor authentication on all accounts that offer it and consider using password managers to help you and your staff generate and protect strong passwords. (PR.AA-03)</blockquote>
               </figure>
             </div>
           </section>
@@ -719,7 +728,7 @@
       <blockquote>Framework users may apply these functions as best suits their needs for managing AI risks based on their resources and capabilities. Some organizations may choose to select from among the categories and subcategories; others may choose and have the capacity to apply all categories and subcategories.</blockquote>
     </figure>
     <div class="prose" style="margin-top:14px">
-      <p>The parts of Map and Measure that do apply to a business using other companies&rsquo; AI are covered here: knowing what each tool is for (step 2), understanding the risks that come with a supplier&rsquo;s product (step 5), deciding where a person checks the output (step 6), and monitoring tools once they are in use (step 9). Steps 4 and 7 address specific risks rather than framework outcomes, so they draw on the Generative AI Profile and the OWASP list instead.</p>
+      <p>The parts of Map and Measure that do apply to a business using other companies&rsquo; AI are covered here: knowing what each tool is for (step 2), understanding the risks that come with a supplier&rsquo;s product (step 5), deciding where a person checks the output (step 6), and monitoring tools once they are in use (step 9). Steps 4 and 7 address specific risks rather than framework outcomes, so they draw on the Generative AI Profile and the OWASP list instead. Step 4 also draws on NIST&rsquo;s Cybersecurity Framework guide for small businesses, for sign-in protection.</p>
       <p>The table below lists the sources each step cites. It can serve as your answer if an auditor, insurer or customer asks how your approach relates to the NIST framework.</p>
     </div>
     <div class="tablewrap">
@@ -729,7 +738,7 @@
           <tr><td><a href="#step-1">Step 1</a>: Appoint an AI lead</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-2-3">GOVERN 2.3</a></td><td>&mdash;</td></tr>
           <tr><td><a href="#step-2">Step 2</a>: List the AI tools in use</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-6">GOVERN 1.6</a> <a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-1-1">MAP 1.1</a></td><td>&mdash;</td></tr>
           <tr><td><a href="#step-3">Step 3</a>: Write an AI policy</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-1-4">GOVERN 1.4</a> <a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-2-2">GOVERN 2.2</a></td><td>&mdash;</td></tr>
-          <tr><td><a href="#step-4">Step 4</a>: Protect sensitive information</td><td>&mdash;</td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-4">Data Privacy</a><br>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM02-2026">LLM02 Sensitive Information Disclosure</a></td></tr>
+          <tr><td><a href="#step-4">Step 4</a>: Protect sensitive information</td><td>&mdash;</td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-4">Data Privacy</a><br>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM02-2026">LLM02 Sensitive Information Disclosure</a><br>CSF 2.0: PR.AA-03 (<a href="https://csrc.nist.gov/pubs/sp/1300/final" rel="noopener">NIST SP 1300</a>)</td></tr>
           <tr><td><a href="#step-5">Step 5</a>: Evaluate AI suppliers</td><td><a class="fnref" style="--c:var(--govern)" href="ai-rmf-playbook.html#i-GOVERN-6-1">GOVERN 6.1</a> <a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-4-1">MAP 4.1</a></td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-12">Value Chain and Component Integration</a></td></tr>
           <tr><td><a href="#step-6">Step 6</a>: Check AI output before use</td><td><a class="fnref" style="--c:var(--map)" href="ai-rmf-playbook.html#i-MAP-3-5">MAP 3.5</a></td><td>Generative AI Profile: <a href="ai-rmf-genai-profile.html#s-2-2">Confabulation</a>, <a href="ai-rmf-genai-profile.html#s-2-7">Human-AI Configuration</a><br>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM07-2026">LLM07 Misinformation</a></td></tr>
           <tr><td><a href="#step-7">Step 7</a>: Limit what AI can do without approval</td><td>&mdash;</td><td>OWASP: <a href="owasp-llm-top-10-2026.html#s-LLM01-2026">LLM01 Prompt Injection</a>, <a href="owasp-llm-top-10-2026.html#s-LLM03-2026">LLM03 Excessive Agency</a>, <a href="owasp-llm-top-10-2026.html#s-LLM06-2026">LLM06 Unbounded Consumption</a></td></tr>
