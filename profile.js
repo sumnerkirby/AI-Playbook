@@ -160,7 +160,8 @@
         <p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Things to check with an advisor, not legal advice. Not yet verified for publication.</p></div>`)).join('')}
       ${fold('Share this profile, or see an example', '', `
         <div class="share"><code id="share-link">${esc(link)}</code><button class="btn" type="button" data-act="copy">Copy link</button></div>
-        <p class="small-note" style="margin-top:8px">The link contains these answers, which describe your business, not you. It saves nothing for the person who opens it unless they choose to save it.</p>
+        <p class="share-warn">This link contains your answers. Anyone who opens it can read them. <button class="linkish" type="button" data-act="copy-plain">Copy the address without answers</button></p>
+        <p class="small-note" style="margin-top:8px">The answers describe your business, not you. The link saves nothing for the person who opens it unless they choose to save it.</p>
         <h4 class="fold-sub">Examples</h4>
         <ul class="changes">${EXAMPLES.map(x => `<li><span class="what">${esc(x.label)}</span><a href="#${x.p}">See this profile</a></li>`).join('')}</ul>`)}
 
@@ -219,9 +220,15 @@
         render();
         return say('Profile cleared. The site shows everything again.');
       case 'copy':
-        try { await navigator.clipboard.writeText($('#share-link').textContent); say('Link copied.'); }
+        try { await navigator.clipboard.writeText($('#share-link').textContent); say('Link copied. Anyone with it sees these answers.'); }
         catch (err) { say('This browser blocked copying. Copy the link above manually.'); }
         return;
+      case 'copy-plain': {
+        const plain = location.href.split('#')[0];
+        try { await navigator.clipboard.writeText(plain); say('Address copied, without your answers.'); }
+        catch (err) { say('This browser blocked copying. The address without answers is ' + plain); }
+        return;
+      }
     }
   });
 

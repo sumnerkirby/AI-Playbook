@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple_touch_icon.png">
@@ -44,6 +46,10 @@
 <script src="../answers_engine.js"></script>
 <script src="../data/record.js"></script>
 <script src="../record_engine.js"></script>
+<script src="../ui_common.js"></script>
+<script src="../progress_bar.js"></script>
+<script src="../data/storage_keys.js"></script>
+<script src="../privacy_engine.js"></script>
 <script src="quick_rules_test.js"></script>
 <script src="quick_policy_test.js"></script>
 <script src="quick_pulse_test.js"></script>
@@ -52,13 +58,7 @@
 <script src="risk_test.js"></script>
 <script src="answers_test.js"></script>
 <script src="record_test.js"></script>
-<script>
-  const runs = [TestRun, PolicyTestRun, PulseTestRun, ProfileTestRun, ToolTestRun, RiskTestRun, AnswersTestRun, RecordTestRun];
-  document.getElementById('summary').textContent = runs.map(r => r.summary).join(' \u00b7 ');
-  const esc = s => String(s).replace(/[&<>]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'})[c]);
-  document.getElementById('out').innerHTML = runs.flatMap(x => x.results).map(r =>
-    `<div class="t${r.fails.length ? ' fail' : ''}"><b>${r.fails.length ? 'FAIL' : 'OK'}</b>${esc(r.name)}` +
-    (r.fails.length ? `<ul>${r.fails.slice(0, 12).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : '') + `</div>`).join('');
-</script>
+<script src="privacy_test.js"></script>
+<script src="run_tests_page.js"></script>
 </body>
 </html>
