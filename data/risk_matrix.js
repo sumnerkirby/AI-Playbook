@@ -55,6 +55,9 @@ var RISK = {
     {id: 'team_no_rules', why: `Several people use it with no written rules`, when: {q: '_team', in: ['small', 'medium', 'large']}, cleared_by: 't.team.tell'},
   ],
   lowers: [
+    /* lowers likelihood only. Impact comes from what goes in, never from
+       the plan, so a business plan does not make patient, client-confidential
+       or government contract information less serious (FIXES 1.3; tested) */
     {id: 'business_training_off', why: `Business plan, training off, with a source noted`,
      when: {all: [{q: 'plan', in: ['business', 'enterprise', 'built_in', 'own']}, {q: 'training', in: ['no_checked']}, {q: '_sourced', in: ['training']}]}},
     {id: 'human_check', why: `A person checks output before it leaves`, when: {q: '_done', in: ['t.output.customers']}},

@@ -402,6 +402,16 @@ var ToolTestRun = (function(){
     eq(T.restore({lines: [old]}, prof(), TODAY).lines[0].retired_on, '2026-09-01', 'a tool retired before the new step stays retired');
   });
 
+  /* ---------- FIXES 1.3: what a business plan does not provide ---------- */
+  test('business directions say what each plan does not cover', () => {
+    const biz = tool => T.vendorHelp({tool, plan: 'business'}).sections[0].steps.join(' ');
+    ok(/does not state one for ChatGPT Business/.test(biz('ChatGPT')) && /court order/.test(biz('ChatGPT')), 'ChatGPT: no BAA on Business, and the preservation order');
+    ok(/HIPAA compliance, do not apply to those search queries/.test(biz('Copilot')) && /any file the person using it can open/.test(biz('Copilot')), 'Copilot: web search terms, and permissions');
+    ok(/Gemini Notebook/.test(biz('Gemini')) && /data region settings do not apply/.test(biz('Gemini')), 'Gemini: Notebook and data regions');
+    ok(/does not cover Team plans/.test(biz('Claude')) && /five years/.test(biz('Claude')), 'Claude: BAA limits, and rated chats');
+    ok(PROFILE_OPTIONS.overlays.healthcare.points.some(x => /^Team-tier AI plans usually do not include a BAA/.test(x)), 'healthcare note');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} tool check tests passed`};
 })();

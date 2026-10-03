@@ -194,6 +194,22 @@ var RiskTestRun = (function(){
     eq([st.custom.length, Object.keys(st.adjust), Object.keys(st.response), st.snapshots.length], [1, ['b'], ['d'], 0], 'cleaned');
   });
 
+  /* ---------- FIXES 1.3: a business plan is not enough on its own ---------- */
+  test('a business plan with training off never lowers the impact of patient, CUI or client-confidential information', () => {
+    const cases = [
+      [{team_size: 'small', ai_use: ['use'], industry: ['healthcare']}, {data: ['sensitive'], special: 'yes'}],
+      [NG, {data: ['regulated'], special: 'dont_know'}],   // CUI marked Yes is a red line, so the use is stopped, not placed
+      [{team_size: 'small', ai_use: ['use'], industry: ['professional']}, {data: ['regulated'], special: 'yes'}],
+    ];
+    cases.forEach(([p, extra]) => {
+      const a = Object.assign({}, base, {tool: 'X', use: 'writing', output: ['internal'], deletion: 'yes', agreement: 'yes', published: 'yes'}, extra);
+      const business = line(Object.assign({}, a, {training: 'no_checked', _evidence: {training: src('Admin console')}}), p, []);
+      const bi = K.items([business], p, K.emptyStore(), {split: false}).items[0];
+      ok(bi && bi.impact === 'high', `${p.industry}: impact stays High on a business plan (got ${bi && bi.impact})`);
+      ok(bi && bi.why.lowers.includes('Business plan, training off, with a source noted'), `${p.industry}: the factor still counts for likelihood`);
+    });
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} risk tests passed`};
 })();

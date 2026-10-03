@@ -99,11 +99,12 @@ var PROFILE_OPTIONS = {
   overlays_verified: false,
   overlays: {
     healthcare: {
-      last_reviewed: '2026-10-01',
+      last_reviewed: '2026-10-03',
       summary: `Patient information needs extra care.`,
       points: [
         `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans do not offer one.`,
         `A BAA for your main software may not cover a new AI feature inside it. Ask the supplier.`,
+        `Team-tier AI plans usually do not include a BAA. It is usually part of an enterprise or healthcare plan, so ask which plan, and which features, the BAA covers.`,
       ],
       red_line: `Patient information in a tool without a BAA.`,
       advice: `Ask your compliance advisor which of your tools count as business associates.`,
