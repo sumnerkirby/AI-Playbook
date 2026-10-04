@@ -11,6 +11,7 @@
   --rule:#CFD7DF;
   --rule2:#E3E8ED;
   --part1:#2D5F8B;
+  --link:#367062;  /* the favicon's green, darkened to pass contrast (4.8:1 on paper, 5.8:1 on white) */
   --part2:#367062;
   --part3:#93552B;
   --library:#7A5296;
@@ -30,6 +31,9 @@ body{
   font-family:var(--body);font-size:16px;line-height:1.6;
 }
 .wrap{max-width:960px;margin:0 auto;padding:0 20px 90px}
+/* links: green, not the browser's blue; underlined so they never rely on color alone. Rules further down keep some links dark (prose, footer, navigation). */
+a{color:var(--link);text-decoration-color:color-mix(in srgb,var(--link) 50%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--link)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* ---------- skip link: first stop for the Tab key ---------- */
