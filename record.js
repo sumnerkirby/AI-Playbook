@@ -215,6 +215,7 @@
           <button class="btn quiet" type="button" data-act="csv-list"${inp.lines.length ? '' : ' disabled'}>AI list (.csv)</button>
           <button class="btn quiet" type="button" data-act="csv-risk"${m.sections.find(s => s.id === 'risk').status === 'empty' ? ' disabled' : ''}>Risk register (.csv)</button>
         </p>
+        ${inp.lines.length ? '' : `<p class="why-off">The two spreadsheets turn on once a tool is on <a href="tool_check.html">your AI list</a>.</p>`}
         <p class="small-note">The Word copy can be edited, but edits made there do not update the record. The .json file contains everything this browser keeps for the playbook, so that you can move it to another browser or give it to an IT provider.</p>
         ${pending ? pendingHTML() : ''}
       </div>
@@ -269,7 +270,7 @@
         copy.innerHTML = docHTML(model, n);
         copy.querySelectorAll('.no-print, .rec-kicker, .rec-head h1').forEach(x => x.remove());
         const footer = R.stamp(model, n) + (model.draft ? ' Draft: not complete.' : '');
-        U.download(window.templateDocx(copy, `${model.business}: ${RC.title}`, {levels: true, footer}), `ai_use_and_risk_record_${slug(model.business)}_${today}.docx`);
+        U.download(window.templateDocx(copy, `${model.business}: ${RC.title}`, {levels: true, footer}), `ai_use_and_risk_record_${slug(model.business)}_${today}.docx`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         stamp(n);
         render();
         say(`Word copy downloaded as version ${n}.`);
@@ -289,10 +290,14 @@
       render();
       return say('Opened. The record now shows what was in the file.');
     }
-    if (act === 'csv-list') return U.download(T.csv(inp.lines, inp.profile, today), `ai_list_${today}.csv`, 'text/csv');
+    if (act === 'csv-list'){
+      U.download(T.csv(inp.lines, inp.profile, today), `ai_list_${today}.csv`, 'text/csv');
+      return say('AI list downloaded. It opens in Excel, Numbers or Google Sheets.');
+    }
     if (act === 'csv-risk'){
       const {items, stopped} = K.items(inp.lines, inp.profile, inp.risk);
-      return U.download(K.csv(items, stopped), `risk_register_${today}.csv`, 'text/csv');
+      U.download(K.csv(items, stopped), `ai_risk_register_${today}.csv`, 'text/csv');
+      return say('Risk register downloaded. It opens in Excel, Numbers or Google Sheets.');
     }
     if (act === 'sign'){
       try {

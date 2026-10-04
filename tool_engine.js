@@ -347,11 +347,13 @@ var ToolEngine = (function(){
   }
   function csv(lines, profile, today){
     const planLabel = id => { const o = Q.questions.find(q => q.id === 'plan').options.find(x => x.id === id); return o ? o.label : ''; };
+    /* the words on screen, not the internal ids */
+    const dataLabel = id => { const o = Q.questions.find(q => q.id === 'data').options.find(x => x.id === id); return o ? o.label : id; };
     const rows = [['tool', 'plan', 'use', 'data', 'light', 'state', 'open to-dos', 'standing rules', 'checked', 're-check by', 'rules version']];
     lines.forEach(l => {
       const r = evaluate(Object.assign({}, l.answers, {_evidence: l.evidence}), profile, l.done);
       const st = state(l, profile, today);
-      rows.push([name(l), planLabel(l.answers.plan), useLabel(l.answers.use), (l.answers.data || []).join('; '), r.light,
+      rows.push([name(l), planLabel(l.answers.plan), useLabel(l.answers.use), (l.answers.data || []).map(dataLabel).join('; '), r.label,
         st.label + (st.due ? ' (re-check due)' : ''), r.todos.filter(t => !t.done).map(t => t.text).join(' | '),
         r.standing.join(' | '), l.checked, l.recheck_by || 'after the change', l.rules_version]);
     });

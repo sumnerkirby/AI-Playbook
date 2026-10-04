@@ -157,6 +157,9 @@ section[id]{scroll-margin-top:80px}
   border:1px solid var(--rule);border-radius:3px;cursor:pointer
 }
 .btn:hover{color:var(--ink);border-color:var(--ink3)}
+/* a button that cannot be used yet looks it; a note next to it says what turns it on */
+.btn:disabled,.btn:disabled:hover{background:transparent;color:var(--ink3);border-color:var(--rule);border-style:dashed;cursor:not-allowed;text-decoration:none}
+.why-off{margin:8px 0 0;font-size:15px;color:var(--ink2)}
 .btn.quiet{background:transparent;border-color:transparent;padding-left:6px;padding-right:6px}
 .btn.quiet:hover{border-color:transparent;text-decoration:underline}
 .atlas-note .btn.quiet{padding:0 0 0 6px;font-size:11px;color:var(--ink2);text-decoration:underline;text-underline-offset:3px}

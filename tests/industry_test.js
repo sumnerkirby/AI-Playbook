@@ -128,6 +128,42 @@ var IndustryTestRun = (function(){
     ok(!h.includes('Nothing to stop'), 'does not read as a pass');
   });
 
+  /* ---------- saving and exporting (feedback log items 98 to 103) ---------- */
+  test('buttons that cannot be used yet look it, and a note says what turns them on', () => {
+    ok(/\.btn:disabled[^{]*\{[^}]*not-allowed/.test(FakePage.need('site.css')), 'a disabled style for every button');
+    const P = JSON.stringify(profile('retail'));
+    const empty = runPage('tool_check.js', {local: {'sb-ai-playbook:profile': P}});
+    ok(empty.includes('data-act="csv" disabled') && empty.includes('class="why-off"'), 'AI list, empty: off, with a note');
+    const l = ToolEngine.makeLine({mode: 'new', tool: 'Notes app', plan: 'business', access: ['website'], use: 'writing', data: ['internal'],
+      training: 'no_checked', deletion: 'yes', published: 'yes', mfa: 'yes', output: ['internal'], acts: ['produces_only']}, profile('retail'), '2026-10-04');
+    const one = runPage('tool_check.js', {local: {'sb-ai-playbook:profile': P, 'sb-ai-playbook:ai-list': JSON.stringify({version: 1, lines: [l], skipped: []})}});
+    ok(!one.includes('data-act="csv" disabled') && !one.includes('class="why-off"'), 'AI list, one tool: on, no note');
+    const pulse = runPage('quick_pulse.js', {local: {'sb-ai-playbook:profile': P}});
+    ok(pulse.includes('data-act="backup" disabled') && pulse.includes('class="why-off"'), 'check-in, none yet: off, with a note');
+    ok(runPage('risk_matrix.js', {local: {'sb-ai-playbook:profile': P}}).includes('class="why-off"'), 'risk overview, empty: a note');
+  });
+  test('spreadsheets use the words on screen, not internal ids', () => {
+    const P = profile('retail');
+    const l = ToolEngine.makeLine({mode: 'new', tool: 'Notes app', plan: 'business', access: ['website'], use: 'writing', data: ['personal'],
+      training: 'no_checked', deletion: 'yes', agreement: 'yes', published: 'yes', mfa: 'yes', output: ['internal'], acts: ['produces_only']}, P, '2026-10-04');
+    const row = ToolEngine.csv([l], P, '2026-10-04').split('\r\n')[1];
+    ok(/,Go(,| once| for)/.test(row) && !/,(green|amber|red),/.test(row), 'AI list light: ' + row.slice(0, 160));
+    ok(row.includes('Names and contact details') && !/,personal,/.test(row), 'AI list data');
+    const log = {version: 1, checkins: [{date: '2026-10-04', new_tools: [], incidents: [], connections: [{name: 'Copilot', approval: 'some', light: 'check'}], people: {answer: 'no'}}]};
+    const c = PulseEngine.csv(log);
+    ok(c.includes('needs a check') && c.includes('Approval before it acts: For some things') && !/,(go|check)\r/.test(c), 'check-in: ' + c.slice(30, 220));
+  });
+  test('the record: Word file has its type, and one name for the risk register', () => {
+    const src = FakePage.need('record.js');
+    ok(src.includes("'application/vnd.openxmlformats-officedocument.wordprocessingml.document'"), 'Word type');
+    ok(src.includes('ai_risk_register_') && !src.includes('`risk_register_'), 'same file name as the risk overview');
+    ok(FakePage.need('risk_matrix.js').includes('ai_risk_register_'), 'risk overview name');
+  });
+  test('the check-in says three to five questions', () => {
+    const h = FakePage.need('quick_pulse.html');
+    ok(h.includes('three to five questions') && !/three or four/i.test(h), 'count');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} industry tests passed`};
 })();

@@ -189,6 +189,7 @@
         <button class="btn" type="button" data-act="csv"${items.length || stopped.length ? '' : ' disabled'}>Download the register (CSV)</button>
         <button class="btn" type="button" data-act="print"${items.length ? '' : ' disabled'}>Print the grid and register</button>
       </div>
+      ${items.length ? '' : `<p class="why-off">These turn on once a tool is on <a href="tool_check.html">your AI list</a>, or once you add a risk above.</p>`}
       ${store.snapshots.length ? `<ul class="events">${store.snapshots.slice().reverse().map(s => `<li>${esc(U.fmtDate(s.date))}: ${s.items.filter(i => i.zone === 'act').length} Act now, ${s.items.filter(i => i.zone === 'plan').length} Plan, ${s.items.filter(i => i.zone === 'watch').length} Watch</li>`).join('')}</ul>` : ''}
       <p class="status" id="status" role="status"></p>
     </section>

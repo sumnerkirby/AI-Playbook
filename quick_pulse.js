@@ -300,11 +300,12 @@
 
       <h2 class="subhead">Your records</h2>
       <div class="actions">
-        <button class="btn" type="button" data-act="backup">Download a backup</button>
+        <button class="btn" type="button" data-act="backup"${checkins.length ? '' : ' disabled'}>Download a backup</button>
         <button class="btn" type="button" data-act="restore">Restore from a backup</button>
-        <button class="btn" type="button" data-act="csv">Download as a spreadsheet (CSV)</button>
+        <button class="btn" type="button" data-act="csv"${checkins.length ? '' : ' disabled'}>Download as a spreadsheet (CSV)</button>
         ${checkins.length ? '<button class="btn quiet" type="button" data-act="wipe">Delete all check-ins</button>' : ''}
       </div>
+      ${checkins.length ? '' : '<p class="why-off">The backup and the spreadsheet turn on after your first check-in.</p>'}
       <input type="file" accept=".json,application/json" class="restore-input" id="restore-file" tabindex="-1" aria-hidden="true">
       <p class="status" id="status" role="status"></p>
     </section>

@@ -143,6 +143,7 @@
         <button class="btn" type="button" data-act="backup"${rows.length ? '' : ' disabled'}>Download a backup</button>
         <button class="btn" type="button" data-act="restore">Restore from a backup</button>
       </div>
+      ${rows.length ? '' : '<p class="why-off">The first three turn on once a tool is on your list. To add one, use Check a new tool above, or Check it on anything under To check.</p>'}
       <input type="file" accept=".json,application/json" id="restore-file" class="visually-hidden" tabindex="-1" aria-hidden="true">
       <p class="small-note" style="margin-top:8px">For a team, keep the spreadsheet on your shared drive, and export it again after each change.</p>
       <p class="status" id="status" role="status"></p>

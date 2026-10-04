@@ -156,12 +156,17 @@ var PulseEngine = (function(){
   function csv(log){
     const rows = [['date', 'kind', 'name', 'detail', 'light']];
     const label = id => { const c = QuickEngine.card(id); return c ? c.label : ''; };
+    /* the words on screen, not the internal ids */
+    const WORDS = {go: 'acceptable', check: 'needs a check', stop: 'stop'};
+    const word = l => WORDS[l] || l || '';
+    const opt = (list, id) => { const o = list.find(x => x.id === id); return o ? o.label : id; };
+    const Qs = P.questions;
     sorted(log).forEach(c => {
-      rows.push([c.date, 'check-in', '', summary(c), worst(c)]);
-      c.new_tools.forEach(t => rows.push([c.date, 'new tool', t.name, label(t.card), t.light]));
+      rows.push([c.date, 'check-in', '', summary(c), word(worst(c))]);
+      c.new_tools.forEach(t => rows.push([c.date, 'new tool', t.name, label(t.card), word(t.light)]));
       c.incidents.forEach(i => rows.push([c.date, 'something went wrong', '', i.text, '']));
-      c.connections.forEach(x => rows.push([c.date, 'new connection', x.name, 'approval: ' + x.approval, x.light]));
-      if (c.people && c.people.answer === 'yes') rows.push([c.date, 'joined or left', '', 'AI accounts updated: ' + c.people.accounts, c.people.light]);
+      c.connections.forEach(x => rows.push([c.date, 'new connection', x.name, 'Approval before it acts: ' + opt(Qs.connection.approval, x.approval), word(x.light)]));
+      if (c.people && c.people.answer === 'yes') rows.push([c.date, 'joined or left', '', 'AI accounts added or removed: ' + opt(Qs.people.accounts, c.people.accounts), word(c.people.light)]);
       if (c.sweep && c.sweep.answer === 'yes') c.sweep.found.forEach(n => rows.push([c.date, 'found on statement', n, '', 'to check']));
     });
     return rows.map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
