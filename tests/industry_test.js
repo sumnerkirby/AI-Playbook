@@ -164,6 +164,31 @@ var IndustryTestRun = (function(){
     ok(h.includes('three to five questions') && !/three or four/i.test(h), 'count');
   });
 
+  /* ---------- site critique fixes (feedback log items 105 to 107) ---------- */
+  test('the quick check result ends with steps in order: fix, policy, then the AI list', () => {
+    const E = QuickEngine, ctx = {industry: 'retail'};
+    const st = {industry: 'retail', screener: {}, none: false, cards: [{id: 'writing', answers: {data: 'customer', account: 'personal'}}]};
+    E.screenerQuestions(ctx, {}).forEach(q => { st.screener[q.id] = 'no'; });
+    const h = runPage('quick_check.js', {hash: '#' + E.encode(st) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
+    const a = h.indexOf('Fix the one thing to stop now'), b = h.indexOf('Write your AI policy'), c = h.indexOf('Check the tool you use most');
+    ok(a > 0 && b > a && c > b, 'order: ' + [a, b, c]);
+    ok(h.includes('Step 2 &middot; 8 to 10 minutes') && h.includes('Start my AI policy') && h.includes('data-act="save-go"'), 'policy second, AI list third');
+    const clean = {industry: 'retail', screener: st.screener, none: false, cards: [{id: 'marketing', answers: {data: 'none', account: 'personal'}}]};
+    const g = runPage('quick_check.js', {hash: '#' + E.encode(clean) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
+    ok(g.includes('Step 1 &middot; 8 to 10 minutes') && g.indexOf('Write your AI policy') < g.indexOf('Check the tool you use most'), 'nothing to fix: the policy comes first');
+  });
+  test('the home page says what the site does not cover, and where to go', () => {
+    const h = FakePage.need('index.html');
+    ok(h.includes('id="not-covered"'), 'section');
+    ['hhs.gov', 'studentprivacy.ed.gov', 'dodcio.defense.gov', 'owasp-llm-top-10-2026.html', 'ai-rmf-1-0.html', 'sba.gov'].forEach(x => ok(h.includes(x), x));
+    ok((h.match(/href="https:[^"]+" rel="noopener"/g) || []).length >= 7, 'outside links open with rel="noopener"');
+    ok(/home page lists where to go instead/.test(O.industry.why) && /home page lists where to go instead/.test(O.ai_use.why), 'step 0 points to it');
+  });
+  test('the record: no capital T in the middle of a sentence when no name is given', () => {
+    const src = FakePage.need('record_engine.js');
+    ok(src.includes('business === RC.business_fallback ? business.charAt(0).toLowerCase()'), 'statement uses this business');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} industry tests passed`};
 })();

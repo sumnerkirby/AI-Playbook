@@ -471,6 +471,11 @@ section[id]{scroll-margin-top:80px}
 }
 .about-text p{margin:0 0 14px;max-width:64ch;color:var(--ink2)}
 .about-text p:first-child{font-size:17px}
+.about-text h2{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.01em;margin:26px 0 8px}
+.about-text .not-covered{margin:0 0 10px;padding-left:20px;max-width:64ch;color:var(--ink2)}
+.about-text .not-covered li{margin:0 0 8px}
+.about-text .not-covered b{color:var(--ink)}
+.about-text .checked-note{font-size:14.5px}
 .starts{display:flex;flex-direction:column;gap:14px}
 .starts-head{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin:0}
 .start{

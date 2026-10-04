@@ -26,7 +26,7 @@ var PROFILE_OPTIONS = {
 
   ai_use: {
     label: `How does your business use AI?`,
-    why: `Setting up your own assistants or automations requires checks that ready-made tools do not. The site does not cover writing code that uses AI.`,
+    why: `Setting up your own assistants or automations requires checks that ready-made tools do not. The site does not cover writing code that uses AI; its home page lists where to go instead.`,
     multiple: true,
     options: [
       {id: 'use',       code: 'u', label: `We use ready-made AI tools`,
@@ -39,7 +39,7 @@ var PROFILE_OPTIONS = {
 
   industry: {
     label: `What kind of business are you?`,
-    why: `Some industries have extra rules about information that goes into AI tools. The site does not cover the rules for healthcare, education or government contracting.`,
+    why: `Some industries have extra rules about information that goes into AI tools. The site does not cover the rules for healthcare, education or government contracting; its home page lists where to go instead.`,
     options: [
       {id: 'professional', code: 'pr', label: `Legal, accounting and professional services`,
        examples: `Law firms, bookkeepers, tax preparers, consultants, architects`},

@@ -318,7 +318,8 @@ var RecordEngine = (function(){
     });
     s.about = section('about', 'complete', {
       business, profile: PR.summary(inp.profile), scope: RC.scope, not_covered: RC.not_covered,
-      statement: fill(RC.statement, {business}),
+      /* the fallback name is mid-sentence here, so it takes a small letter */
+      statement: fill(RC.statement, {business: business === RC.business_fallback ? business.charAt(0).toLowerCase() + business.slice(1) : business}),
     });
     return {
       title: RC.title, business, today, draft, missing, recheck_by, problems: inp.problems,

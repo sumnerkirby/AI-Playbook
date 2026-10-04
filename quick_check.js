@@ -452,7 +452,7 @@
       </ul>
 
       <h3 class="subhead">Next</h3>
-      ${nextSteps(t)}
+      ${nextSteps(t, A)}
 
       <h3 class="subhead">Keep this</h3>
       <div class="actions">
@@ -466,30 +466,35 @@
     `);
   }
 
-  /* ---------- next: one step picked from the result, the rest as a list ---------- */
-  function nextSteps(t){
-    const toList = t.stop + t.check > 0;
+  /* ---------- next: a short plan in order (site critique U1): fix what is
+     urgent, write the policy, then check the most-used tool ---------- */
+  function nextSteps(t, A){
     const policyHref = `quick_policy.html#${E.encode(state)}`;
-    const first = toList
-      ? `<div class="start next-card" style="--c:var(--part2)"><span class="k">Do this next &middot; 5 to 15 minutes a tool</span>
-          <h4>Examine the stop and check results in detail</h4>
-          <p>Your tasks are added to your AI list, most serious first. This saves the result in this browser so that the list can use it.</p>
-          <button class="start-btn" type="button" data-act="save-go">Save and open my AI list</button></div>`
-      : `<div class="start next-card" style="--c:var(--part3);--btn:#9A5A2F"><span class="k">Do this next &middot; 8 to 10 minutes</span>
-          <h4>Turn this into your AI policy</h4>
-          <p>About twelve questions, some already answered by this check. The result is a one-page policy.</p>
-          <a class="start-btn" href="${policyHref}">Start my AI policy</a></div>`;
-    const also = [
-      toList ? `<a href="${policyHref}">Turn this into your AI policy</a><span>8 to 10 minutes</span>`
-             : `<button class="linkish" type="button" data-act="save-go">Check each tool in detail on your AI list</button><span>5 to 15 minutes a tool; saves this result first</span>`,
-      `<a href="playbook.html#step-2">List all the AI tools in use</a><span>Playbook step 2, which covers what this check cannot</span>`,
+    const aStops = A.hits.filter(h => h.outcome === 'stop').length;
+    const fixes = aStops + t.stop, opens = (A.hits.length - aStops) + t.check;
+    const things = n => n === 1 ? 'one thing' : n + ' things';
+    const steps = [];
+    if (fixes || opens) steps.push({time: fixes ? 'a few minutes each' : 'about 5 minutes each', c: 'var(--ink)',
+      h: fixes ? `Fix the ${things(fixes)} to stop now`
+        : !t.check ? `Find out the ${things(opens)} you were not sure about` : `Look into the ${things(opens)} that ${opens === 1 ? 'needs' : 'need'} a check`,
+      p: `Each finding above says what to do and who can do it.${fixes && opens ? ` Then the ${things(opens)} to find out or check.` : ''}`});
+    steps.push({time: '8 to 10 minutes', c: 'var(--part3)', btn: '#9A5A2F', h: `Write your AI policy`,
+      p: `About twelve questions, some already answered by this check. The result is a one-page policy to share with staff, and a list of what must never go into an AI tool.`,
+      act: `<a class="start-btn" href="${policyHref}">Start my AI policy</a>`});
+    steps.push({time: '5 to 15 minutes a tool', c: 'var(--part2)', h: `Check the tool you use most`,
+      p: `Your AI list shows what this check found, most serious first. Checking a tool there gives it a to-do list and adds it to your record. This saves the result in this browser.`,
+      act: `<button class="start-btn" type="button" data-act="save-go">Save and open my AI list</button>`});
+    const later = [
       `<a href="quick_pulse.html">Keep it current</a><span>1 minute a month, with a calendar reminder</span>`,
-      `<a href="policy-supplier-questions.html">Questions to ask a supplier</a><span>Template, for anything marked check</span>`,
+      `<a href="playbook.html#step-2">List all the AI tools in use</a><span>Playbook step 2, which covers what this check cannot</span>`,
+      `<a href="policy-supplier-questions.html">Questions to ask a supplier</a><span>Template, for anything marked needs a check</span>`,
     ];
-    return `${first}
+    return `<p class="plan-intro">In this order:</p>
+      <ol class="plan">${steps.map((x, n) => `<li class="start next-card" style="--c:${x.c}${x.btn ? `;--btn:${x.btn}` : ''}">
+        <span class="k">Step ${n + 1} &middot; ${x.time}</span><h4>${x.h}</h4><p>${x.p}</p>${x.act || ''}</li>`).join('')}</ol>
       <p class="status" id="next-status" role="status"></p>
-      <h4 class="also-head">Also useful</h4>
-      <ul class="also">${also.map(x => `<li>${x}</li>`).join('')}</ul>`;
+      <h4 class="also-head">Later</h4>
+      <ul class="also">${later.map(x => `<li>${x}</li>`).join('')}</ul>`;
   }
   function saveAndGo(){
     if (sset('localStorage', SAVE_KEY, JSON.stringify(record()))) return void (location.href = 'tool_check.html');

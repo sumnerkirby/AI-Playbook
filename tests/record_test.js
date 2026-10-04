@@ -87,7 +87,7 @@ var RecordTestRun = (function(){
     eq(m.sections.map(s => s.n), RECORD.sections.map(s => s.n), 'every section is present, even empty');
     eq(sec(m, 'controls').list.map(c => c.level), Array(9).fill('none'), 'no control claimed');
     ok(sec(m, 'about').statement.startsWith('This record is a self-assessment'), 'self-attested on page 1');
-    ok(sec(m, 'about').statement.includes('This business is responsible'), 'fallback name');
+    ok(sec(m, 'about').statement.includes('what this business recorded, and this business is responsible'), 'fallback name, mid-sentence in small letters');
     eq([sec(m, 'summary').uses, sec(m, 'summary').actions, m.problems], [0, 0, []], 'nothing counted');
   });
 
