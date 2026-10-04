@@ -201,6 +201,12 @@
   /* ---------- finished ---------- */
   function slug(s){ return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'our'; }
   function renderDone(){
+    /* saved automatically when it is ready (Sumner, Oct 4, 2026); reopening
+       the saved policy unchanged does not rewrite its date */
+    let prev = null;
+    try { prev = JSON.parse(sget('localStorage', SAVE_KEY) || 'null'); } catch (e) {}
+    const autoSaved = prev && JSON.stringify(prev.a) === JSON.stringify(a)
+      || sset('localStorage', SAVE_KEY, JSON.stringify({a, saved_on: today(), policy_version: P.version}));
     const doc = PE.build(a);
     const html = PE.toHTML(doc);
     const blanks = (html.match(/class="fill"/g) || []).length;
@@ -231,10 +237,11 @@
           <div>
             <h3 class="subhead">Keep this</h3>
             <div class="actions">
-              <button class="btn" type="button" data-act="save">Save in this browser</button>
+              ${autoSaved ? '' : '<button class="btn" type="button" data-act="save">Save in this browser</button>'}
               <button class="btn" type="button" data-act="edit">Change answers</button>
               <button class="btn quiet" type="button" data-act="restart">Start again</button>
             </div>
+            ${autoSaved ? '<p class="small-note">Saved in this browser, so that the record and Your progress can use it. Clearing your browser data deletes it.</p>' : ''}
             <p class="status" id="status" role="status"></p>
           </div>
           <div>

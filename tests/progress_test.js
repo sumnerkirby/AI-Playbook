@@ -112,6 +112,20 @@ var ProgressTestRun = (function(){
     });
   });
 
+  test('the quick check and the policy save themselves when finished (Sumner, Oct 4, 2026)', () => {
+    const E = QuickEngine, ctx = {industry: 'retail'};
+    const st = {industry: 'retail', screener: {}, none: false, cards: [{id: 'marketing', answers: {data: 'none', account: 'personal'}}]};
+    E.screenerQuestions(ctx, {}).forEach(q => { st.screener[q.id] = 'no'; });
+    const hash = '#' + E.encode(st) + '&s=result', local = {'sb-ai-playbook:profile': JSON.stringify(PROFILE)};
+    const own = runPage('quick_check.js', {hash, local, state: {qc: 9}});
+    ok(own.includes('Saved in this browser, so that the AI list') && !own.includes('data-act="save"'), 'finished here: saved, no button');
+    const link = runPage('quick_check.js', {hash, local});
+    ok(link.includes('data-act="save"') && !link.includes('Saved in this browser, so that the AI list'), 'opened from a link: not saved, button offered');
+    const pol = need('quick_policy.js');
+    ok(/const autoSaved = prev && JSON\.stringify\(prev\.a\) === JSON\.stringify\(a\)\s*\|\| sset\('localStorage', SAVE_KEY/.test(pol), 'policy saved when ready, unless unchanged');
+    ok(!/if you choose|chose to save|Choose Save/.test(need('quick_check.html') + need('quick_policy.html') + need('progress.html') + need('data/storage_keys.js') + need('data/progress.js')), 'no wording says saving is a choice');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} progress tests passed`};
 })();

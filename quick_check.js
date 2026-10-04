@@ -145,7 +145,7 @@
         <div class="part" style="--c:var(--part2)"><span class="k">Part 2 &middot; 5 to 8 minutes</span><span class="t">Everyday tasks</span><p>Select the tasks in which AI is used, answer one or two questions about each, and see which need attention.</p></div>
       </div>
       <div class="go-row"><button class="btn primary" type="button" data-act="start">${done0 ? 'Start part 1' : 'Start part 0'}</button><span class="small-note">No sign-up. No email.</span></div>
-      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter is sent to us or to anyone else.</b> There are no accounts and no tracking. The answers about your business are saved in this browser for the rest of the site. The other answers are kept in this page&rsquo;s address, so that you can bookmark the result. That puts them in your browser history and in any link you copy. They are saved in this browser only if you choose. <a href="privacy.html">Privacy and your data</a></span></p>
+      <p class="privacy"><span aria-hidden="true">&#9679;</span><span><b>Nothing you enter is sent to us or to anyone else.</b> There are no accounts and no tracking. The answers about your business are saved in this browser for the rest of the site. The other answers are kept in this page&rsquo;s address, so that you can bookmark the result. That puts them in your browser history and in any link you copy. When you finish, the result is also saved in this browser, so that the other tools can use it. <a href="privacy.html">Privacy and your data</a></span></p>
     `);
     syncRedFlagCount();
   }
@@ -392,6 +392,11 @@
   }
 
   function showResult(){
+    /* saved automatically when the person reached the result in this tab
+       (Sumner, Oct 4, 2026). A result opened straight from a link, perhaps
+       someone else's, is not saved unless they choose. */
+    const own = depth() > 0;
+    const autoSaved = own && sset('localStorage', SAVE_KEY, JSON.stringify(record()));
     const c = ctx();
     const A = E.evaluateScreener(c, state.screener);
     const rank = {stop: 0, check: 1, go: 2};
@@ -458,8 +463,9 @@
       <div class="actions">
         <button class="btn" type="button" data-act="print">Print or save as PDF</button>
         <button class="btn" type="button" data-act="copy">Copy link</button>
-        <button class="btn" type="button" data-act="save">Save in this browser</button>
+        ${autoSaved ? '' : '<button class="btn" type="button" data-act="save">Save in this browser</button>'}
       </div>
+      ${autoSaved ? '<p class="small-note">Saved in this browser, so that the AI list, the AI policy and Your progress can use it. Clearing your browser data deletes it.</p>' : ''}
       <p class="share-warn">This link contains your answers. Anyone who opens it can read them. <button class="linkish" type="button" data-act="copy-plain">Copy the address without answers</button></p>
       <p class="status" id="status" role="status"></p>
       ${backRow()}
