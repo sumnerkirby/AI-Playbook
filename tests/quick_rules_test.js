@@ -106,6 +106,12 @@ var TestRun = (function(){
     eq(E.screenerQuestions({industry: null}, {q4: 'yes'}).length, 7, 'q4 yes opens the follow-up');
   });
 
+  test('screener: passwords, Yes or Not sure, both say to change any password (FIXES 2.6)', () => {
+    const fix = id => RULES.rules.find(r => r.id === id).fix;
+    ok(/Change any password/.test(fix('a.never_put_in')), 'yes');
+    ok(/Change any password you find\.$/.test(fix('a.never_put_in.not_sure')), 'not sure');
+  });
+
   test('screener: all no means no flags, for every industry', () => {
     INDUSTRIES.forEach(ind => {
       const ctx = {industry: ind}, a = {};

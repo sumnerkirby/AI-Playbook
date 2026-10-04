@@ -81,7 +81,7 @@ var RULES = {
      applies_to: {industry: '*', region: 'us'},
      title: `Whether passwords or numbers have gone in`,
      reason: `Nobody is sure whether passwords, card numbers or ID numbers have gone into an AI tool.`,
-     fix: `Search past chats in the AI tools you use for words like password, card and account number, and delete any you find.`,
+     fix: `Search past chats in the AI tools you use for words like password, card and account number, and delete any you find. Change any password you find.`,
      how: {href: 'guide-data.html', label: `Keeping sensitive information out of AI tools`},
      owner: 'you', sources: [], last_reviewed: '2026-10-01'},
 
