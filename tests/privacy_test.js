@@ -29,15 +29,15 @@ var PrivacyTestRun = (function(){
   const PAGES = ['404.html', 'ai-rmf-1-0.html', 'ai-rmf-genai-profile.html', 'ai-rmf-playbook.html', 'guide-ai-inventory.html',
     'guide-ai-policy.html', 'guide-data.html', 'index.html', 'owasp-llm-top-10-2026.html', 'playbook.html', 'policies.html',
     'policy-ai-lead.html', 'policy-connected-ai.html', 'policy-human-review.html', 'policy-incident-response.html',
-    'policy-quarterly-review.html', 'policy-supplier-questions.html', 'policy-tool-approval.html', 'privacy.html', 'profile.html',
+    'policy-quarterly-review.html', 'policy-supplier-questions.html', 'policy-tool-approval.html', 'privacy.html', 'profile.html', 'progress.html',
     'quick_check.html', 'quick_policy.html', 'quick_pulse.html', 'record.html', 'risk_matrix.html', 'tool_check.html'];
   const SCRIPTS = ['answers_engine.js', 'docx.js', 'done_when.js', 'home_forward.js', 'policy_engine.js', 'privacy.js', 'privacy_engine.js',
     'profile.js', 'profile_bar.js', 'profile_engine.js', 'progress_bar.js', 'pulse_engine.js', 'quick_check.js', 'quick_engine.js',
     'quick_policy.js', 'quick_pulse.js', 'record.js', 'record_engine.js', 'risk_engine.js', 'risk_matrix.js', 'site.js', 'sitebar.js',
-    'step_zero.js', 'tool_check.js', 'tool_engine.js', 'ui_common.js',
+    'step_zero.js', 'tool_check.js', 'tool_engine.js', 'ui_common.js', 'progress_engine.js', 'progress.js', 'home_progress.js',
     'data/done_when.js', 'data/policy_questions.js', 'data/profile_effects.js', 'data/profile_options.js', 'data/pulse_questions.js',
     'data/questions.js', 'data/record.js', 'data/risk_matrix.js', 'data/rules.js', 'data/storage_keys.js', 'data/tool_questions.js',
-    'data/tool_rules.js'];
+    'data/tool_rules.js', 'data/progress.js'];
 
   const BAD = '"\'><img src=x onerror=alert(1)>';
   const DAY = '2026-10-03';

@@ -489,9 +489,11 @@
       `<a href="playbook.html#step-2">List all the AI tools in use</a><span>Playbook step 2, which covers what this check cannot</span>`,
       `<a href="policy-supplier-questions.html">Questions to ask a supplier</a><span>Template, for anything marked needs a check</span>`,
     ];
+    /* First, Then, After that: not Step, so these are not confused with the
+       playbook's steps or the essentials on Your progress */
     return `<p class="plan-intro">In this order:</p>
       <ol class="plan">${steps.map((x, n) => `<li class="start next-card" style="--c:${x.c}${x.btn ? `;--btn:${x.btn}` : ''}">
-        <span class="k">Step ${n + 1} &middot; ${x.time}</span><h4>${x.h}</h4><p>${x.p}</p>${x.act || ''}</li>`).join('')}</ol>
+        <span class="k">${['First', 'Then', 'After that'][n]} &middot; ${x.time}</span><h4>${x.h}</h4><p>${x.p}</p>${x.act || ''}</li>`).join('')}</ol>
       <p class="status" id="next-status" role="status"></p>
       <h4 class="also-head">Later</h4>
       <ul class="also">${later.map(x => `<li>${x}</li>`).join('')}</ul>`;

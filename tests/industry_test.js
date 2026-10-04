@@ -115,7 +115,8 @@ var IndustryTestRun = (function(){
     ok(h.includes('Nothing to stop, 1 thing needs a check'), 'the headline');
     ok(!/>\s*\d+ go</.test(h) && !/\d+ check</.test(h), 'no go or check counts');
     const sentence = 'acceptable, needs a check, or stop';
-    ok(FakePage.need('index.html').includes(sentence) && FakePage.need('quick_check.html').includes(sentence), 'home page and quick check intro');
+    ok(FakePage.need('quick_check.html').includes(sentence), 'quick check intro');
+    ok(!/go, check,? or stop/.test(FakePage.need('index.html')), 'the home page has no other words for them');
     ok(FakePage.need('quick_pulse.js').includes("{go: 'Acceptable', check: 'Needs a check', stop: 'Stop'}"), 'check-in labels');
   });
   test('all Not sure: the summary says what to find out, not what to check (FIXES 2.4)', () => {
@@ -172,10 +173,10 @@ var IndustryTestRun = (function(){
     const h = runPage('quick_check.js', {hash: '#' + E.encode(st) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
     const a = h.indexOf('Fix the one thing to stop now'), b = h.indexOf('Write your AI policy'), c = h.indexOf('Check the tool you use most');
     ok(a > 0 && b > a && c > b, 'order: ' + [a, b, c]);
-    ok(h.includes('Step 2 &middot; 8 to 10 minutes') && h.includes('Start my AI policy') && h.includes('data-act="save-go"'), 'policy second, AI list third');
+    ok(h.includes('Then &middot; 8 to 10 minutes') && h.includes('Start my AI policy') && h.includes('data-act="save-go"'), 'policy second, AI list third');
     const clean = {industry: 'retail', screener: st.screener, none: false, cards: [{id: 'marketing', answers: {data: 'none', account: 'personal'}}]};
     const g = runPage('quick_check.js', {hash: '#' + E.encode(clean) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
-    ok(g.includes('Step 1 &middot; 8 to 10 minutes') && g.indexOf('Write your AI policy') < g.indexOf('Check the tool you use most'), 'nothing to fix: the policy comes first');
+    ok(g.includes('First &middot; 8 to 10 minutes') && g.indexOf('Write your AI policy') < g.indexOf('Check the tool you use most'), 'nothing to fix: the policy comes first');
   });
   test('the home page says what the site does not cover, and where to go', () => {
     const h = FakePage.need('index.html');

@@ -99,6 +99,8 @@ var FakePage = (function(){
     STORAGE_KEYS: typeof STORAGE_KEYS !== 'undefined' ? STORAGE_KEYS : undefined,
     PrivacyEngine: typeof PrivacyEngine !== 'undefined' ? PrivacyEngine : undefined,
     progressBar: typeof progressBar !== 'undefined' ? progressBar : undefined,
+    PROGRESS: typeof PROGRESS !== 'undefined' ? PROGRESS : undefined,
+    ProgressEngine: typeof ProgressEngine !== 'undefined' ? ProgressEngine : undefined,
   };
   /* runs one page script; returns every piece of markup it wrote */
   function runPage(file, o){

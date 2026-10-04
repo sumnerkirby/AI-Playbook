@@ -313,6 +313,7 @@ section[id]{scroll-margin-top:80px}
 .quote figcaption a{color:var(--ink2)}
 /* tap targets of at least 24px (WCAG 2.2, 2.5.8) without moving the layout */
 .quote figcaption a,.profilebar a,.fnmap td:first-child a{display:inline-block;padding:5px 0;margin-top:-5px;margin-bottom:-5px}
+.atlas-note .btn.quiet{padding-top:4px;padding-bottom:4px;margin-top:-4px;margin-bottom:-4px}
 .quote blockquote{margin:0;padding:11px 16px 13px;font-size:15.5px;line-height:1.55;font-style:italic;color:#27323D}
 .sources-note{margin:0 0 12px;color:var(--ink2);font-size:15px}
 
@@ -478,6 +479,11 @@ section[id]{scroll-margin-top:80px}
 .about-text .checked-note{font-size:14.5px}
 .starts{display:flex;flex-direction:column;gap:14px}
 .starts-head{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin:0}
+.start .mini-track{margin:-2px 0 2px;padding-left:22px;color:#fff;font-size:16px;line-height:1.5}
+.progress-link{margin:0;color:var(--ink2);font-size:15px}
+/* a returning visitor's next step, above the two ways through */
+.start.continue{border-left-width:6px}
+.start.continue .more{font-size:15px;color:var(--ink2)}
 .start{
   display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--rule);
   border-left:4px solid var(--c);border-radius:3px;padding:18px 20px

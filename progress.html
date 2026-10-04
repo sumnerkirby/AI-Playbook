@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple_touch_icon.png">
+<title>Your progress</title>
+<meta name="description" content="Where you are in the AI Playbook for small businesses, and what to do next: the essentials in under an hour, or the full nine-step playbook. Worked out in your browser from what the tools saved.">
+<link rel="preload" href="fonts/source_serif_4_latin_wght_normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  .next-up{max-width:640px;margin:0 0 28px}
+  .next-up .k b{font-weight:600}
+  .none-yet{max-width:64ch;color:var(--ink2);margin:-14px 0 26px}
+  .tracks{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;align-items:start}
+  .track-box{background:var(--card);border:1px solid var(--rule2);border-top:4px solid var(--c);border-radius:3px;padding:18px 20px 12px}
+  .track-box h2{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.01em;margin:0}
+  .track-box .meta-line{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:4px 0 8px}
+  .track-box .intro{margin:0 0 10px;color:var(--ink2);font-size:15.5px}
+  .track{list-style:none;margin:0;padding:0}
+  .track li{display:grid;grid-template-columns:30px 1fr;gap:2px 8px;padding:10px 0;border-top:1px solid var(--rule2)}
+  .track .mark{font-family:var(--mono);font-size:15px;line-height:1.5;color:var(--ink3);text-align:center}
+  .track li.done .mark{color:var(--part2)}
+  .track li.is-next .mark{color:var(--c)}
+  .track .what a{font-family:var(--display);font-weight:600;color:var(--ink);text-decoration:none;font-size:16.5px}
+  .track .what a:hover{text-decoration:underline}
+  .track li.done .what a{color:var(--ink2);font-weight:500}
+  .track .state{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-left:6px;white-space:nowrap}
+  .track li.is-next .state{color:var(--c);font-weight:600}
+  .track .note{grid-column:2;margin:2px 0 0;color:var(--ink2);font-size:15px}
+  .track .helps{grid-column:2;margin:2px 0 0;font-size:14.5px;color:var(--ink3)}
+  .track .helps a{color:var(--ink2)}
+  .sub{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:0;padding:14px 0 4px;border-top:1px solid var(--rule2)}
+  .how{max-width:68ch;margin:26px 0 0;color:var(--ink2);font-size:15px}
+  @media (max-width:760px){ .tracks{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="wrap">
+
+  <nav class="sitebar" aria-label="Site">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>AI Playbook for small businesses</a>
+    <ul>
+      <li><a href="playbook.html">Playbook</a></li>
+      <li><a href="playbook.html#guides">Guides</a></li>
+      <li><a href="policies.html">Templates</a></li>
+      <li><a href="playbook.html#library">Library</a></li>
+    </ul>
+  </nav>
+  <nav class="toolrow" aria-label="Your tools">
+    <span class="k">Your tools</span>
+    <a href="progress.html" aria-current="page">Your progress</a>
+    <a class="featured" href="playbook.html">The 9-step playbook</a>
+    <a href="quick_check.html">Quick check</a>
+    <a href="tool_check.html">AI list</a>
+    <a href="risk_matrix.html">Risk overview</a>
+    <a href="quick_policy.html">AI policy</a>
+    <a href="quick_pulse.html">Monthly check-in</a>
+    <a href="record.html">Record</a>
+  </nav>
+  <script src="sitebar.js"></script>
+
+  <header class="mast">
+    <p class="eyebrow">Your progress &middot; Part of the <a href="index.html">AI Playbook for small businesses</a></p>
+    <h1>Your progress<span>Two ways through, and what to do next</span></h1>
+    <p class="lede">The essentials cover the most common risks in under an hour. The full playbook is the nine steps, with the tools that support them. This page shows what you have done in each, and the one thing to do next.</p>
+  </header>
+
+  <main id="main">
+    <div id="progress">
+      <noscript>
+        <div class="callout"><p>This page needs JavaScript to read what the tools saved. The essentials, in order: describe your business, do the quick check, write your AI policy, check the tool you use most, and set a monthly reminder. The full playbook: steps 0 to 9 on the <a href="playbook.html">playbook</a>, then the risk overview and the record.</p></div>
+      </noscript>
+    </div>
+    <p class="how">How this page knows: it reads what each tool saved in this browser, and saves nothing itself. The quick check and the AI policy count once you choose Save in this browser at the end. A playbook step counts once you mark it done. Work done in another browser shows here after you open your saved file on the <a href="record.html">record</a> page. <a href="privacy.html">Privacy and your data</a>.</p>
+  </main>
+
+  <footer>
+    AI Playbook for small businesses &middot; The AI Playbook Project, University of Oklahoma Cybersecurity Clinic &middot; educational material, not legal advice<br>
+    Nothing you enter is sent to us or to anyone else. This page reads what the other tools saved in this browser. The site&rsquo;s host, GitHub Pages, receives ordinary page requests, as it would for any website.<br>
+    <a href="privacy.html">Privacy and your data</a> &middot; Contact: <a href="mailto:cyberclinic@ou.edu">cyberclinic@ou.edu</a>
+  </footer>
+</div>
+<script src="ui_common.js"></script>
+<script src="data/profile_options.js"></script>
+<script src="data/profile_effects.js"></script>
+<script src="profile_engine.js"></script>
+<script src="data/progress.js"></script>
+<script src="progress_engine.js"></script>
+<script src="progress.js"></script>
+</body>
+</html>

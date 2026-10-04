@@ -1,6 +1,6 @@
 # AI Playbook for small businesses
 
-A plain-language guide to using AI tools safely in a small business with no IT staff: nine steps, a quick check of about 10 minutes, and tools that turn your answers into a list of the AI you use, a risk overview, a one-page AI policy and a record you can share.
+A plain-language guide to using AI tools safely in a small business with no IT staff: nine steps, a quick check of about 10 minutes, and tools that turn your answers into a list of the AI you use, a risk overview, a one-page AI policy and a record you can share. Two ways through: the essentials in under an hour, or the full playbook, with a progress page that shows what is done and what to do next.
 
 **The site:** https://sumnerkirby.github.io/AI-Playbook/
 
