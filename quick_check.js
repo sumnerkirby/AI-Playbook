@@ -226,7 +226,7 @@
     const q = qs[i];
     ask({
       q,
-      left: `<b>Part 1 of 2</b> &middot; Red flags`,
+      left: `<b>Part 1</b> &middot; Red flags`,
       n: i + 1, total: qs.length,
       onAnswer: id => {
         state.screener[q.id] = id;
@@ -246,7 +246,7 @@
     ask({
       q: qs[i],
       about: def.label,
-      left: `<b>Part 2 of 2</b> &middot; Task ${n + 1} of ${state.cards.length}`,
+      left: `<b>Part 2</b> &middot; Task ${n + 1} of ${state.cards.length}`,
       frac: (n + i / qs.length) / state.cards.length,
       onAnswer: id => {
         cd.answers[qs[i].id] = id;
@@ -292,7 +292,7 @@
     const stops = r.hits.filter(h => h.outcome === 'stop').length;
     const checks = r.hits.length - stops;
     screen(`
-      <p class="step-label"><b>Part 1 of 2 &middot; Result</b></p>
+      <p class="step-label"><b>Part 1 &middot; Result</b></p>
       <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? `No red flags confirmed yet: ${plural(checks, 'thing')} to find out first` : 'No red flags found'}</h2>
       <p class="honest">Quick check, not a full review</p>
       ${screenerFindings(r)}
@@ -316,7 +316,7 @@
         <span class="t">${esc(c.label)}</span><span class="h">${esc(c.hint)}</span><span class="box" aria-hidden="true"></span></button>`;
     const nudge = CARDS.none_nudge;
     screen(`
-      <p class="step-label"><b>Part 2 of 2 &middot; Everyday tasks</b></p>
+      <p class="step-label"><b>Part 2 &middot; Everyday tasks</b></p>
       <h2>In which of these tasks does anyone in your business use AI?</h2>
       <p class="example">Select every task in which anyone uses AI, even occasionally. The note on each card says where AI is often found.</p>
       <div class="tapgrid rows" role="group" aria-label="Everyday tasks">${tapOrder().map(btn).join('')}</div>

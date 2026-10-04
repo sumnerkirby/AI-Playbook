@@ -200,7 +200,7 @@ var PolicyEngine = (function(){
     else if (a.recording === null) sec('recording', T.recording_h, [pending('Our rule on recording calls')]);
 
     const contact = P.incident_contacts[a.industry];
-    sec('wrong', T.wrong_h, [p(T.wrong), contact ? p(contact) : null]);
+    sec('wrong', T.wrong_h, [p(T.wrong), p(T.wrong_payments), contact ? p(contact) : null]);
     sec('review', T.review_h, [p(T.review)]);
 
     if (solo && business.length){

@@ -31,6 +31,9 @@ var PolicyTestRun = (function(){
   }
 
   /* ---------- data ---------- */
+  test('both versions confirm changes to bank or payment details by calling back (FIXES 2.8)', () => {
+    ['team', 'solo'].forEach(v => ok(/calling a number (we|I) already have, never one given in the message/.test(POLICY.text[v].wrong_payments), v));
+  });
   test('no em dashes or en dashes in any policy wording', () => {
     const s = JSON.stringify(POLICY);
     ok(!/[\u2013\u2014]/.test(s), 'found a dash');

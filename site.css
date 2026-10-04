@@ -308,6 +308,8 @@ section[id]{scroll-margin-top:80px}
 }
 .quote figcaption b{color:var(--ink);font-weight:600;letter-spacing:.03em}
 .quote figcaption a{color:var(--ink2)}
+/* tap targets of at least 24px (WCAG 2.2, 2.5.8) without moving the layout */
+.quote figcaption a,.profilebar a,.fnmap td:first-child a{display:inline-block;padding:5px 0;margin-top:-5px;margin-bottom:-5px}
 .quote blockquote{margin:0;padding:11px 16px 13px;font-size:15.5px;line-height:1.55;font-style:italic;color:#27323D}
 .sources-note{margin:0 0 12px;color:var(--ink2);font-size:15px}
 
@@ -384,7 +386,7 @@ section[id]{scroll-margin-top:80px}
 .grid a{color:inherit;text-decoration-color:var(--ink3);text-underline-offset:3px}
 /* the framework table: each outcome ID in its function's colour */
 .fnmap .fnref{
-  display:inline-block;margin:0 10px 2px 0;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
+  display:inline-block;margin:0 10px 2px 0;padding:3px 0;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
   color:var(--c);text-decoration:none;border-bottom:1.5px solid color-mix(in srgb,var(--c) 35%,transparent);white-space:nowrap
 }
 .fnmap .fnref:hover{border-bottom-color:var(--c)}
