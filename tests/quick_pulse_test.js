@@ -119,7 +119,7 @@ var PulseTestRun = (function(){
     const rows = PU.csv(log).trim().split('\r\n');
     eq(rows[0], 'date,kind,name,detail,light', 'header');
     ok(rows.includes('2026-11-03,new tool,Copilot in Outlook,"Writing emails, letters or documents",stop'), 'new tool row');
-    ok(rows.includes('2026-12-01,something went wrong,,"\'=HYPERLINK(""http://x"",""click"")",'), 'formula defused and quoted: ' + rows.filter(r => r.includes('HYPERLINK')));
+    ok(rows.includes('2026-12-01,something went wrong,,"\'=HYPERLINK(""http://x"",""click"")",needs a check'), 'formula defused and quoted: ' + rows.filter(r => r.includes('HYPERLINK')));
     eq(rows.filter(r => r.split(',')[1] === 'check-in').length, 3, 'one check-in row each');
   });
 
@@ -174,6 +174,12 @@ var PulseTestRun = (function(){
   });
 
   /* ---------- joined or left (FIXES 1.2) ---------- */
+  test('a check-in that reports a problem needs a check (Sumner, Oct 4, 2026)', () => {
+    const c = {date: '2026-10-04', new_tools: [], connections: [], incidents: [{text: 'Client name pasted into ChatGPT'}], people: {answer: 'no'}};
+    eq(PU.worst(c), 'check', 'worst light');
+    eq(PU.worst(Object.assign({}, c, {incidents: []})), 'go', 'without the problem');
+    ok(/something went wrong,,Client name pasted into ChatGPT,needs a check/.test(PU.csv({version: 1, checkins: [c]})), 'CSV');
+  });
   test('joined or left: accounts not yet changed is a check, done is go, and it shows in the summary, CSV and worst light', () => {
     eq(['yes', 'no', 'not_sure'].map(a => PU.peopleRule(a).light), ['go', 'check', 'check'], 'lights');
     ok(PULSE.questions.people.accounts.every(o => PU.peopleRule(o.id) && PU.peopleRule(o.id).fix), 'every answer has a rule');

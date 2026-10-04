@@ -77,8 +77,10 @@ var PulseEngine = (function(){
   function newCheckin(today){
     return {date: today, pulse_version: P.version, rules_version: RULES.version, new_tools: [], incidents: [], connections: []};
   }
+  /* a reported problem always needs a look, so it counts as check */
   function worst(c){
-    const lights = c.new_tools.map(t => t.light).concat(c.connections.map(x => x.light), c.people && c.people.light ? [c.people.light] : []);
+    const lights = c.new_tools.map(t => t.light).concat(c.connections.map(x => x.light), c.people && c.people.light ? [c.people.light] : [],
+      c.incidents.length ? ['check'] : []);
     return lights.reduce((w, l) => RANK[l] > RANK[w] ? l : w, 'go');
   }
   function summary(c){
@@ -164,7 +166,7 @@ var PulseEngine = (function(){
     sorted(log).forEach(c => {
       rows.push([c.date, 'check-in', '', summary(c), word(worst(c))]);
       c.new_tools.forEach(t => rows.push([c.date, 'new tool', t.name, label(t.card), word(t.light)]));
-      c.incidents.forEach(i => rows.push([c.date, 'something went wrong', '', i.text, '']));
+      c.incidents.forEach(i => rows.push([c.date, 'something went wrong', '', i.text, word('check')]));
       c.connections.forEach(x => rows.push([c.date, 'new connection', x.name, 'Approval before it acts: ' + opt(Qs.connection.approval, x.approval), word(x.light)]));
       if (c.people && c.people.answer === 'yes') rows.push([c.date, 'joined or left', '', 'AI accounts added or removed: ' + opt(Qs.people.accounts, c.people.accounts), word(c.people.light)]);
       if (c.sweep && c.sweep.answer === 'yes') c.sweep.found.forEach(n => rows.push([c.date, 'found on statement', n, '', 'to check']));
