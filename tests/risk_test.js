@@ -30,8 +30,8 @@ var RiskTestRun = (function(){
     return T.refresh(l, profile, TODAY, false);
   }
 
-  /* ---------- Northgate Supply Co.: 25 people, defense customer, CUI ---------- */
-  const NG = {team_size: 'medium', ai_use: ['use', 'configure'], industry: ['defense'], it_support: 'provider'};
+  /* ---------- Northgate Supply Co.: 25 people, a distributor ---------- */
+  const NG = {team_size: 'medium', ai_use: ['use', 'configure'], industry: ['trades'], it_support: 'provider'};
   const base = {mode: 'new', plan: 'business', access: ['website'], acts: ['produces_only']};
   const northgate = () => ({
     marketing: line(Object.assign({}, base, {tool: 'Copy generator', use: 'marketing', data: ['public'], output: ['customers']}), NG, 'all'),
@@ -68,9 +68,9 @@ var RiskTestRun = (function(){
     const {items} = K.items(Object.values(n), NG, K.emptyStore());
     eq(items.map(i => i.label.split(' · ')[0]), ['Meeting summarizer', 'Invoice reader', 'Website chatbot', 'Copy generator', 'Code assistant'], 'order');
   });
-  test('Northgate: if CUI is spoken in meetings, the summarizer is a red line and leaves the matrix', () => {
+  test('Northgate: if the summarizer could act without approval, it is a red line and leaves the matrix', () => {
     const n = northgate();
-    const red = line(Object.assign({}, T.reopenAnswers(n.meetings), {special: 'yes'}), NG, []);
+    const red = line(Object.assign({}, T.reopenAnswers(n.meetings), {acts: ['reads', 'acts'], approval: 'none'}), NG, []);
     const {items, stopped} = K.items([red], NG, K.emptyStore());
     eq([items.length, stopped.length, stopped[0].paused], [0, 1, false], 'listed under Stopped, not on the grid');
   });

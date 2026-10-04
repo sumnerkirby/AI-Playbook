@@ -53,16 +53,13 @@ var POLICY = {
     {id: 'cards',     label: `Payment card numbers`, on: true},
     {id: 'bank',      label: `Bank account numbers`, on: true},
     {id: 'ids',       label: `Social Security numbers and other ID numbers`, on: true},
-    {id: 'health',    label: `Health or medical information about anyone`, on: true, off_for: ['healthcare']},
+    {id: 'health',    label: `Health or medical information about anyone`, on: true},
     {id: 'hr',        label: `Staff pay, performance or disciplinary records`, on: false},
     /* industry suggestions, ticked by default for that industry */
-    {id: 'patients',  industry: 'healthcare',   on: true, label: `Patient information, unless the tool is covered by a business associate agreement (BAA)`},
     {id: 'client_conf', industry: 'professional', on: true, label: `Client-confidential documents, unless the tool is approved for client work`},
     {id: 'tax',       industry: 'professional', on: false, label: `Tax return information, unless the client has agreed in writing`},
     {id: 'client_fin', industry: 'finance',     on: true, label: `Client account numbers, statements and portfolio details, unless the tool is covered by a data agreement`},
     {id: 'candidates', industry: 'hiring',      on: true, label: `Candidates' health, disability or background-check information`},
-    {id: 'children',  industry: 'education',    on: true, label: `Information that identifies a child`},
-    {id: 'cui',       industry: 'defense',      on: true, label: `Controlled Unclassified Information (CUI), unless the tool is approved for it`},
     {id: 'drawings',  industry: 'trades',       on: true, label: `Customer drawings and specifications, unless the customer has agreed`},
     {id: 'embargo',   industry: 'creative',     on: true, label: `Unreleased or embargoed client work, unless the client has agreed`},
   ],
@@ -113,11 +110,8 @@ var POLICY = {
   /* walkthrough gap 12: who else might need to know, by industry. Flags,
      not conclusions. */
   incident_contacts: {
-    healthcare:   `Ask a compliance advisor whether it is a privacy incident under HIPAA.`,
     finance:      `Check whether the compliance consultant, custodian or insurer must be notified.`,
     professional: `Check whether the client, the professional association or the insurer must be notified.`,
-    defense:      `Check the contract: some incidents involving CUI must be reported quickly.`,
-    education:    `If it involves a child's information, check whether the parents or the school must be notified.`,
     hiring:       `If it involves candidates' information, check whether they must be notified.`,
   },
 

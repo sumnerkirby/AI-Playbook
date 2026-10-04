@@ -52,12 +52,12 @@ var RISK = {
     {id: 'public', why: `Public-facing, or shared by a public link`, when: {any: [{q: 'direct', in: ['yes']}, {q: 'own_access', in: ['public']}]}},
     {id: 'unpublished', why: `Browser add-on, or a supplier that does not publish its data handling`, when: {any: [{q: 'access', in: ['extension']}, {q: 'published', in: ['no']}]}},
     {id: 'discovered', why: `Found already in use, with no rules yet`, when: {q: '_mode', in: ['discovered']}, cleared_by_standing: true},
-    {id: 'team_no_rules', why: `Several people use it with no written rules`, when: {q: '_team', in: ['small', 'medium', 'large']}, cleared_by: 't.team.tell'},
+    {id: 'team_no_rules', why: `Several people use it with no written rules`, when: {q: '_team', in: ['small', 'medium']}, cleared_by: 't.team.tell'},
   ],
   lowers: [
     /* lowers likelihood only. Impact comes from what goes in, never from
-       the plan, so a business plan does not make patient, client-confidential
-       or government contract information less serious (FIXES 1.3; tested) */
+       the plan, so a business plan does not make client-confidential or
+       regulated information less serious (FIXES 1.3; tested) */
     {id: 'business_training_off', why: `Business plan, training off, with a source noted`,
      when: {all: [{q: 'plan', in: ['business', 'enterprise', 'built_in', 'own']}, {q: 'training', in: ['no_checked']}, {q: '_sourced', in: ['training']}]}},
     {id: 'human_check', why: `A person checks output before it leaves`, when: {q: '_done', in: ['t.output.customers']}},
@@ -66,7 +66,7 @@ var RISK = {
     {id: 'sourced', why: `Supplier answers recorded with sources`, when: {all: [{q: '_sourced_any', in: ['yes']}, {q: '_unsourced_any', in: ['no']}]}},
     {id: 'only_public', why: `Nothing personal or confidential goes in`,
      when: {all: [{q: 'data', in: ['public']}, {not: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']}}]}},
-    {id: 'team_told', why: `The team has been told the rules`, when: {all: [{q: '_team', in: ['small', 'medium', 'large']}, {q: '_done', in: ['t.team.tell']}]}},
+    {id: 'team_told', why: `The team has been told the rules`, when: {all: [{q: '_team', in: ['small', 'medium']}, {q: '_done', in: ['t.team.tell']}]}},
   ],
   /* High if two or more raise it; Low if none raise it and two or more
      lower it; otherwise Moderate */
@@ -84,7 +84,7 @@ var RISK = {
 
   responses: [
     {id: 'mitigate', label: `Reduce it`, detail: `Do the to-dos and keep the standing rules`},
-    {id: 'avoid',    label: `Stop or change the use`, detail: `For example, stop putting patient details in`},
+    {id: 'avoid',    label: `Stop or change the use`, detail: `For example, stop putting customer details in`},
     {id: 'transfer', label: `Share it`, detail: `Contract terms or insurance. This is only partly possible, because reputational harm cannot be shared`},
     {id: 'accept',   label: `Accept it`, detail: `You approve it, with a reason and a review date. Not available where a red line is crossed`},
   ],
@@ -105,9 +105,6 @@ var RISK = {
     {id: 'client_money', type: 'used_against', industry: ['finance'],
      title: `Someone impersonates a client (voice or email) to request a money movement`,
      control: `Confirm any request to move money by calling the client back on the number already on file.`},
-    {id: 'patient_info', type: 'used_against', industry: ['healthcare'],
-     title: `Someone uses a cloned voice or fake email to get patient information`,
-     control: `Verify identity using details already on file before sharing anything.`},
     {id: 'cant_answer', type: 'other', industry: '*',
      title: `Customers ask how we use AI and we cannot answer`,
      control: `Keep a short, honest answer ready, taken from your AI policy.`},

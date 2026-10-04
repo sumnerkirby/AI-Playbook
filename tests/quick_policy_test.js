@@ -122,13 +122,14 @@ var PolicyTestRun = (function(){
   });
 
   /* ---------- industry ---------- */
-  test('industry suggestions: ticked for that industry, and health swaps for patients', () => {
-    ok(PE.neverDefaults('healthcare').includes('patients'), 'patients');
-    ok(!PE.neverDefaults('healthcare').includes('health'), 'general health line replaced');
+  test('industry suggestions: ticked for that industry, and the health line for everyone', () => {
+    ok(PE.neverDefaults('professional').includes('client_conf'), 'client-confidential for professional services');
+    ok(PE.neverDefaults('finance').includes('health'), 'general health line kept');
     ok(PE.neverDefaults(null).includes('health'), 'general health line otherwise');
     ok(!PE.neverDefaults('retail').includes('client_conf'), 'no other industry items');
-    const a = PE.initial(TODAY, 'defense'); a.never_touched = true; a.never = ['passwords'];
-    PE.setIndustry(a, 'healthcare');
+    ok(!PE.neverDefaults('healthcare').some(id => ['patients', 'children', 'cui'].includes(id)), 'no lines for industries no longer covered');
+    const a = PE.initial(TODAY, 'finance'); a.never_touched = true; a.never = ['passwords'];
+    PE.setIndustry(a, 'professional');
     eq(a.never, ['passwords'], 'an edited list is kept when the industry changes');
   });
 

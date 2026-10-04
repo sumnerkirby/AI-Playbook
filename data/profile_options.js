@@ -5,17 +5,21 @@
    Loaded as a .js file (not .json) so pages still work opened from disk. */
 
 var PROFILE_OPTIONS = {
-  profile_version: 2,
+  profile_version: 3,
   last_reviewed: '2026-10-01',
+
+  /* answers saved before version 3 that are no longer offered (Oct 4, 2026:
+     the site covers up to 50 people, and no longer covers healthcare,
+     education or defense contracting) */
+  retired: {team_size: {large: 'medium'}, industry: {healthcare: 'other', education: 'other', defense: 'other'}},
 
   team_size: {
     label: `Who uses AI for work in your business?`,
-    why: `If you work alone, the site leaves out the steps meant for a team.`,
+    why: `The site is written for businesses of up to 50 people. If you work alone, it leaves out the steps meant for a team.`,
     options: [
       {id: 'solo',   code: 's', label: `Just me`,                              summary: `Just me`},
       {id: 'small',  code: 't', label: `Me and a small team (2 to 10 people)`, summary: `Small team`},
       {id: 'medium', code: 'm', label: `A bigger team (11 to 50 people)`,      summary: `Team of 11 to 50`},
-      {id: 'large',  code: 'l', label: `More than 50 people`,                  summary: `Over 50`},
     ],
   },
 
@@ -36,42 +40,22 @@ var PROFILE_OPTIONS = {
 
   industry: {
     label: `What kind of business are you?`,
-    why: `Some industries have extra rules about information that goes into AI tools.`,
+    why: `Some industries have extra rules about information that goes into AI tools. The site does not cover the rules for healthcare, education or government contracting.`,
     options: [
-      {id: 'healthcare',   code: 'hc', label: `Healthcare and wellness`,
-       examples: `Dental, therapy, clinics, physical therapy, pharmacy, veterinary`},
       {id: 'professional', code: 'pr', label: `Legal, accounting and professional services`,
        examples: `Law firms, bookkeepers, tax preparers, consultants, architects`},
       {id: 'finance',      code: 'fi', label: `Finance and insurance`,
-       examples: `Brokers, insurance agents, small lenders, financial advisers`,
-       /* walkthrough gap 1: finance is too broad without these */
-       subtypes: [
-         {id: 'advice',    label: `Financial advice or planning`},
-         {id: 'insurance', label: `Insurance`},
-         {id: 'lending',   label: `Lending or credit`},
-       ],
-       registration: {
-         applies_to_subtype: 'advice',
-         label: `How are you registered?`,
-         options: [
-           {id: 'sec',      label: `With the SEC`},
-           {id: 'state',    label: `With my state`},
-           {id: 'not_sure', label: `Not sure`},
-         ],
-       }},
+       examples: `Brokers, insurance agents, small lenders, financial advisers`},
       {id: 'retail',       code: 're', label: `Retail, e-commerce and hospitality`,
        examples: `Shops, online sellers, restaurants, hotels`},
       {id: 'hiring',       code: 'hi', label: `Hiring and staffing`,
        examples: `Recruiters, staffing agencies`},
-      {id: 'education',    code: 'ed', label: `Education and childcare`,
-       examples: `Tutoring, training providers, childcare`},
-      {id: 'defense',      code: 'de', label: `Defense or government contractor`,
-       examples: `Suppliers handling government contract information`},
       {id: 'trades',       code: 'tr', label: `Trades, construction and manufacturing`,
        examples: `Builders, electricians, HVAC, small manufacturers`},
       {id: 'creative',     code: 'cr', label: `Creative, marketing and media`,
        examples: `Agencies, designers, photographers, writers`},
-      {id: 'other',        code: 'ot', label: `Something else`, examples: ``},
+      {id: 'other',        code: 'ot', label: `Something else`,
+       examples: `The general guidance, with no industry notes`},
     ],
   },
 
@@ -86,12 +70,11 @@ var PROFILE_OPTIONS = {
     ],
   },
 
-  /* short words for the summary bar ("Just me · Ready-made tools · Healthcare") */
+  /* short words for the summary bar ("Just me · Ready-made tools · Finance") */
   path_summary: {use: `Ready-made tools`, configure: `Tools you set up`, build: `Code you write`, none: `No AI yet`},
   industry_summary: {
-    healthcare: `Healthcare`, professional: `Professional services`, finance: `Finance`, retail: `Retail`,
-    hiring: `Hiring`, education: `Education`, defense: `Defense contractor`, trades: `Trades`,
-    creative: `Creative`, other: `Other`,
+    professional: `Professional services`, finance: `Finance`, retail: `Retail`,
+    hiring: `Hiring`, trades: `Trades`, creative: `Creative`, other: `Other`,
   },
 
   /* Industry overlays: what's different, as things to check with an advisor,
@@ -110,22 +93,6 @@ var PROFILE_OPTIONS = {
     ],
   },
   overlays: {
-    healthcare: {
-      last_reviewed: '2026-10-03',
-      summary: `Patient information needs extra care.`,
-      points: [
-        `Under HIPAA, a covered entity generally needs a business associate agreement (BAA) with a vendor before patient information goes in. Most consumer AI plans do not offer one.`,
-        `A BAA for your main software may not cover a new AI feature inside it. Ask the supplier.`,
-        `Team-tier AI plans usually do not include a BAA. It is usually part of an enterprise or healthcare plan, so ask which plan, and which features, the BAA covers.`,
-      ],
-      red_line: `Patient information in a tool without a BAA.`,
-      advice: `Ask your compliance advisor which of your tools count as business associates.`,
-      seek_advice: `Patient information has legal rules. Before patient information goes into any AI tool, confirm that a business associate agreement covers that tool and plan. Get advice from your compliance advisor.`,
-      links: [
-        {title: `HHS: Business associates`, href: `https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/business-associates/index.html`},
-        {title: `HHS: Guidance on HIPAA and cloud computing`, href: `https://www.hhs.gov/hipaa/for-professionals/special-topics/health-information-technology/cloud-computing/index.html`},
-      ],
-    },
     professional: {
       last_reviewed: '2026-10-01',
       summary: `Client confidentiality comes first.`,
@@ -148,23 +115,14 @@ var PROFILE_OPTIONS = {
         `Customer financial information is covered by the Gramm-Leach-Bliley Act. Non-bank firms are generally subject to the FTC Safeguards Rule.`,
         `If AI helps with credit decisions, adverse-action notices still need specific reasons (Equal Credit Opportunity Act and Regulation B). The CFPB withdrew its 2022 guidance on AI and adverse action in May 2025; the requirement in Regulation B did not change.`,
         `AI outputs such as meeting notes and client summaries may count as business records you have to keep.`,
+        `Investment advisers registered with the SEC: Regulation S-P (as amended in 2024) covers safeguarding customer information and notice of incidents. State-registered advisers follow their state regulator's rules.`,
       ],
       red_line: `AI helping decide credit or cover with no person deciding.`,
-      advice: `Ask your compliance consultant which rules apply to how you are registered.`,
+      advice: `Ask your compliance consultant which rules apply to your business.`,
       seek_advice: `Customer financial information is covered by federal rules. Check your AI tools against the FTC Safeguards Rule, or your regulator's rules, with your compliance consultant.`,
       links: [
         {title: `FTC: Safeguards Rule, what your business needs to know`, href: `https://www.ftc.gov/business-guidance/resources/ftc-safeguards-rule-what-your-business-needs-know`},
       ],
-      subtype_points: {
-        advice: `Advisers: check how AI-drafted client communications and meeting notes fit your record-keeping duties.`,
-        insurance: `Insurance: some states have rules or bulletins on AI in underwriting and claims.`,
-        lending: `Lending: fair-lending and adverse-action rules apply whether or not AI is involved.`,
-      },
-      registration_points: {
-        sec: `SEC-registered advisers: Regulation S-P (as amended in 2024) covers safeguarding customer information and incident notice.`,
-        state: `State-registered advisers: your state regulator's rules apply, and the FTC Safeguards Rule may too.`,
-        not_sure: `Find out how you are registered. It decides which privacy and record-keeping rules apply.`,
-      },
     },
     retail: {
       last_reviewed: '2026-10-01',
@@ -190,37 +148,6 @@ var PROFILE_OPTIONS = {
       links: [
         {title: `New York City: Automated employment decision tools`, href: `https://www.nyc.gov/site/dca/about/automated-employment-decision-tools.page`},
         {title: `Illinois General Assembly: Public Act 103-0804, AI in employment decisions`, href: `https://www.ilga.gov/Legislation/publicacts/view/103-0804`},
-      ],
-    },
-    education: {
-      last_reviewed: '2026-10-01',
-      summary: `Children's information.`,
-      points: [
-        `COPPA covers online services directed at children under 13.`,
-        `FERPA applies where school records are involved.`,
-      ],
-      red_line: `Information about a named child on a free or personal plan.`,
-      advice: `Check what your agreements with schools or parents say about sharing information.`,
-      seek_advice: `Children's and student information has its own rules. Check your agreements with schools and parents before using AI with it.`,
-      links: [
-        {title: `U.S. Department of Education: Protecting student privacy`, href: `https://studentprivacy.ed.gov/`},
-        {title: `FTC: Complying with COPPA, frequently asked questions`, href: `https://www.ftc.gov/business-guidance/resources/complying-coppa-frequently-asked-questions`},
-      ],
-    },
-    defense: {
-      last_reviewed: '2026-10-03',
-      summary: `Controlled Unclassified Information (CUI) stays in approved systems.`,
-      points: [
-        `DFARS 252.204-7012 requires CUI to be protected under NIST SP 800-171, and in the cloud, by services that meet FedRAMP Moderate or equivalent. General commercial AI plans usually do not.`,
-        `CMMC: Phase 1 self-assessments are in effect. On July 13, 2026, the Department suspended Phase 2, which would have added third-party Level 2 certification from November 10, 2026, while it reviews the program. Check the DoD CIO CMMC page for the current status.`,
-        `Export-controlled technical data (ITAR or EAR) in a tool that stores data abroad, or that foreign persons can access, can count as an export. Check before it goes into any AI tool.`,
-      ],
-      red_line: `CUI in any tool not approved for CUI.`,
-      advice: `Your contract may require you to report incidents quickly. Ask your contracting officer or advisor.`,
-      seek_advice: `Controlled Unclassified Information must stay in systems approved for it. Most commercial AI plans are not. Ask your contracting officer, or a no-cost APEX Accelerator advisor, before using AI with contract information.`,
-      links: [
-        {title: `DoD CIO: Cybersecurity Maturity Model Certification (CMMC)`, href: `https://dodcio.defense.gov/CMMC/`},
-        {title: `APEX Accelerators: no-cost help for government contractors`, href: `https://www.apexaccelerators.us/`},
       ],
     },
     trades: {

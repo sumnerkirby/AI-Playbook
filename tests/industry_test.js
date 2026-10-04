@@ -1,6 +1,7 @@
 /* Tests for the industry warnings (FIXES 1.4): the Get advice banner and its
    links, on step 0 of the playbook, the quick check result and the tool
-   check result, and the defense notes. The page tests use the stand-in page
+   check result. Healthcare, education and defense are no longer covered
+   (Oct 4, 2026). The page tests use the stand-in page
    in tests/fake_page.js.
    Run with the other tests: tests/run_tests.sh or tests/run_tests.html. */
 
@@ -20,9 +21,9 @@ var IndustryTestRun = (function(){
   }
   function ok(cond, what){ if (!cond) current.fails.push(what || 'expected true'); }
   const esc = UI.esc;
-  const REGULATED = ['healthcare', 'defense', 'finance', 'professional', 'hiring', 'education'];
+  const REGULATED = ['finance', 'professional', 'hiring'];
   const OTHERS = O.industry.options.map(o => o.id).filter(i => !REGULATED.includes(i));
-  const profile = industry => ({profile_version: 2, team_size: 'small', ai_use: ['use'], industry: [industry], finance_subtype: null, registration: null, it_support: null});
+  const profile = industry => ({profile_version: 3, team_size: 'small', ai_use: ['use'], industry: [industry], it_support: null});
   const BANNER = 'class="advice-banner"';
 
   test('each regulated industry has banner text and links; the others have none', () => {
@@ -32,7 +33,7 @@ var IndustryTestRun = (function(){
       ok(o.links && o.links.length, i + ': links');
       (o.links || []).forEach(l => {
         ok(/^https:\/\//.test(l.href), `${i}: ${l.href} is https`);
-        ok(/^[^:]+: \S/.test(l.title) || /^APEX Accelerators/.test(l.title), `${i}: "${l.title}" names where it goes`);
+        ok(/^[^:]+: \S/.test(l.title), `${i}: "${l.title}" names where it goes`);
       });
     });
     ok(OTHERS.length >= 4, 'retail, trades, creative and other are not regulated here');
@@ -41,13 +42,14 @@ var IndustryTestRun = (function(){
     ok(!/[–—]/.test(JSON.stringify(O.overlays) + JSON.stringify(O.general_help)), 'no dashes');
   });
   test('the banner: one per regulated industry, links open with rel="noopener", and general help for everyone', () => {
-    const h = PR.adviceHTML(['healthcare'], esc);
+    const h = PR.adviceHTML(['finance'], esc);
     ok(h.includes(BANNER) && h.includes('<b>Get advice</b>'), 'the advisor-note component');
     eq((h.match(/<a /g) || []).length, (h.match(/rel="noopener"/g) || []).length, 'every link has rel="noopener"');
     ok(h.includes('SBA: Strengthen your cybersecurity') && h.includes('Oklahoma Small Business Development Centers'), 'general help');
     eq(PR.adviceHTML(['retail'], esc), '', 'none for retail');
-    eq(PR.adviceBanners(['retail', 'healthcare', 'hiring', 'healthcare']).map(b => b.industry), ['healthcare', 'hiring'], 'two industries, two banners, no repeats');
-    ok(PR.adviceHTML(['healthcare', 'hiring'], esc).includes('<span class="ind">Healthcare and wellness.</span>'), 'with two, each is named');
+    eq(PR.adviceBanners(['retail', 'finance', 'hiring', 'finance']).map(b => b.industry), ['finance', 'hiring'], 'two industries, two banners, no repeats');
+    ok(PR.adviceHTML(['finance', 'hiring'], esc).includes('<span class="ind">Finance and insurance.</span>'), 'with two, each is named');
+    eq(PR.adviceBanners(['healthcare', 'education', 'defense']), [], 'nothing for industries no longer covered');
   });
   test('playbook step 0 shows the banner for a regulated industry, and nothing for the others', () => {
     REGULATED.forEach(i => ok(runPage('step_zero.js', {local: {'sb-ai-playbook:profile': JSON.stringify(profile(i))}}).includes(BANNER), i + ': banner'));
@@ -80,12 +82,12 @@ var IndustryTestRun = (function(){
     REGULATED.forEach(i => ok(run(i).includes(BANNER), i + ': banner'));
     OTHERS.forEach(i => ok(!run(i).includes(BANNER), i + ': no banner'));
   });
-  test('defense notes: what DFARS requires, where CMMC stands, and export control', () => {
-    const pts = O.overlays.defense.points.join(' ');
-    ok(/NIST SP 800-171/.test(pts) && /FedRAMP Moderate or equivalent/.test(pts), 'DFARS 252.204-7012');
-    ok(/Phase 1 self-assessments are in effect/.test(pts) && /July 13, 2026/.test(pts) && /current status/.test(pts), 'CMMC status, dated, with where to check');
-    ok(/ITAR or EAR/.test(pts) && /can count as an export/.test(pts), 'export control');
-    ok(!/DFARS 252.204-7012 and CMMC require CUI to stay/.test(pts), 'the old wording is gone');
+  test('healthcare, education and defense: not offered, and the question says the site does not cover them', () => {
+    ['healthcare', 'education', 'defense'].forEach(i => {
+      ok(!O.industry.options.some(o => o.id === i), i + ': not offered');
+      ok(!O.overlays[i], i + ': no notes');
+    });
+    ok(/does not cover the rules for healthcare, education or government contracting/.test(O.industry.why), 'said on the question');
   });
 
   /* ---------- FIXES 1.5: foreign AI tools, a neutral check ---------- */
@@ -99,6 +101,31 @@ var IndustryTestRun = (function(){
     eq([lists.reduce((a, b) => a + b, 0), (tpl.match(/<ol start="(\d+)">/g) || []).join(' ')], [17, '<ol start="8"> <ol start="11"> <ol start="14">'], 'seventeen questions, numbered in order');
     ok(tpl.includes('17 questions') && tpl.includes('Seventeen questions') && !/15 questions|Fifteen/.test(tpl), 'the count says 17');
     ok(FakePage.need('policies.html').includes('Step 5 &middot; 17 questions'), 'the templates page agrees');
+  });
+
+  /* ---------- one set of result words (Oct 4, 2026) ---------- */
+  test('result words: acceptable, needs a check, or stop, on the home page, the quick check and the check-in', () => {
+    const E = QuickEngine, ctx = {industry: 'retail'};
+    const st = {industry: 'retail', screener: {}, none: false, cards: [
+      {id: 'marketing', answers: {data: 'none', account: 'personal'}},
+      {id: 'spreadsheets', answers: {data: 'sensitive', account: 'business'}}]};
+    E.screenerQuestions(ctx, {}).forEach(q => { st.screener[q.id] = 'no'; });
+    const h = runPage('quick_check.js', {hash: '#' + E.encode(st) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
+    ok(h.includes('1 acceptable') && h.includes('1 needs a check'), 'the counts');
+    ok(h.includes('Nothing to stop, 1 thing needs a check'), 'the headline');
+    ok(!/>\s*\d+ go</.test(h) && !/\d+ check</.test(h), 'no go or check counts');
+    const sentence = 'acceptable, needs a check, or stop';
+    ok(FakePage.need('index.html').includes(sentence) && FakePage.need('quick_check.html').includes(sentence), 'home page and quick check intro');
+    ok(FakePage.need('quick_pulse.js').includes("{go: 'Acceptable', check: 'Needs a check', stop: 'Stop'}"), 'check-in labels');
+  });
+  test('all Not sure: the summary says what to find out, not what to check (FIXES 2.4)', () => {
+    const E = QuickEngine, ctx = {industry: 'retail'};
+    const st = {industry: 'retail', screener: {}, cards: [], none: true};
+    E.screenerQuestions(ctx, {}).forEach(q => { st.screener[q.id] = 'not_sure'; });
+    st.screener = E.pruneScreener(ctx, st.screener);
+    const h = runPage('quick_check.js', {hash: '#' + E.encode(st) + '&s=result', local: {'sb-ai-playbook:profile': JSON.stringify(profile('retail'))}});
+    ok(/No red flags confirmed yet: \d+ things to find out first/.test(h), 'find out first');
+    ok(!h.includes('Nothing to stop'), 'does not read as a pass');
   });
 
   const failed = results.filter(r => r.fails.length);

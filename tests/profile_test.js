@@ -18,7 +18,7 @@ var ProfileTestRun = (function(){
   }
   function ok(cond, what){ if (!cond) current.fails.push(what || 'expected true'); }
   const P = o => PR.clean(Object.assign(PR.blank(), o));
-  const DANA = P({team_size: 'solo', ai_use: ['use'], industry: ['finance'], finance_subtype: 'advice', registration: 'state'});
+  const DANA = P({team_size: 'solo', ai_use: ['use'], industry: ['finance']});
   const ids = list => list.map(e => e.id).sort();
 
   /* ---------- data ---------- */
@@ -73,35 +73,42 @@ var ProfileTestRun = (function(){
     eq(P({ai_use: ['none', 'use']}).ai_use, ['use'], 'none dropped when something else is ticked');
   });
   test('link: the concept example decodes to Dana', () => {
-    eq(PR.decode('#p=solo.use.finance-advice-state'), DANA, 'decoded');
-    eq(PR.encode(DANA), 'p=solo.use.finance-advice-state', 'encoded');
-    eq(PR.decode('#x=1&p=solo.use.finance-advice-state'), DANA, 'among other parameters');
+    eq(PR.decode('#p=solo.use.finance'), DANA, 'decoded');
+    eq(PR.encode(DANA), 'p=solo.use.finance', 'encoded');
+    eq(PR.decode('#x=1&p=solo.use.finance'), DANA, 'among other parameters');
+    eq(PR.decode('#p=solo.use.finance-advice-state'), DANA, 'an older link with the finance follow-ups');
+  });
+  test('answers no longer offered map to what replaces them (Oct 4, 2026)', () => {
+    eq(PR.decode('#p=large.use.retail').team_size, 'medium', 'over 50 becomes 11 to 50');
+    eq(PR.decode('#p=small.use.healthcare').industry, ['other'], 'healthcare becomes other');
+    eq(PR.decode('#p=small.use.defense+education').industry, ['other'], 'two retired industries become one other');
+    eq(PR.decode('#p=small.use.education+finance').industry, ['other', 'finance'], 'a second industry is kept');
+    eq(PR.clean({team_size: 'large', ai_use: ['use'], industry: ['healthcare'], finance_subtype: 'advice'}),
+      {profile_version: O.profile_version, team_size: 'medium', ai_use: ['use'], industry: ['other'], it_support: null}, 'a saved profile');
+    eq(O.team_size.options.map(o => o.id), ['solo', 'small', 'medium'], 'three team sizes');
   });
   test('link: every profile survives a round trip', () => {
     const uses = [['use'], ['configure'], ['build'], ['none'], ['use', 'configure'], ['use', 'configure', 'build']];
-    const inds = O.industry.options.map(o => [o.id]).concat([['professional', 'finance'], ['healthcare', 'education']]);
-    const subs = [[null, null], ['advice', 'sec'], ['advice', 'not_sure'], ['advice', null], ['insurance', null], ['lending', null]];
+    const inds = O.industry.options.map(o => [o.id]).concat([['professional', 'finance'], ['retail', 'hiring']]);
     let n = 0;
-    ids_(O.team_size).forEach(t => uses.forEach(u => inds.forEach(i => [null].concat(ids_(O.it_support)).forEach(it =>
-      (i.includes('finance') ? subs : [[null, null]]).forEach(([s, r]) => {
-        const p = P({team_size: t, ai_use: u, industry: i, finance_subtype: s, registration: r, it_support: it});
-        eq(PR.decode('#' + PR.encode(p)), p, PR.encode(p));
-        n++;
-      })))));
-    ok(n > 1000, 'checked ' + n);
+    ids_(O.team_size).forEach(t => uses.forEach(u => inds.forEach(i => [null].concat(ids_(O.it_support)).forEach(it => {
+      const p = P({team_size: t, ai_use: u, industry: i, it_support: it});
+      eq(PR.decode('#' + PR.encode(p)), p, PR.encode(p));
+      n++;
+    }))));
+    ok(n > 500, 'checked ' + n);
   });
   function ids_(list){ return list.options.map(o => o.id); }
   test('link: junk is dropped or refused, never trusted', () => {
     eq(PR.decode('#p=giant.use.retail'), null, 'unknown team size');
     eq(PR.decode('#p=solo.use.retail+pirates').industry, ['retail'], 'unknown industry dropped');
-    eq(PR.decode('#p=solo.use.retail+finance+healthcare').industry, ['retail', 'finance'], 'at most two industries');
-    eq(PR.decode('#p=solo.use.finance-lending-sec').registration, null, 'registration only for advisers');
+    eq(PR.decode('#p=solo.use.retail+finance+trades').industry, ['retail', 'finance'], 'at most two industries');
     eq(PR.decode('#p=solo.use.retail.everyone').it_support, null, 'unknown IT answer');
     eq(PR.decode('#step-3'), null, 'an ordinary anchor is not a profile');
     eq(PR.encode(P({team_size: 'solo'})), '', 'an unfinished profile has no link');
   });
   test('summary bar words', () => {
-    eq(PR.summary(DANA), ['Just me', 'Ready-made tools', 'Finance (advice)'], 'Dana');
+    eq(PR.summary(DANA), ['Just me', 'Ready-made tools', 'Finance'], 'Dana');
     eq(PR.summary(P({team_size: 'medium', ai_use: ['use', 'configure'], industry: ['trades', 'creative']})),
       ['Team of 11 to 50', 'Tools you set up', 'Trades and Creative'], 'two industries');
   });
@@ -113,8 +120,7 @@ var ProfileTestRun = (function(){
     eq(ids(PR.effectsFor('policies.html', f)), ['solo.hide.approval', 'solo.hide.lead'], 'policies');
     eq(ids(PR.effectsFor('guide-ai-policy.html', f)), ['solo.policy'], 'policy guide');
     const ov = PR.overlays(DANA)[0];
-    ok(ov.points.some(x => x.startsWith('Advisers:')), 'adviser point');
-    ok(ov.points.some(x => x.startsWith('State-registered advisers')), 'registration point');
+    ok(ov.points.some(x => x.includes('Regulation S-P')), 'adviser point');
   });
   test('a team of 30 that sets up automations, with an IT company', () => {
     const p = P({team_size: 'medium', ai_use: ['use', 'configure'], industry: ['trades'], it_support: 'provider'});
@@ -122,9 +128,9 @@ var ProfileTestRun = (function(){
     eq(ids(PR.effectsFor('playbook.html', f)), ['acts.yes.step7', 'configure.review', 'configure.step7', 'industry.overlay', 'it.provider.step7'], 'playbook');
     eq(ids(PR.effectsFor('policies.html', f)), ['medium.tag.approval', 'medium.tag.lead'], 'policies');
   });
-  test('over 50 gets a banner on every page; build gets the developer notes', () => {
-    const f = PR.facts(P({team_size: 'large', ai_use: ['build'], industry: ['other']}));
-    ok(PR.effectsFor('guide-data.html', f).some(e => e.id === 'large.banner'), 'banner anywhere');
+  test('build gets the developer notes; other gets no industry notes', () => {
+    const f = PR.facts(P({team_size: 'medium', ai_use: ['build'], industry: ['other']}));
+    ok(!PR.effectsFor('guide-data.html', f).some(e => e.kind === 'banner'), 'no banner for a team of 11 to 50');
     ok(PR.effectsFor('playbook.html', f).some(e => e.id === 'build.step5'), 'developer notes');
     ok(!PR.effectsFor('playbook.html', f).some(e => e.id === 'industry.overlay'), 'no overlay for other');
   });
@@ -157,11 +163,10 @@ var ProfileTestRun = (function(){
   });
 
   /* ---------- step 0 ---------- */
-  test('step 0: three questions, and finance adds what kind and how registered', () => {
+  test('step 0: three questions for everyone, finance included', () => {
     eq(PR.zeroSteps(PR.blank()), ['team', 'use', 'industry'], 'blank');
     eq(PR.zeroSteps(P({industry: ['retail']})), ['team', 'use', 'industry'], 'retail');
-    eq(PR.zeroSteps(P({industry: ['finance'], finance_subtype: 'insurance'})), ['team', 'use', 'industry', 'finance_sub'], 'insurance');
-    eq(PR.zeroSteps(DANA), ['team', 'use', 'industry', 'finance_sub', 'registration'], 'Dana');
+    eq(PR.zeroSteps(DANA), ['team', 'use', 'industry'], 'Dana');
     PR.zeroSteps(DANA).forEach(id => ok(PR.zeroQuestion(id) && PR.zeroQuestion(id).options.length, id + ': has options'));
   });
   test('step 0: answers build a clean profile, one question at a time', () => {
@@ -175,19 +180,15 @@ var ProfileTestRun = (function(){
     eq(PR.zeroAnswer(p, 'use', 'use').ai_use, ['configure'], 'choosing again removes it');
     ok(!PR.zeroComplete(p), 'no industry yet');
     p = PR.zeroAnswer(p, 'industry', 'finance');
-    ok(PR.complete(p) && !PR.zeroComplete(p), 'finance still needs what kind');
-    p = PR.zeroAnswer(p, 'finance_sub', 'advice');
-    ok(!PR.zeroComplete(p), 'advice still needs registration');
-    p = PR.zeroAnswer(p, 'registration', 'sec');
-    ok(PR.zeroComplete(p), 'complete');
+    ok(PR.complete(p) && PR.zeroComplete(p), 'complete');
     p = PR.zeroAnswer(p, 'industry', 'retail');
-    eq([p.industry, p.finance_subtype, p.registration], [['retail'], null, null], 'leaving finance clears its answers');
+    eq(p.industry, ['retail'], 'changing the industry');
   });
   test('step 0: changing the first industry keeps a second one, and IT support stays', () => {
-    const two = P({team_size: 'small', ai_use: ['use'], industry: ['professional', 'finance'], finance_subtype: 'lending', it_support: 'provider'});
+    const two = P({team_size: 'small', ai_use: ['use'], industry: ['professional', 'finance'], it_support: 'provider'});
     eq(PR.zeroValue(two, 'industry'), ['professional'], 'shows the first');
-    const n = PR.zeroAnswer(two, 'industry', 'healthcare');
-    eq([n.industry, n.finance_subtype, n.it_support], [['healthcare', 'finance'], 'lending', 'provider'], 'second industry and IT kept');
+    const n = PR.zeroAnswer(two, 'industry', 'trades');
+    eq([n.industry, n.it_support], [['trades', 'finance'], 'provider'], 'second industry and IT kept');
     eq(PR.zeroAnswer(two, 'industry', 'finance').industry, ['finance'], 'picking the second as the first leaves one');
   });
 

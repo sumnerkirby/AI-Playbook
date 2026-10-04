@@ -39,7 +39,7 @@
     check: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.2l9.2 17H.8z" fill="currentColor"/><path d="M10 7.2v5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="10" cy="15.1" r="1.3" fill="#fff"/></svg>',
     stop: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 1h7.4L19 6.3v7.4L13.7 19H6.3L1 13.7V6.3z" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
   };
-  const LABEL = {go: 'Go', check: 'Check', stop: 'Stop'};
+  const LABEL = {go: 'Acceptable', check: 'Needs a check', stop: 'Stop'};
   const light = (l, text) => `<span class="light ${l}">${ICON[l]}${esc(text || LABEL[l])}</span>`;
   const WHO = {
     you: 'You can do this yourself',
@@ -410,7 +410,7 @@
       ? [aStops && `${aStops} to fix now`, aChecks && `${aChecks} to find out`].filter(Boolean).join(', ')
       : 'none';
     const tallyB = state.none ? 'none selected'
-      : [t.stop && `${t.stop} stop`, t.check && `${t.check} check`, t.go && `${t.go} go`, extra.o && '1 not checked'].filter(Boolean).join(', ');
+      : [t.stop && `${t.stop} stop`, t.check && plural(t.check, 'needs a check', 'need a check'), t.go && `${t.go} acceptable`, extra.o && '1 not checked'].filter(Boolean).join(', ');
     const breakdown = `<p class="breakdown">Red flags: ${tallyA}.${didB ? ` Everyday tasks: ${tallyB}.` : ''}</p>`;
 
     let partB;
@@ -421,7 +421,7 @@
       const n = cards.length + (extra.o ? 1 : 0);
       partB = `
         <p class="counts"><span>${plural(n, 'task')} with AI:</span>
-          ${light('go', t.go + ' go')} ${light('check', t.check + ' check')} ${light('stop', t.stop + ' stop')}${extra.o ? ' <span class="light none">1 not checked</span>' : ''}</p>
+          ${light('go', t.go + ' acceptable')} ${light('check', plural(t.check, 'needs a check', 'need a check'))} ${light('stop', t.stop + ' stop')}${extra.o ? ' <span class="light none">1 not checked</span>' : ''}</p>
         <div class="resultgrid">${sorted.map(x => `<button type="button" class="resultcell ${x.r.light}" data-jump="r-${x.cd.id}">${light(x.r.light)}<span class="t">${esc(x.def.label)}</span></button>`).join('')}</div>
         ${sorted.map(cardFinding).join('')}
         ${extra.o ? `<div class="finding"><span class="light none">Not checked</span><h3>Something else${otherText ? ': ' + esc(otherText) : ''}</h3><p>Not checked here. Add it when you complete the full check of your AI tools.</p></div>` : ''}`;
@@ -429,7 +429,9 @@
 
     screen(`
       <p class="step-label"><b>Your quick check</b><span>${esc(fmtDate(today()))}</span>${ind ? `<span>${esc(ind.label)}</span>` : ''}</p>
-      <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in the areas covered'}</h2>
+      <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${plural(checks, 'needs a check', 'need a check')}` : ''}`
+        : !t.check && aChecks ? `No red flags confirmed yet: ${plural(aChecks, 'thing')} to find out first`
+        : checks ? `Nothing to stop, ${plural(checks, 'thing needs a check', 'things need a check')}` : 'Nothing to stop or check in the areas covered'}</h2>
       ${breakdown}
       <p class="honest">Quick check, not a full review</p>
       ${ind && PR.adviceBanners([ind.id]).length ? PR.adviceHTML([ind.id], esc)

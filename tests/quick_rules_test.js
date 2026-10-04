@@ -97,12 +97,12 @@ var TestRun = (function(){
 
   /* ================= A. screener ================= */
 
-  test('screener: six questions, a seventh only for three industries', () => {
+  test('screener: six questions, a seventh only for finance', () => {
     eq(E.screenerQuestions({industry: null}, {}).length, 6, 'no industry');
     eq(E.screenerQuestions({industry: 'retail'}, {}).length, 6, 'retail');
-    eq(E.screenerQuestions({industry: 'healthcare'}, {}).map(q => q.id).pop(), 'q7_healthcare', 'healthcare');
+    eq(E.screenerQuestions({industry: 'other'}, {}).length, 6, 'other');
     eq(E.screenerQuestions({industry: 'finance'}, {}).map(q => q.id).pop(), 'q7_finance', 'finance');
-    eq(E.screenerQuestions({industry: 'defense'}, {}).map(q => q.id).pop(), 'q7_defense', 'defense');
+    ok(SCREENER.questions.every(q => !q.applies_to || q.applies_to.industry.every(i => PROFILE_OPTIONS.industry.options.some(o => o.id === i))), 'every seventh question is for an industry still offered');
     eq(E.screenerQuestions({industry: null}, {q4: 'yes'}).length, 7, 'q4 yes opens the follow-up');
   });
 
@@ -161,10 +161,10 @@ var TestRun = (function(){
 
   /* ================= B. cards ================= */
 
-  test('cards: twelve for everyone plus the trial card; industry cards only for their industry', () => {
+  test('cards: twelve for everyone plus the trial card; the finance card only for finance', () => {
     eq(E.cardsFor({industry: null}).length, 13, 'no industry');
-    ok(E.cardsFor({industry: 'healthcare'}).some(c => c.id === 'patient_notes'), 'healthcare card');
-    ok(!E.cardsFor({industry: 'retail'}).some(c => c.id === 'patient_notes'), 'no healthcare card for retail');
+    eq(E.cardsFor({industry: 'other'}).length, 13, 'other');
+    ok(!E.cardsFor({industry: 'retail'}).some(c => c.id === 'client_planning'), 'no finance card for retail');
     ok(E.cardsFor({industry: 'finance'}).some(c => c.id === 'client_planning'), 'finance card');
   });
 
@@ -187,10 +187,10 @@ var TestRun = (function(){
   test('cards: the phone card asks what callers tell it (log item 35)', () => {
     eq(E.cardQuestions('phone', {told: 'yes', acts: 'suggests'}).map(q => q.id), ['told', 'acts', 'data'], 'asks what goes in');
     ok(!E.cardComplete('phone', {told: 'yes', acts: 'suggests'}), 'not complete before what goes in');
-    const ctx = {industry: 'healthcare'};
+    const ctx = {industry: 'finance'};
     const r = E.evaluateCard('phone', {told: 'yes', acts: 'suggests', data: 'sensitive', account: 'business'}, ctx);
-    eq(r.light, 'check', 'patient details on a business plan: check, not go');
-    ok(r.hits.some(h => h.id === 'b.health.baa'), 'BAA overlay applies');
+    eq(r.light, 'check', 'client details on a business plan: check, not go');
+    ok(r.hits.some(h => h.id === 'b.finance.agreement'), 'data agreement overlay applies');
   });
 
   test('cards: Dana, in about 4 minutes (1 go, 2 check, 2 stop)', () => {
@@ -220,12 +220,14 @@ var TestRun = (function(){
     eq(after.light, 'check', 'after moving plans: supplier still to check');
   });
 
-  test('example 2: AI notes in practice software, BAA unknown (healthcare)', () => {
+  test('healthcare, education and defense are no longer covered (Oct 4, 2026)', () => {
+    const gone = ['healthcare', 'education', 'defense'];
+    ok(!PROFILE_OPTIONS.industry.options.some(o => gone.includes(o.id)), 'not offered');
+    const tied = r => r.applies_to && Array.isArray(r.applies_to.industry) && r.applies_to.industry.some(i => gone.includes(i));
+    ok(!RULES.rules.some(tied), 'no rule for them');
+    ok(!SCREENER.questions.some(tied) && !CARDS.cards.some(tied), 'no question or card for them');
     const ctx = {industry: 'healthcare'};
-    const r = E.evaluateCard('patient_notes', {data: 'sensitive', account: 'business'}, ctx);
-    eq(r.light, 'check', 'light');
-    ok(r.hits.some(h => h.id === 'b.health.baa' && h.flag === 'get_advice'), 'BAA flag');
-    eq(E.evaluateCard('patient_notes', {data: 'sensitive', account: 'personal'}, ctx).light, 'stop', 'on a personal account');
+    eq(E.screenerQuestions(ctx, {}).length, 6, 'an old link with healthcare gets the general questions');
   });
 
   test('example 3: automation that reads invoices and schedules payment (trades)', () => {

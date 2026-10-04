@@ -28,7 +28,7 @@
     check: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.2l9.2 17H.8z" fill="currentColor"/><path d="M10 7.2v5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="10" cy="15.1" r="1.3" fill="#fff"/></svg>',
     stop: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 1h7.4L19 6.3v7.4L13.7 19H6.3L1 13.7V6.3z" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
   };
-  const LABEL = {go: 'Go', check: 'Check', stop: 'Stop'};
+  const LABEL = {go: 'Acceptable', check: 'Needs a check', stop: 'Stop'};
   const light = (l, text) => l ? `<span class="light ${l}">${ICON[l]}${esc(text || LABEL[l])}</span>` : `<span class="light none">${esc(text || 'To check')}</span>`;
 
   /* ---------- the log ---------- */

@@ -74,8 +74,8 @@ var ToolTestRun = (function(){
     ok(!ids({mode: 'new'}).includes('already_in') && ids({mode: 'discovered'}).includes('already_in'), 'clean-up questions only for discovered tools');
     ok(!T.visible({}, p).find(q => q.id === 'plan').options.some(o => o.id === 'own'), '"set up ourselves" hidden for the Use path');
     ok(T.visible({}, prof({ai_use: ['configure']})).find(q => q.id === 'plan').options.some(o => o.id === 'own'), 'shown for Configure');
-    eq(T.visible({data: ['sensitive']}, prof({industry: ['healthcare']})).find(q => q.id === 'agreement').text,
-      'Is there a business associate agreement (BAA) that covers this AI feature?', 'BAA wording for healthcare');
+    eq(T.visible({data: ['sensitive']}, prof({industry: ['finance']})).find(q => q.id === 'agreement').text,
+      'Is there a data agreement with the supplier that covers this?', 'one agreement question for every industry');
   });
 
   /* ---------- the scoring model ---------- */
@@ -158,17 +158,17 @@ var ToolTestRun = (function(){
     eq(g.light, 'green', 'green when done');
     ok(g.standing.includes('A person reads AI output before it goes to a customer or the public.'), 'standing rule: read replies before sending');
   });
-  test('example 2: AI notes in practice software, BAA unknown (healthcare)', () => {
-    const p = prof({industry: ['healthcare']});
-    const a = {mode: 'new', tool: 'Practice notes AI', plan: 'built_in', access: ['website'], use: 'meetings', data: ['sensitive'], special: 'yes',
+  test('example 2: AI notes in client meetings, data agreement unknown (finance)', () => {
+    const p = prof({industry: ['finance']});
+    const a = {mode: 'new', tool: 'Meeting notes AI', plan: 'built_in', access: ['website'], use: 'meetings', data: ['sensitive'], special: 'yes',
       training: 'no_checked', deletion: 'yes', agreement: 'dont_know', published: 'yes', output: ['internal'], acts: ['produces_only']};
     const r = ev(a, p);
     eq([r.light, r.label], ['amber', 'Go for limited use'], 'limited use');
-    eq(r.allowed, ['public', 'internal'], 'no patient information until the BAA is confirmed');
+    eq(r.allowed, ['public', 'internal'], 'no client financial information until the agreement is confirmed');
     ok(has(r, 't.recording.consent') && has(r, 't.retention'), 'recording consent (gap 7) and records (gap 6)');
     const yes = Object.assign({}, a, {agreement: 'yes'});
-    eq(ev(yes, p, allDone(yes, p)).light, 'green', 'BAA covers it: green once done');
-    eq(ev(Object.assign({}, a, {agreement: 'no'}), p).light, 'red', 'BAA does not cover it: red');
+    eq(ev(yes, p, allDone(yes, p)).light, 'green', 'agreement covers it: green once done');
+    eq(ev(Object.assign({}, a, {agreement: 'no'}), p).light, 'red', 'no agreement: red');
   });
   test('example 3: automation that reads invoices and schedules payment (trades, 11 to 50)', () => {
     const p = prof({team_size: 'medium', ai_use: ['use', 'configure'], industry: ['trades'], it_support: 'provider'});
@@ -405,11 +405,11 @@ var ToolTestRun = (function(){
   /* ---------- FIXES 1.3: what a business plan does not provide ---------- */
   test('business directions say what each plan does not cover', () => {
     const biz = tool => T.vendorHelp({tool, plan: 'business'}).sections[0].steps.join(' ');
-    ok(/does not state one for ChatGPT Business/.test(biz('ChatGPT')) && /court order/.test(biz('ChatGPT')), 'ChatGPT: no BAA on Business, and the preservation order');
-    ok(/HIPAA compliance, do not apply to those search queries/.test(biz('Copilot')) && /any file the person using it can open/.test(biz('Copilot')), 'Copilot: web search terms, and permissions');
+    ok(/court order/.test(biz('ChatGPT')), 'ChatGPT: the preservation order');
+    ok(/do(es)? not apply to those search queries/.test(biz('Copilot')) && /any file the person using it can open/.test(biz('Copilot')), 'Copilot: web search terms, and permissions');
     ok(/Gemini Notebook/.test(biz('Gemini')) && /data region settings do not apply/.test(biz('Gemini')), 'Gemini: Notebook and data regions');
-    ok(/does not cover Team plans/.test(biz('Claude')) && /five years/.test(biz('Claude')), 'Claude: BAA limits, and rated chats');
-    ok(PROFILE_OPTIONS.overlays.healthcare.points.some(x => /^Team-tier AI plans usually do not include a BAA/.test(x)), 'healthcare note');
+    ok(/five years/.test(biz('Claude')), 'Claude: rated chats');
+    ok(!/BAA|HIPAA|business associate/.test(['ChatGPT', 'Copilot', 'Gemini', 'Claude'].map(biz).join(' ')), 'no healthcare terms (Oct 4, 2026)');
   });
 
   /* ---------- FIXES 1.5: where the data is stored ---------- */
@@ -427,16 +427,13 @@ var ToolTestRun = (function(){
     eq(dk.ids, ['t.dk.location'], 'not sure: find out');
     eq(ev(Object.assign({}, LOC, {location: 'dont_know'}), prof(), ['t.dk.location']).todos.find(t => t.id === 't.dk.location').done, false, 'cannot be ticked away');
   });
-  test('data location: stronger only for CUI or export-controlled data, and patient data', () => {
-    const D = prof({industry: ['defense']}), H = prof({industry: ['healthcare']});
-    eq(locRules({location: 'abroad', special: 'dont_know'}, D).light, 'red', 'defense, CUI not ruled out, stored abroad: stop');
-    eq(locRules({location: 'dont_know', data: ['regulated'], special: 'no', agreement: 'yes'}, D).ids.includes('t.location.defense'), true, 'defense, contract information, location unknown: stop');
-    eq(locRules({location: 'abroad', special: 'no'}, D).ids, ['t.location.abroad'], 'defense, no CUI: the ordinary check only');
-    const h = locRules({location: 'abroad', special: 'yes', agreement: 'yes'}, H);
-    eq([h.ids, h.light], [['t.location.abroad', 't.location.health'], 'amber'], 'healthcare, patient information abroad: a check');
-    ok(h.r.todos.find(t => t.id === 't.location.health').flag === 'get_advice', 'with Get advice');
-    eq(locRules({location: 'abroad', special: 'no'}, H).ids, ['t.location.abroad'], 'healthcare, no patient information: the ordinary check only');
-    eq(locRules({location: 'abroad', data: ['personal'], agreement: 'yes'}, prof({industry: ['retail']})).light, 'amber', 'retail: never a stop');
+  test('data location: a check, never a stop, for every industry offered (Oct 4, 2026)', () => {
+    PROFILE_OPTIONS.industry.options.forEach(o => {
+      const r = locRules({location: 'abroad', special: 'dont_know', data: ['personal'], agreement: 'yes'}, prof({industry: [o.id]}));
+      eq(r.ids, ['t.location.abroad'], o.id + ': the ordinary check only');
+    });
+    const gone = ['healthcare', 'education', 'defense'];
+    ok(!TOOL_RULES.rules.some(r => gone.some(g => JSON.stringify(r.when).includes('"' + g + '"'))), 'no rule names an industry no longer covered');
   });
 
   const failed = results.filter(r => r.fails.length);

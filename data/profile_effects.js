@@ -72,10 +72,6 @@ var PROFILE_EFFECTS = {
      text: `Recommended for a team your size`},
     {id: 'medium.tag.approval', when: {q: 'team_size', in: ['medium']}, page: 'policies.html', target: 'a[href="policy-tool-approval.html"]', kind: 'tag',
      text: `Recommended: use the full request form`},
-    {id: 'large.banner', when: {q: 'team_size', in: ['large']}, page: '*', target: null, kind: 'banner',
-     title: `More than 50 people`,
-     text: `This playbook still applies, but a business of your size may be better served by a more complete framework.`,
-     links: [{href: 'ai-rmf-1-0.html', label: `The NIST AI Risk Management Framework`}]},
 
     /* ---------- how the business uses AI ---------- */
     {id: 'none.step2', when: {q: 'path', in: ['none']}, page: 'playbook.html', target: '#step-2', kind: 'note',
@@ -118,7 +114,7 @@ var PROFILE_EFFECTS = {
      ]},
 
     /* ---------- industry ---------- */
-    {id: 'industry.overlay', when: {q: 'industry', in: ['healthcare', 'professional', 'finance', 'retail', 'hiring', 'education', 'defense', 'trades', 'creative']},
+    {id: 'industry.overlay', when: {q: 'industry', in: ['professional', 'finance', 'retail', 'hiring', 'trades', 'creative']},
      page: 'playbook.html', target: '#step-4', kind: 'overlay'},
 
     /* ---------- who looks after IT ---------- */

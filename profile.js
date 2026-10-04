@@ -13,8 +13,8 @@
   $('#fx-version').textContent = PROFILE_EFFECTS.version;
 
   const EXAMPLES = [
-    {label: `A financial adviser working alone`, p: 'p=solo.use.finance-advice-state'},
-    {label: `A dental practice of eight, with an IT company`, p: 'p=small.use.healthcare.provider'},
+    {label: `A financial adviser working alone`, p: 'p=solo.use.finance'},
+    {label: `An accounting firm of eight, with an IT company`, p: 'p=small.use.professional.provider'},
     {label: `A building firm of 30 that sets up its own automations`, p: 'p=medium.use+configure.trades.provider'},
   ];
 
@@ -40,10 +40,7 @@
     try { localStorage.setItem(KEY, JSON.stringify(p)); saved = PR.clean(p); return true; } catch (e) { return false; }
   };
   function steps(){
-    const s = ['team', 'use', 'industry'];
-    if (p.industry.includes('finance')) s.push('finance_sub');
-    if (p.industry.includes('finance') && p.finance_subtype === 'advice') s.push('registration');
-    return s.concat('it');
+    return ['team', 'use', 'industry', 'it'];
   }
 
   let firstRender = true;
@@ -73,7 +70,6 @@
   const answer = (key, o, pressed, detail) => `<button type="button" class="answer" data-${key}="${o.id}" aria-pressed="${pressed}">${esc(o.label)}${detail ? `<small>${esc(detail)}</small>` : ''}</button>`;
   function renderStep(){
     const list = steps(), n = list.indexOf(step);
-    const fin = O.industry.options.find(o => o.id === 'finance');
     let h2 = '', why = '', body = '', next = '';
     if (step === 'team'){
       h2 = O.team_size.label; why = O.team_size.why;
@@ -90,12 +86,6 @@
           <div class="chiprow">${O.industry.options.filter(o => o.id !== p.industry[0] && o.id !== 'other').map(o =>
             `<button type="button" class="chip" data-ind2="${o.id}" aria-pressed="${p.industry[1] === o.id}">${esc(o.label)}</button>`).join('')}</div></fieldset>` : ''}`;
       next = `<button class="btn primary" type="button" data-act="next"${p.industry.length ? '' : ' disabled'}>Next</button>`;
-    } else if (step === 'finance_sub'){
-      h2 = `What kind of finance or insurance?`; why = `The rules differ for advice, insurance and lending.`;
-      body = `<div class="answers">${fin.subtypes.map(o => answer('sub', o, p.finance_subtype === o.id)).join('')}</div>`;
-    } else if (step === 'registration'){
-      h2 = fin.registration.label; why = `It decides which privacy and record-keeping rules apply.`;
-      body = `<div class="answers">${fin.registration.options.map(o => answer('reg', o, p.registration === o.id)).join('')}</div>`;
     } else if (step === 'it'){
       h2 = O.it_support.label; why = O.it_support.why;
       body = `<div class="answers">${O.it_support.options.map(o => answer('it', o, p.it_support === o.id)).join('')}</div>`;
@@ -185,20 +175,16 @@
     }
     if (d.ind){
       p.industry = [d.ind].concat(p.industry.slice(1).filter(x => x !== d.ind));
-      if (!p.industry.includes('finance')){ p.finance_subtype = null; p.registration = null; }
       history.replaceState({prof: {step, p}}, '');
       renderStep();
       return $(`[data-ind="${d.ind}"]`, main).focus();
     }
     if (d.ind2){
       p.industry = p.industry[1] === d.ind2 ? [p.industry[0]] : [p.industry[0], d.ind2];
-      if (!p.industry.includes('finance')){ p.finance_subtype = null; p.registration = null; }
       history.replaceState({prof: {step, p}}, '');
       renderStep();
       return $(`[data-ind2="${d.ind2}"]`, main).focus();
     }
-    if (d.sub){ p.finance_subtype = d.sub; if (d.sub !== 'advice') p.registration = null; return advance(); }
-    if (d.reg){ p.registration = d.reg; return advance(); }
     if (d.it){ p.it_support = d.it; return finish(); }
     switch (d.act){
       case 'next': return advance();

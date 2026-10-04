@@ -57,20 +57,10 @@ var SCREENER = {
 
     /* Optional seventh question, one per industry. Only shown if the visitor
        picked that industry on the first screen. */
-    {id: 'q7_healthcare', code: '7',
-     applies_to: {industry: ['healthcare']},
-     text: `Does **patient information** go into an AI tool **without a business associate agreement (BAA)** that covers it?`,
-     example: `Dictating patient notes into a general AI assistant.`,
-     answers: YES_NO_NOT_SURE},
     {id: 'q7_finance', code: '7',
      applies_to: {industry: ['finance']},
      text: `Does **client financial information** go into an AI tool **without a data agreement** with the supplier?`,
      example: `Pasting a client's statements into an AI tool to summarize them.`,
-     answers: YES_NO_NOT_SURE},
-    {id: 'q7_defense', code: '7',
-     applies_to: {industry: ['defense']},
-     text: `Does **government contract information (CUI)** go into an AI tool **not approved for it**?`,
-     example: `Summarizing a contract specification in a general AI assistant.`,
      answers: YES_NO_NOT_SURE},
   ],
 };
@@ -141,12 +131,11 @@ var CARDS = {
     {id: 'extensions',   code: 'ex', label: `Browser add-ons that help you write or check spelling`, hint: `They can often read every page you open`, questions: ['data', 'account'], trial: true},
 
     /* Industry cards, shown only for that industry */
-    {id: 'patient_notes',   code: 'pn', label: `Patient notes or letters`,    hint: `Clinical notes, referral letters, appointment summaries`, questions: ['data', 'account'], applies_to: {industry: ['healthcare']}},
     {id: 'client_planning', code: 'cp', label: `Client reviews and planning`, hint: `Portfolio reviews, financial plans, meeting prep`,        questions: ['data', 'account'], applies_to: {industry: ['finance']}},
   ],
 
   /* on the results, when the chosen industry has no question or card of its own */
-  industry_general: `No extra questions for this industry yet; the general rules apply.`,
+  industry_general: `There are no extra questions for this industry; the general guidance applies.`,
   /* shown on the result instead of industry_general; a flag to check with an
      advisor, not a conclusion (log item 49; pending in notes/verification_log.md) */
   industry_advice: {
