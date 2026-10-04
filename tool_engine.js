@@ -15,7 +15,7 @@ var ToolEngine = (function(){
   const Q = TOOL_QUESTIONS, R = TOOL_RULES;
   const CLASSES = Q.data_classes.map(c => c.id);
   const RANK = {green: 0, amber: 1, red: 2};
-  const PATHS = ['none', 'use', 'configure', 'build'];
+  const PATHS = ['none', 'use', 'configure'];
 
   /* ---------- dates ---------- */
   function addDays(s, n){ const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); }

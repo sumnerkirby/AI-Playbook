@@ -10,8 +10,9 @@ var PROFILE_OPTIONS = {
 
   /* answers saved before version 3 that are no longer offered (Oct 4, 2026:
      the site covers up to 50 people, and no longer covers healthcare,
-     education or defense contracting) */
-  retired: {team_size: {large: 'medium'}, industry: {healthcare: 'other', education: 'other', defense: 'other'}},
+     education, defense contracting, or writing code that uses AI) */
+  retired: {team_size: {large: 'medium'}, ai_use: {build: 'configure'},
+    industry: {healthcare: 'other', education: 'other', defense: 'other'}},
 
   team_size: {
     label: `Who uses AI for work in your business?`,
@@ -25,15 +26,13 @@ var PROFILE_OPTIONS = {
 
   ai_use: {
     label: `How does your business use AI?`,
-    why: `Setting up your own assistants or writing code requires checks that ready-made tools do not.`,
+    why: `Setting up your own assistants or automations requires checks that ready-made tools do not. The site does not cover writing code that uses AI.`,
     multiple: true,
     options: [
       {id: 'use',       code: 'u', label: `We use ready-made AI tools`,
        examples: `ChatGPT, Copilot, Gemini or Claude for writing; AI features in software you already pay for`},
       {id: 'configure', code: 'c', label: `We set up our own AI assistants or automations, without writing code`,
        examples: `Custom GPTs, Gemini Gems, Copilot Studio agents, Claude Projects; Zapier, Make or n8n with an AI step`},
-      {id: 'build',     code: 'b', label: `We write code that uses AI`,
-       examples: `Calling an AI company's API from your own software, or running a model yourself`},
       {id: 'none',      code: 'n', label: `We do not use AI`, examples: ``},
     ],
   },
@@ -71,7 +70,7 @@ var PROFILE_OPTIONS = {
   },
 
   /* short words for the summary bar ("Just me · Ready-made tools · Finance") */
-  path_summary: {use: `Ready-made tools`, configure: `Tools you set up`, build: `Code you write`, none: `No AI yet`},
+  path_summary: {use: `Ready-made tools`, configure: `Tools you set up`, none: `No AI yet`},
   industry_summary: {
     professional: `Professional services`, finance: `Finance`, retail: `Retail`,
     hiring: `Hiring`, trades: `Trades`, creative: `Creative`, other: `Other`,

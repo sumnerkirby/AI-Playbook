@@ -66,8 +66,12 @@ var ProfileTestRun = (function(){
   });
 
   /* ---------- the profile ---------- */
-  test('path: the highest of use, configure, build; none only on its own', () => {
-    eq(PR.path(P({ai_use: ['use', 'build', 'configure']})), 'build', 'build');
+  test('path: the higher of use and configure; none only on its own', () => {
+    eq(PR.path(P({ai_use: ['configure', 'use']})), 'configure', 'configure');
+    eq(O.ai_use.options.map(o => o.id), ['use', 'configure', 'none'], 'writing code is not offered (Oct 4, 2026)');
+    eq(P({ai_use: ['build']}).ai_use, ['configure'], 'an old answer of writing code becomes setting up tools');
+    eq(P({ai_use: ['use', 'build', 'configure']}).ai_use, ['use', 'configure'], 'and is not doubled');
+    ok(/does not cover writing code/.test(O.ai_use.why), 'the question says so');
     eq(PR.path(P({ai_use: ['use']})), 'use', 'use');
     eq(PR.path(P({ai_use: ['none']})), 'none', 'none');
     eq(P({ai_use: ['none', 'use']}).ai_use, ['use'], 'none dropped when something else is ticked');
@@ -88,7 +92,7 @@ var ProfileTestRun = (function(){
     eq(O.team_size.options.map(o => o.id), ['solo', 'small', 'medium'], 'three team sizes');
   });
   test('link: every profile survives a round trip', () => {
-    const uses = [['use'], ['configure'], ['build'], ['none'], ['use', 'configure'], ['use', 'configure', 'build']];
+    const uses = [['use'], ['configure'], ['none'], ['use', 'configure']];
     const inds = O.industry.options.map(o => [o.id]).concat([['professional', 'finance'], ['retail', 'hiring']]);
     let n = 0;
     ids_(O.team_size).forEach(t => uses.forEach(u => inds.forEach(i => [null].concat(ids_(O.it_support)).forEach(it => {
@@ -96,7 +100,7 @@ var ProfileTestRun = (function(){
       eq(PR.decode('#' + PR.encode(p)), p, PR.encode(p));
       n++;
     }))));
-    ok(n > 500, 'checked ' + n);
+    ok(n > 400, 'checked ' + n);
   });
   function ids_(list){ return list.options.map(o => o.id); }
   test('link: junk is dropped or refused, never trusted', () => {
@@ -128,15 +132,16 @@ var ProfileTestRun = (function(){
     eq(ids(PR.effectsFor('playbook.html', f)), ['acts.yes.step7', 'configure.review', 'configure.step7', 'industry.overlay', 'it.provider.step7'], 'playbook');
     eq(ids(PR.effectsFor('policies.html', f)), ['medium.tag.approval', 'medium.tag.lead'], 'policies');
   });
-  test('build gets the developer notes; other gets no industry notes', () => {
-    const f = PR.facts(P({team_size: 'medium', ai_use: ['build'], industry: ['other']}));
+  test('configure gets the notes for tools you set up; other gets no industry notes', () => {
+    const f = PR.facts(P({team_size: 'medium', ai_use: ['configure'], industry: ['other']}));
     ok(!PR.effectsFor('guide-data.html', f).some(e => e.kind === 'banner'), 'no banner for a team of 11 to 50');
-    ok(PR.effectsFor('playbook.html', f).some(e => e.id === 'build.step5'), 'developer notes');
+    ok(PR.effectsFor('playbook.html', f).some(e => e.id === 'configure.step7'), 'notes for tools you set up');
+    ok(!FX.effects.some(e => /^build\./.test(e.id)), 'no developer notes');
     ok(!PR.effectsFor('playbook.html', f).some(e => e.id === 'industry.overlay'), 'no overlay for other');
   });
   test('every possible profile: no step hidden, and every change can be described', () => {
     let n = 0;
-    ids_(O.team_size).forEach(t => ['use', 'configure', 'build', 'none'].forEach(u => ids_(O.industry).forEach(i =>
+    ids_(O.team_size).forEach(t => ['use', 'configure', 'none'].forEach(u => ids_(O.industry).forEach(i =>
       [null].concat(ids_(O.it_support)).forEach(it => ['yes', 'no', 'unknown'].forEach(a => {
         const f = PR.facts(P({team_size: t, ai_use: [u], industry: [i], it_support: it}), a);
         PR.allEffects(f).forEach(e => {
@@ -146,7 +151,7 @@ var ProfileTestRun = (function(){
         });
         n++;
       })))));
-    ok(n > 1000, 'checked ' + n);
+    ok(n > 700, 'checked ' + n);
   });
 
   /* ---------- the AI list, not just the profile ---------- */
@@ -176,7 +181,7 @@ var ProfileTestRun = (function(){
     p = PR.zeroAnswer(p, 'use', 'configure');
     eq(p.ai_use, ['use', 'configure'], 'several uses');
     eq(PR.zeroAnswer(p, 'use', 'none').ai_use, ['none'], 'none stands alone');
-    eq(PR.zeroAnswer(PR.zeroAnswer(p, 'use', 'none'), 'use', 'build').ai_use, ['build'], 'an answer replaces none');
+    eq(PR.zeroAnswer(PR.zeroAnswer(p, 'use', 'none'), 'use', 'configure').ai_use, ['configure'], 'an answer replaces none');
     eq(PR.zeroAnswer(p, 'use', 'use').ai_use, ['configure'], 'choosing again removes it');
     ok(!PR.zeroComplete(p), 'no industry yet');
     p = PR.zeroAnswer(p, 'industry', 'finance');

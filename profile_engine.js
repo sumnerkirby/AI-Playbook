@@ -12,14 +12,14 @@
 
 var ProfileEngine = (function(){
   const O = PROFILE_OPTIONS, FX = PROFILE_EFFECTS;
-  const PATHS = ['none', 'use', 'configure', 'build'];
+  const PATHS = ['none', 'use', 'configure'];
   const ids = list => list.options.map(o => o.id);
   const retire = (q, v) => (O.retired[q] && O.retired[q][v]) || v;
 
   function blank(){
     return {profile_version: O.profile_version, team_size: null, ai_use: [], industry: [], it_support: null};
   }
-  /* the highest of use, configure, build sets the path; "none" only alone */
+  /* the higher of use and configure sets the path; "none" only alone */
   function path(p){
     const uses = (p.ai_use || []).filter(u => PATHS.includes(u));
     if (!uses.length) return null;
@@ -33,7 +33,7 @@ var ProfileEngine = (function(){
     if (!raw || typeof raw !== 'object') return p;
     const team = retire('team_size', raw.team_size);
     if (ids(O.team_size).includes(team)) p.team_size = team;
-    const uses = (Array.isArray(raw.ai_use) ? raw.ai_use : []).filter((u, i, a) => ids(O.ai_use).includes(u) && a.indexOf(u) === i);
+    const uses = (Array.isArray(raw.ai_use) ? raw.ai_use : []).map(u => retire('ai_use', u)).filter((u, i, a) => ids(O.ai_use).includes(u) && a.indexOf(u) === i);
     p.ai_use = uses.includes('none') && uses.length > 1 ? uses.filter(u => u !== 'none') : uses;
     p.industry = (Array.isArray(raw.industry) ? raw.industry : []).map(u => retire('industry', u)).filter((u, i, a) => ids(O.industry).includes(u) && a.indexOf(u) === i).slice(0, 2);
     if (ids(O.it_support).includes(raw.it_support)) p.it_support = raw.it_support;

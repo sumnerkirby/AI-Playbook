@@ -32,7 +32,7 @@ var ToolTestRun = (function(){
   test('every rule is complete, and names real questions and answers', () => {
     const ids = {};
     const known = {_industry: PROFILE_OPTIONS.industry.options.map(o => o.id), _team: PROFILE_OPTIONS.team_size.options.map(o => o.id),
-      _path: ['none', 'use', 'configure', 'build'], _mode: ['new', 'discovered'], _records: ['yes', 'no', 'dont_know']};
+      _path: ['none', 'use', 'configure'], _mode: ['new', 'discovered'], _records: ['yes', 'no', 'dont_know']};
     Q.questions.forEach(q => { if (q.options) known[q.id] = q.options.map(o => o.id); });
     function walk(c, id){
       if (c.all || c.any) return (c.all || c.any).forEach(x => walk(x, id));

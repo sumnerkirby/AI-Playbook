@@ -10,7 +10,7 @@
    Each effect:
      id      stable
      when    condition over profile facts: team_size, path (the highest of
-             use, configure, build, or none), ai_use, industry, it_support,
+             use, configure, or none), ai_use, industry, it_support,
              and acts (yes | no | unknown, from a saved quick check and
              monthly check-ins)
      page    file the effect applies to
@@ -85,7 +85,7 @@ var PROFILE_EFFECTS = {
        `Staff using AI on their own phones or personal accounts`,
      ],
      links: [{href: 'quick_check.html', label: `The quick check takes about 10 minutes`}]},
-    {id: 'configure.step7', when: {q: 'path', in: ['configure', 'build']}, page: 'playbook.html', target: '#step-7', kind: 'note',
+    {id: 'configure.step7', when: {q: 'path', in: ['configure']}, page: 'playbook.html', target: '#step-7', kind: 'note',
      title: `Tools you have set up yourself`,
      text: `Custom assistants and automations carry risks that ready-made tools do not. For each one, record:`,
      list: [
@@ -99,19 +99,6 @@ var PROFILE_EFFECTS = {
     {id: 'configure.review', when: {q: 'path', in: ['configure']}, page: 'playbook.html', target: '#step-6', kind: 'note',
      title: `Before customers use anything you have set up`,
      text: `If customers will use an assistant or automation you built, have it reviewed by a professional before launch.`},
-    {id: 'build.step5', when: {q: 'path', in: ['build']}, page: 'playbook.html', target: '#step-5', kind: 'note',
-     title: `Writing code that uses AI`,
-     text: `This playbook covers the basics. For code you write, also do the following:`,
-     list: [
-       `Keep API keys out of web pages, apps and shared code`,
-       `Treat what the model returns as untrusted input, never as instructions`,
-       `Plan for prompt injection: text in emails, documents or web pages that tries to steer the model`,
-       `Have the code reviewed by a professional before launching it to customers`,
-     ],
-     links: [
-       {href: 'owasp-llm-top-10-2026.html', label: `OWASP Top 10 for LLM Applications`},
-       {href: 'ai-rmf-genai-profile.html', label: `NIST Generative AI Profile`},
-     ]},
 
     /* ---------- industry ---------- */
     {id: 'industry.overlay', when: {q: 'industry', in: ['professional', 'finance', 'retail', 'hiring', 'trades', 'creative']},

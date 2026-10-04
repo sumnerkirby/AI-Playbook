@@ -169,7 +169,7 @@ var TOOL_RULES = {
      fix: `Test it before sharing it: ask it to reveal its instructions, ignore its rules, or show other people's information.`,
      owner: 'you', how: {href: 'owasp-llm-top-10-2026.html', label: `OWASP Top 10 for LLM Applications`}},
     {id: 't.own.review', outcome: 'condition',
-     when: {all: [{q: 'plan', in: ['own']}, {any: [{q: 'own_access', in: ['public']}, {q: 'output', in: ['customers']}]}, {q: '_path', in: ['configure', 'build']}]},
+     when: {all: [{q: 'plan', in: ['own']}, {any: [{q: 'own_access', in: ['public']}, {q: 'output', in: ['customers']}]}, {q: '_path', in: ['configure']}]},
      reason: `A tool you set up yourself will be used by customers or the public.`,
      fix: `Have it reviewed by a professional before launching it to customers.`,
      owner: 'advisor', how: {href: 'owasp-llm-top-10-2026.html', label: `OWASP Top 10 for LLM Applications`}},

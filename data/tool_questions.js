@@ -41,7 +41,7 @@ var TOOL_QUESTIONS = {
        {id: 'enterprise',    label: `An enterprise plan`},
        {id: 'built_in',      label: `It came built into software we already pay for`},
        {id: 'own',           label: `Something we set up ourselves`, detail: `A custom assistant, or an automation with an AI step`,
-        show_if: {q: '_path', in: ['configure', 'build']}},
+        show_if: {q: '_path', in: ['configure']}},
        {id: 'dont_know',     label: `Not sure`},
      ]},
     {id: 'access', step: 0, kind: 'many', text: `How is it used?`, hint: `Select everything that applies.`, exclusive: ['dont_know'],
