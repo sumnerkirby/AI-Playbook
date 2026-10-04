@@ -114,14 +114,14 @@
         <button class="btn" type="button" data-act="found">Check one already in use</button>
       </div>
 
-      ${queue.length ? `<h3 class="subhead">To check (${queue.length})</h3>
+      ${queue.length ? `<h2 class="subhead">To check (${queue.length})</h2>
         <p class="example">Found by your quick check, your policy and your monthly check-ins, with the likely most serious first.</p>
         ${queue.slice(0, 12).map(i => `<div class="q-item">${U.light(i.light, i.light ? ({stop: 'Stop', check: 'Check', go: 'Go', red: 'Stop', amber: 'Check', green: 'Go'})[i.light] : 'To check')}
           <span class="n"><b>${esc(i.label)}</b><small>${esc(i.source)}${i.account === 'personal' ? ' &middot; personal account' : ''}${i.can_act && i.can_act !== 'no' ? ' &middot; can act' : ''}</small></span>
           <button class="btn" type="button" data-queue="${esc(i.key)}">Check it</button>
           <button class="btn quiet" type="button" data-skip="${esc(i.key)}">Not needed</button></div>`).join('')}` : ''}
 
-      <h3 class="subhead">Your AI list</h3>
+      <h2 class="subhead">Your AI list</h2>
       ${rows.length ? `<p class="counts-row"><span>${active.length} use${active.length === 1 ? '' : 's'}:</span>
           ${U.light('green', n.green + ' go')} ${U.light('amber', n.amber + ' with to-dos')} ${U.light('red', n.red + ' stopped or paused')}
           ${due ? `<span class="badge due">${due} re-check${due > 1 ? 's' : ''} due</span>` : ''}${waiting ? ` <span class="badge wait">${waiting} waiting on a supplier</span>` : ''}</p>
@@ -136,7 +136,7 @@
         }).join('')}</ul>`
         : '<p class="empty">Nothing yet. Begin with the tool your business uses most, or with any tool that receives customer details.</p>'}
 
-      <h3 class="subhead">Your records</h3>
+      <h2 class="subhead">Your records</h2>
       <div class="actions">
         <button class="btn" type="button" data-act="csv"${rows.length ? '' : ' disabled'}>Download as a spreadsheet (CSV)</button>
         <button class="btn" type="button" data-act="print"${rows.length ? '' : ' disabled'}>Print the list</button>
@@ -172,16 +172,16 @@
     if (q.id === 'use' && !d.lineId){
       /* a new check can cover several uses: they are checked one after another */
       const sel = pickedUses(d);
-      body = `<div class="answers multi" role="group" aria-label="Answers">${q.options.map(o => `<button type="button" class="answer" data-usepick="${o.id}" aria-pressed="${sel.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
+      body = `<div class="answers multi" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer" data-usepick="${o.id}" aria-pressed="${sel.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="use-next"${sel.length ? '' : ' disabled'}>Next</button></div>`;
     } else if (q.kind === 'text'){
       body = `<div class="field" style="margin:18px 0 0;max-width:560px"><input class="textin" id="t-in" type="text" maxlength="120" autocomplete="off" placeholder="${esc(q.placeholder || '')}" value="${esc(v || '')}" aria-label="${esc(q.text)}"></div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="text-next">Next</button></div>`;
     } else if (q.kind === 'many'){
-      body = `<div class="answers multi" role="group" aria-label="Answers">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-many="${o.id}" aria-pressed="${(v || []).includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
+      body = `<div class="answers multi" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-many="${o.id}" aria-pressed="${(v || []).includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="many-next"${(v || []).length ? '' : ' disabled'}>Next</button></div>`;
     } else {
-      body = `<div class="answers" role="group" aria-label="Answers">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-one="${o.id}" aria-pressed="${v === o.id}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>`;
+      body = `<div class="answers" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-one="${o.id}" aria-pressed="${v === o.id}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>`;
       /* supplier answers: say how you know, or where to look */
       if (q.evidence && v){
         body += v === 'dont_know'
@@ -193,7 +193,7 @@
     main.innerHTML = `<section class="screen">
       ${progressBar({left: `<b>Section ${q.step + 1} of ${Q.steps.length}</b> &middot; ${esc(Q.steps[q.step])}${a.mode ? ` &middot; ${a.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, frac})}
       ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${a.use && q.id !== 'use' ? ' &middot; ' + esc(T.useLabel(a.use)) + passText(d) : ''}</p>` : ''}
-      <h2>${esc(q.text)}</h2>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
+      <h2 id="q-h">${esc(q.text)}</h2>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
       ${body}
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button><button class="btn quiet" type="button" data-act="cancel">Cancel</button></div>
     </section>`;

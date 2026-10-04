@@ -78,18 +78,6 @@
   }
   const ctx = () => ({industry: state.industry});
 
-  /* ---------- timing, for trying this with owners ----------
-     Kept in memory: only a run started on this page is timed, never a
-     result opened from a link. */
-  const times = {};
-  function mark(k){ if (times.start && !times[k]) times[k] = Date.now(); }
-  function took(k){
-    const a = times.start, b = times[k];
-    if (!a || !b) return '';
-    const s = Math.round((b - a) / 1000);
-    return s < 60 ? plural(s, 'second') : `${Math.floor(s / 60)} min ${s % 60} s`;
-  }
-
   /* ---------- routing: the state decides the screen ---------- */
   function render(){
     const z = !state && zeroHere();
@@ -171,9 +159,9 @@
     onAnswer = null;
     screen(`
       ${progressBar({left: '<b>Part 0</b> &middot; Your business', n: list.indexOf(id) + 1, total: list.length})}
-      <div class="qhead"><h2>${esc(q.label)}</h2></div>
+      <div class="qhead"><h2 id="q-h">${esc(q.label)}</h2></div>
       <p class="example">${esc(q.why)}</p>
-      <div class="answers${q.multi ? ' multi' : ''}" role="group" aria-label="Answers">
+      <div class="answers${q.multi ? ' multi' : ''}" role="group" aria-labelledby="q-h">
         ${q.options.map(o => `<button type="button" class="answer" data-zero="${o.id}" aria-pressed="${chosen.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}
       </div>
       ${q.multi ? `<div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="zero-next"${chosen.length ? '' : ' disabled'}>Next</button></div>` : ''}
@@ -211,8 +199,6 @@
   function startPart1(){
     state = {industry: chosenIndustry, screener: {}, cards: [], none: false};
     extra = {};
-    Object.keys(times).forEach(k => delete times[k]);
-    times.start = Date.now();
     go();
   }
 
@@ -223,10 +209,10 @@
     onAnswer = o.onAnswer;
     screen(`
       ${progressBar({left: o.left, n: o.n, total: o.total, frac: o.frac})}
-      <div class="qhead">${o.about ? `<p class="about">${esc(o.about)}</p>` : ''}<h2>${o.about ? `<span class="visually-hidden">${esc(o.about)}: </span>` : ''}${fmt(q.text)}</h2></div>
+      <div class="qhead">${o.about ? `<p class="about">${esc(o.about)}</p>` : ''}<h2 id="q-h">${o.about ? `<span class="visually-hidden">${esc(o.about)}: </span>` : ''}${fmt(q.text)}</h2></div>
       ${q.example ? `<p class="example"><b>For example</b>${esc(q.example)}</p>` : ''}
       ${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
-      <div class="answers" role="group" aria-label="Answers">
+      <div class="answers" role="group" aria-labelledby="q-h">
         ${q.answers.map(a => `<button type="button" class="answer${a.id === 'not_sure' ? ' unsure' : ''}" data-answer="${a.id}">${esc(a.label)}${a.detail ? `<small>${esc(a.detail)}</small>` : ''}</button>`).join('')}
       </div>
       ${backRow()}
@@ -245,7 +231,6 @@
       onAnswer: id => {
         state.screener[q.id] = id;
         state.screener = E.pruneScreener(c, state.screener);
-        if (E.screenerComplete(c, state.screener)) mark('a');
         go();
       },
     });
@@ -306,12 +291,10 @@
     const r = E.evaluateScreener(ctx(), state.screener);
     const stops = r.hits.filter(h => h.outcome === 'stop').length;
     const checks = r.hits.length - stops;
-    const t = took('a');
     screen(`
       <p class="step-label"><b>Part 1 of 2 &middot; Result</b></p>
       <h2>${stops ? `${plural(stops, 'red flag')} to fix now` : checks ? `No red flags confirmed yet: ${plural(checks, 'thing')} to find out first` : 'No red flags found'}</h2>
       <p class="honest">Quick check, not a full review</p>
-      ${t ? `<p class="timing">Part 1 took ${t}.</p>` : ''}
       ${screenerFindings(r)}
       <div class="go-row" style="margin-top:24px">
         <button class="btn primary" type="button" data-act="to-tap">Next: everyday tasks (5 to 8 minutes)</button>
@@ -409,7 +392,6 @@
   }
 
   function showResult(){
-    mark('end');
     const c = ctx();
     const A = E.evaluateScreener(c, state.screener);
     const rank = {stop: 0, check: 1, go: 2};
@@ -419,7 +401,6 @@
     const stops = A.hits.filter(h => h.outcome === 'stop').length + t.stop;
     const checks = A.hits.filter(h => h.outcome === 'check').length + t.check;
     const ind = PROFILE_OPTIONS.industry.options.find(o => o.id === state.industry);
-    const time = took('end');
     const didB = state.cards.length || state.none || extra.o;
 
     /* says where the headline numbers come from, in the words the findings below use */
@@ -451,7 +432,6 @@
       <h2>${stops ? `${plural(stops, 'thing')} to stop now${checks ? `, ${checks} to check` : ''}` : checks ? `Nothing to stop, ${plural(checks, 'thing')} to check` : 'Nothing to stop or check in the areas covered'}</h2>
       ${breakdown}
       <p class="honest">Quick check, not a full review</p>
-      ${time ? `<p class="timing">This took ${time}.</p>` : ''}
       ${ind && PR.adviceBanners([ind.id]).length ? PR.adviceHTML([ind.id], esc)
         : ind && (CARDS.industry_advice || {})[ind.id] ? `<p class="advice"><b>Get advice</b>${esc(CARDS.industry_advice[ind.id])}</p>`
         : ind && !industryHasExtras(ind.id) ? `<p class="small-note ind-general">${esc(CARDS.industry_general)}</p>` : ''}

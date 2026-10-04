@@ -158,7 +158,7 @@
       if (!s.notes.length) return `<p>${esc(s.none)}</p>`;
       return s.notes.map(n => `<h3>${esc(n.label)}</h3><p>${esc(n.summary)}</p><ul>${n.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
         ${n.red_line ? `<p><strong>Red line:</strong> ${esc(n.red_line)}</p>` : ''}
-        <p class="rec-flag">Check with an advisor. ${n.advice ? esc(n.advice) + ' ' : ''}Last reviewed ${d(n.last_reviewed)}; not yet verified for publication.</p>`).join('');
+        <p class="rec-flag">Check with an advisor. ${n.advice ? esc(n.advice) + ' ' : ''}Last reviewed ${d(n.last_reviewed)}.</p>`).join('');
     },
     policy_text(s){
       if (!s.policy) return `<p>${esc(s.none)}</p>`;

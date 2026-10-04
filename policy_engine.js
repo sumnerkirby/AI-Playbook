@@ -265,14 +265,14 @@ var PolicyEngine = (function(){
   }
   /* the title stays the first element, so docx.js uses it as the title */
   function toHTML(doc){
-    return `<h4>${partsHTML(doc.title)}</h4>` +
+    return `<h3>${partsHTML(doc.title)}</h3>` +
       `<div class="pol-sec" data-sec="title"><p>${partsHTML(doc.meta)}</p></div>` +
-      doc.sections.map(s => `<div class="pol-sec" data-sec="${s.id}">${s.heading ? `<h4>${esc(s.heading)}</h4>` : ''}${s.blocks.map(blockHTML).join('')}</div>`).join('') +
+      doc.sections.map(s => `<div class="pol-sec" data-sec="${s.id}">${s.heading ? `<h3>${esc(s.heading)}</h3>` : ''}${s.blocks.map(blockHTML).join('')}</div>`).join('') +
       `<div class="pol-sec" data-sec="review"><p><em>${partsHTML(doc.footer)}</em></p></div>`;
   }
   function neverHTML(doc){
     const n = doc.never_sheet;
-    return `<h4>${partsHTML(n.title)}</h4>` +
+    return `<h3>${partsHTML(n.title)}</h3>` +
       `<ul>${(n.items.length ? n.items : ['']).map(i => `<li>${i ? esc(i) : '<span class="fill">[What must never go in]</span>'}</li>`).join('')}</ul>` +
       `<p>${partsHTML(n.after)}</p>`;
   }

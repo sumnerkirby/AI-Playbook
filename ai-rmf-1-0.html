@@ -272,9 +272,14 @@ footer a{color:var(--ink2)}
 .backlink:hover{background:#26343F}
 @media (max-width:640px){.backlink{left:16px;bottom:16px;max-width:calc(100% - 32px)}}
 @media print{.sitebar,.backlink{display:none !important}}
+/* ---------- skip link: first stop for the Tab key ---------- */
+.skip-link{position:absolute;left:16px;top:-80px;z-index:100;padding:10px 16px;background:#111A22;color:#fff;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:2px}
+.skip-link:focus{top:10px;outline:2px solid #fff;outline-offset:-5px}
+main[tabindex="-1"]:focus{outline:none}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#list">Skip to content</a>
 <div class="wrap">
 
   <nav class="sitebar" aria-label="Site">
@@ -324,7 +329,7 @@ footer a{color:var(--ink2)}
     Source: NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0), January 2023<br>
     Not reproduced: the five figures themselves (their captions are shown); the front matter &mdash; cover, citation page, disclaimer, contents, lists of tables and figures; and the publication boilerplate carrying the DOI<br>
     Unofficial reformatting &middot; not a NIST publication &middot; the source PDF is authoritative<br>
-    <a href="privacy.html">Privacy and your data</a>
+    <a href="privacy.html">Privacy and your data</a> &middot; Contact: <a href="mailto:cyberclinic@ou.edu">cyberclinic@ou.edu</a>
   </footer>
 </div>
 

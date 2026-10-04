@@ -309,9 +309,14 @@ footer a{color:var(--ink2)}
 .backlink:hover{background:#26343F}
 @media (max-width:640px){.backlink{left:16px;bottom:16px;max-width:calc(100% - 32px)}}
 @media print{.sitebar,.backlink{display:none !important}}
+/* ---------- skip link: first stop for the Tab key ---------- */
+.skip-link{position:absolute;left:16px;top:-80px;z-index:100;padding:10px 16px;background:#111A22;color:#fff;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:2px}
+.skip-link:focus{top:10px;outline:2px solid #fff;outline-offset:-5px}
+main[tabindex="-1"]:focus{outline:none}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#list">Skip to content</a>
 <div class="wrap">
 
   <nav class="sitebar" aria-label="Site">
@@ -361,7 +366,7 @@ footer a{color:var(--ink2)}
     Not reproduced: the References; the Acknowledgements, sponsor and supporter lists; the front matter (cover, license and revision history, contents); and the three figures and the Appendix B diagram, which are images (figure captions are shown)<br>
     Source licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> &middot; this adaptation reformats it and omits the sections above, and is shared under the same license<br>
     Unofficial reformatting &middot; not an OWASP publication &middot; not endorsed by OWASP &middot; the source PDF is authoritative<br>
-    <a href="privacy.html">Privacy and your data</a>
+    <a href="privacy.html">Privacy and your data</a> &middot; Contact: <a href="mailto:cyberclinic@ou.edu">cyberclinic@ou.edu</a>
   </footer>
 </div>
 

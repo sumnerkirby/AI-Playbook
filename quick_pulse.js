@@ -93,8 +93,8 @@
   function ask(n, text, hint, answers, handler, extra = ''){
     onAnswer = handler;
     main.innerHTML = `<section class="screen">${progress(n)}
-      <h2>${esc(text)}</h2>${hint ? `<p class="hint">${esc(hint)}</p>` : ''}${extra}
-      <div class="answers" role="group" aria-label="Answers">${answers.map(a =>
+      <h2 id="q-h">${esc(text)}</h2>${hint ? `<p class="hint">${esc(hint)}</p>` : ''}${extra}
+      <div class="answers" role="group" aria-labelledby="q-h">${answers.map(a =>
         `<button type="button" class="answer${a.id === 'not_sure' || a.id === 'not_looked' ? ' unsure' : ''}" data-answer="${a.id}">${esc(a.label)}</button>`).join('')}</div>
       ${back()}</section>`;
   }
@@ -281,7 +281,7 @@
       ${!checkins.length && !hasBaseline() ? `<div class="callout" style="margin-top:14px;max-width:760px"><span class="k">Works best after the quick check</span><p>On its own, the monthly check-in finds only what is new. <a href="quick_check.html">The quick check</a> (10 minutes) finds what you already use.</p></div>` : ''}
       ${PU.backupDue(log, t) ? `<div class="callout" style="margin-top:14px;max-width:760px;--c:var(--check)"><span class="k">Time for a backup</span><p>Your check-ins are stored only in this browser. Download a copy and keep it with your other business records.</p><p><button class="btn" type="button" data-act="backup">Download a backup</button></p></div>` : ''}
 
-      <h3 class="subhead">Reminders</h3>
+      <h2 class="subhead">Reminders</h2>
       <div class="actions">
         <button class="btn" type="button" data-act="calendar">Add a monthly reminder to your calendar</button>
         <button class="btn" type="button" data-act="print-card">Print a card for the year</button>
@@ -289,16 +289,16 @@
       <p class="small-note" style="margin-top:8px">The calendar file works with Apple Calendar, Outlook and Google Calendar (import it). On a phone, you can also add this page to your home screen.</p>
 
       <div class="pulse-cols">
-        <div><h3 class="subhead">AI found by check-ins</h3>
+        <div><h2 class="subhead">AI found by check-ins</h2>
           ${list.length ? `<ul class="log">${list.map(x => `<li><span class="d">${esc(x.date)}</span><span class="n"><b>${esc(x.name)}</b> ${x.source === 'connection' ? '&middot; connected' : x.source === 'statement' ? '&middot; on the statement' : ''}</span>${light(x.light)}</li>`).join('')}</ul>` : '<p class="empty">Nothing new yet.</p>'}</div>
-        <div><h3 class="subhead">Things that went wrong</h3>
+        <div><h2 class="subhead">Things that went wrong</h2>
           ${inc.length ? `<ul class="log">${inc.map(i => `<li><span class="d">${esc(i.date)}</span><span class="n">${esc(i.text)}</span></li>`).join('')}</ul>` : `<p class="empty">${checkins.length ? 'None recorded. A month with no problems is also worth recording.' : 'Nothing yet.'}</p>`}</div>
       </div>
 
-      <h3 class="subhead">Check-ins</h3>
+      <h2 class="subhead">Check-ins</h2>
       ${checkins.length ? `<ul class="log">${checkins.map(c => `<li><span class="d">${esc(c.date)}</span><span class="n">${esc(PU.summary(c))}</span>${light(PU.worst(c))}</li>`).join('')}</ul>` : '<p class="empty">None yet.</p>'}
 
-      <h3 class="subhead">Your records</h3>
+      <h2 class="subhead">Your records</h2>
       <div class="actions">
         <button class="btn" type="button" data-act="backup">Download a backup</button>
         <button class="btn" type="button" data-act="restore">Restore from a backup</button>

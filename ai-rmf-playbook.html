@@ -253,9 +253,14 @@ footer{
 .backlink:hover{background:#26343F}
 @media (max-width:640px){.backlink{left:16px;bottom:16px;max-width:calc(100% - 32px)}}
 @media print{.sitebar,.backlink{display:none !important}}
+/* ---------- skip link: first stop for the Tab key ---------- */
+.skip-link{position:absolute;left:16px;top:-80px;z-index:100;padding:10px 16px;background:#111A22;color:#fff;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:2px}
+.skip-link:focus{top:10px;outline:2px solid #fff;outline-offset:-5px}
+main[tabindex="-1"]:focus{outline:none}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#list">Skip to content</a>
 <div class="wrap">
 
   <nav class="sitebar" aria-label="Site">
@@ -305,7 +310,7 @@ footer{
     Source: NIST AI RMF Playbook &middot; 72 subcategories across Govern, Map, Measure, Manage<br>
     Excluded by design: AI Transparency Resources and References<br>
     Companion: <a href="ai-rmf-1-0.html">AI RMF 1.0, condensed</a> &middot; unofficial reformatting &middot; the source PDF is authoritative<br>
-    <a href="privacy.html">Privacy and your data</a>
+    <a href="privacy.html">Privacy and your data</a> &middot; Contact: <a href="mailto:cyberclinic@ou.edu">cyberclinic@ou.edu</a>
   </footer>
 </div>
 

@@ -157,7 +157,7 @@
         <p>${esc(o.summary)}</p><ul>${o.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
         <p><b>Red line in the checks:</b> ${esc(o.red_line)}</p>
         <p class="advice"><b>Get advice</b>${esc(o.advice)}</p>
-        <p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Things to check with an advisor, not legal advice. Not yet verified for publication.</p></div>`)).join('')}
+        <p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Things to check with an advisor, not legal advice.</p></div>`)).join('')}
       ${fold('Share this profile, or see an example', '', `
         <div class="share"><code id="share-link">${esc(link)}</code><button class="btn" type="button" data-act="copy">Copy link</button></div>
         <p class="share-warn">This link contains your answers. Anyone who opens it can read them. <button class="linkish" type="button" data-act="copy-plain">Copy the address without answers</button></p>

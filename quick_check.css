@@ -17,7 +17,7 @@
 .qc.started .mast .lede,.qc.started .mast .eyebrow{display:none}
 
 .screen{padding-top:18px}
-.screen > h2,.qhead h2,.head-row > h2{
+.screen > h2:not(.subhead),.qhead h2,.head-row > h2{
   font-family:var(--display);font-weight:700;font-size:clamp(21px,3.4vw,27px);line-height:1.25;
   letter-spacing:-.005em;margin:0 0 12px;max-width:34ch
 }
@@ -143,7 +143,6 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.04em;text-transform:uppercase;
   margin:34px 0 12px;padding-bottom:7px;border-bottom:1.5px solid var(--rule)
 }
-.timing{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink3);margin:0 0 14px}
 .breakdown{margin:-4px 0 12px;font-size:16px;color:var(--ink2)}
 /* an answer carried over from another page (policy, profile) */
 .from-quick{
@@ -278,7 +277,6 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   .basis,
   .finding p.basis,
   .honest,
-  .timing,
   .from-quick,
   .othertext label,
   .small-note,

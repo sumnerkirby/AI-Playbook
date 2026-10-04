@@ -57,7 +57,7 @@
     function overlayHTML(){
       return PR.overlays(p).map(o => `<p><b>${esc(o.label)}.</b> ${esc(o.summary)}</p><ul>${o.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` +
         `<p><b>Red line in the checks:</b> ${esc(o.red_line)}</p><p class="advice"><b>Get advice</b>${esc(o.advice)}</p>` +
-        `<p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Not legal advice. Not yet verified for publication.</p>`).join('');
+        `<p class="small-note">Last reviewed ${esc(PR.fmtDate(o.last_reviewed))}. Not legal advice.</p>`).join('');
     }
     /* a note inside a playbook step goes at the top of the step, and the
        closed step shows that it has one */

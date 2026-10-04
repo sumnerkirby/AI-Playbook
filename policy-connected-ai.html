@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <nav class="sitebar" aria-label="Site">
@@ -52,7 +53,7 @@
     </ul>
   </section>
 
-  <main class="guide">
+  <main id="main" class="guide">
 
     <h2 id="why">Why AI that can act needs its own rules</h2>
     <p>An AI assistant that reads your email can receive instructions from anyone who sends you an email. This is the essence of prompt injection: text hidden in a message, document or web page that the assistant treats as an instruction. No reliable method of preventing it is known, so the practical defense is to limit what the assistant can do if it is misled, and to require a person&rsquo;s approval for any action that matters.</p>
@@ -61,20 +62,20 @@
     <div class="template">
       <div class="template-head"><span>Connected AI standard &middot; copy and adapt</span><span class="acts"><button class="btn" type="button" data-docx="connected-text" title="Download as a Word document" hidden>Word</button><button class="btn" type="button" data-print="connected-text" hidden>Print</button><button class="btn" type="button" data-copy="connected-text" hidden>Copy</button></span></div>
       <div class="template-body" id="connected-text">
-        <h4><span class="fill">[Business name]</span>: AI tools that can act</h4>
+        <h3><span class="fill">[Business name]</span>: AI tools that can act</h3>
         <p>Version <span class="fill">[1.0]</span>, <span class="fill">[date]</span>. Owner: <span class="fill">[AI lead]</span>.</p>
 
-        <h4>What this covers</h4>
+        <h3>What this covers</h3>
         <p>Any AI tool that can read our email, files, calendars or other systems, or can take actions such as sending messages, booking, buying, paying, deleting or changing records. This includes AI agents, assistants connected to our accounts, and browser tools that can act on web pages.</p>
 
-        <h4>Before a tool is connected</h4>
+        <h3>Before a tool is connected</h3>
         <ul>
           <li>Connected AI tools are Level 3 under our tool approval procedure, and need <span class="fill">[owner]</span>&rsquo;s approval.</li>
           <li>We record what the tool is for, what it needs to reach, and what it must not do.</li>
           <li>We try it first with limited access, on work where a mistake would have little effect.</li>
         </ul>
 
-        <h4>Access</h4>
+        <h3>Access</h3>
         <ul>
           <li>Each tool receives the least access that the job requires: read-only access, unless it must change data.</li>
           <li>Connect only the mailboxes, folders, calendars or accounts it needs, not everything the person using it can see.</li>
@@ -83,7 +84,7 @@
           <li>Before connecting a tool to shared files, check that the files&rsquo; permissions are correct.</li>
         </ul>
 
-        <h4>Actions that need a person&rsquo;s approval every time</h4>
+        <h3>Actions that need a person&rsquo;s approval every time</h3>
         <ul>
           <li>Sending an email or message outside the business</li>
           <li>Making or approving a payment, refund or purchase</li>
@@ -94,16 +95,16 @@
         </ul>
         <p>The person approving must examine the action itself, meaning the exact email or the exact amount, not only the tool&rsquo;s description of it.</p>
 
-        <h4>Spending</h4>
+        <h3>Spending</h3>
         <ul>
           <li>Every AI service billed by usage has a spending limit of <span class="fill">[amount]</span> a month, set in the provider&rsquo;s account so that usage stops rather than only triggering a warning, with an alert at <span class="fill">[75%]</span>.</li>
           <li>Tools that can buy things have a limit of <span class="fill">[amount]</span> per transaction, where the product allows it.</li>
         </ul>
 
-        <h4>Plugins and add-ons</h4>
+        <h3>Plugins and add-ons</h3>
         <p>Plugins, extensions, connectors and add-ons for AI tools must be approved like any other tool. Install them only from the provider&rsquo;s official marketplace, or from developers we have checked.</p>
 
-        <h4>Monitoring</h4>
+        <h3>Monitoring</h3>
         <ul>
           <li><span class="fill">[AI lead]</span> reviews what each connected tool has done at least every <span class="fill">[month]</span>, using its activity log where it has one.</li>
           <li>Anyone who sees a connected tool do something unexpected should disconnect it, or ask <span class="fill">[AI lead]</span> to do so, and report it immediately.</li>
@@ -147,11 +148,11 @@
   </nav>
 
   <footer>
-    AI Playbook for small businesses &middot; The AI Playbook Project, OUPI Cybersecurity Clinic &middot; educational material, not legal advice<br>
+    AI Playbook for small businesses &middot; The AI Playbook Project, University of Oklahoma Cybersecurity Clinic &middot; educational material, not legal advice<br>
     Not a publication of NIST or OWASP, and not endorsed by either &middot; quoted passages are verbatim and link to their source &middot; the original publications are authoritative<br>
     Passages from the OWASP Top 10 for LLM Applications 2026 are quoted under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><br>
     This template may be copied and adapted without credit (<a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>)<br>
-    <a href="privacy.html">Privacy and your data</a>
+    <a href="privacy.html">Privacy and your data</a> &middot; Contact: <a href="mailto:cyberclinic@ou.edu">cyberclinic@ou.edu</a>
   </footer>
 </div>
 <script src="site.js"></script>

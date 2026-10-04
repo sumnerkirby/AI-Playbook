@@ -164,7 +164,7 @@ var PolicyTestRun = (function(){
     const html = PE.toHTML(PE.build(a));
     ok(!html.includes('<script>'), 'no raw tag');
     ok(html.includes('&lt;script&gt;x&lt;/script&gt; &amp; Co'), 'escaped');
-    ok(html.startsWith('<h4>'), 'title first, for docx.js');
+    ok(html.startsWith('<h3>'), 'title first, for docx.js');
   });
   test('carry-over fills playbook steps 1, 3, 4 and 6 and lists tools as finds', () => {
     const a = dana(); a.team = 'team'; a.decider = 'Dana';

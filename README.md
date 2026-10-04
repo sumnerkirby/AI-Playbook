@@ -1,12 +1,12 @@
 # AI Playbook for small businesses
 
-A plain-language guide to using AI tools safely in a small business with no IT staff: nine steps, a five-minute quick check, and tools that turn your answers into a list of the AI you use, a risk overview, a one-page AI policy and a record you can share.
+A plain-language guide to using AI tools safely in a small business with no IT staff: nine steps, a quick check of about 10 minutes, and tools that turn your answers into a list of the AI you use, a risk overview, a one-page AI policy and a record you can share.
 
 **The site:** https://sumnerkirby.github.io/AI-Playbook/
 
 ## Status
 
-A prototype, published for testing with small business owners. The rules and industry notes are marked as not yet verified for publication. It is not legal advice.
+Educational material, not legal advice. Points marked check with an advisor should be confirmed with one.
 
 ## Privacy
 
@@ -45,4 +45,4 @@ Check with the Clinic and an advisor that these terms fit the University of Okla
 
 ## Contact
 
-To report a problem, suggest a correction or ask a question, [open an issue](https://github.com/sumnerkirby/AI-Playbook/issues) on GitHub. Issues are public, so do not include anything about your business that you would not want others to read.
+To report a problem, suggest a correction or ask a question, email the University of Oklahoma Cybersecurity Clinic at [cyberclinic@ou.edu](mailto:cyberclinic@ou.edu), or [open an issue](https://github.com/sumnerkirby/AI-Playbook/issues) on GitHub. Issues are public, so do not include anything about your business that you would not want others to read.
