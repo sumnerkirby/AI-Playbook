@@ -404,7 +404,7 @@
         log = next;
         if (!saveLog()) return say('This browser is blocking storage, so the backup could not be restored here.');
         renderHome();
-        say(`Restored ${plural(next.checkins.length, 'check-in')}.${dropped ? ` ${plural(dropped, 'entry', 'entries')} in the file couldn’t be read and ${dropped === 1 ? 'was' : 'were'} left out.` : ''}`);
+        say(`Restored ${plural(next.checkins.length, 'check-in')}.${dropped ? ` ${plural(dropped, 'entry', 'entries')} in the file could not be read and ${dropped === 1 ? 'was' : 'were'} left out.` : ''}`);
       } catch (err) {
         say('That file could not be read as a check-in backup. Nothing was changed.');
       }

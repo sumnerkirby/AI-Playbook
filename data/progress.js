@@ -35,7 +35,7 @@ var PROGRESS = {
   full: {
     title: `The full playbook`,
     intro: `The nine steps, each marked done on the playbook, and the two tools that pull the work together.`,
-    step_note: `Read what to do, then mark the step done on the playbook when you can answer its questions.`,
+    step_note: `Read what to do, answer its questions, then mark the step done on the playbook.`,
     after_essentials: `The essentials are done. The full playbook goes further, one step at a time.`,
     steps: [
       {n: 0, title: `Describe your business`, helps: [{href: 'profile.html', label: `Your business`}]},

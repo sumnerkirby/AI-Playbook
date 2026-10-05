@@ -21,6 +21,12 @@ var ProgressTestRun = (function(){
   const PROFILE = {profile_version: 3, team_size: 'small', ai_use: ['use'], industry: ['retail'], it_support: null};
   const LINE = {id: 'l1', answers: {tool: 'ChatGPT', use: 'writing'}, done: []};
   const ids = list => list.filter(x => x.done).map(x => x.id);
+  /* every question of the given steps answered */
+  function answered(steps){
+    const A = AnswersEngine, st = A.empty(), F = A.fields();
+    Object.keys(F).filter(k => steps.map(String).includes(F[k].step)).forEach(k => A.set(st, k, F[k].kind === 'date' ? '2026-10-01' : 'An answer', '2026-10-05'));
+    return st;
+  }
 
   test('the essentials, in the quick-win order, and the full playbook, steps 0 to 9 then two tools', () => {
     eq(G.essentials.stages.map(s => s.id), ['business', 'quick', 'policy', 'tool', 'reminder'], 'essentials order');
@@ -63,9 +69,19 @@ var ProgressTestRun = (function(){
     eq([pol.done, pol.started, S.next.id], [false, true, 'policy'], 'started, not done');
   });
   test('the full playbook: steps marked done, a risk snapshot, a copy of the record', () => {
-    const S = PG.status({profile: PROFILE, done: ['1', '3', 9], risk: {snapshots: [{date: '2026-10-04', items: []}]}, record: {generations: [{n: 1}]}});
+    const S = PG.status({profile: PROFILE, done: ['1', '3', 9], answers: answered([1, 3, 9]), risk: {snapshots: [{date: '2026-10-04', items: []}]}, record: {generations: [{n: 1}]}});
     eq(ids(S.full), ['step-0', 'step-1', 'step-3', 'step-9', 'risk', 'record'], 'done');
     eq(S.full.find(x => x.id === 'step-2').href, 'playbook.html#step-2', 'link to the step');
+  });
+  test('a step counts only when marked done and every question is answered, as in the record (Sumner, Oct 5, 2026)', () => {
+    const part = answered([2]);
+    delete part.answers[Object.keys(part.answers)[0]];
+    const S = PG.status({profile: PROFILE, done: ['1', '2', '3'], answers: Object.assign(answered([1]), {answers: Object.assign({}, answered([1]).answers, part.answers)})});
+    eq(ids(S.full), ['step-0', 'step-1'], 'marked and answered: 1; marked, one answer missing: 2; marked, none answered: 3');
+    eq(ids(PG.status({profile: PROFILE, answers: answered([4])}).full), ['step-0'], 'answered but not marked');
+    eq(PG.readSaved(fakeStorage({'sb-ai-playbook:answers': '{"v":1}'}), null).answers, {v: 1}, 'answers read from storage');
+    ok(need('playbook.html').includes('Mark each step done when you have answered its questions'), 'playbook says so');
+    ok(['index.html', 'progress.html'].every(p => { const s = need(p); return s.indexOf('src="answers_engine.js"') > 0 && s.indexOf('src="answers_engine.js"') < s.indexOf('src="progress_engine.js"'); }), 'answers engine loaded first');
   });
   test('a playbook step as the next thing: its own button, and a word when the essentials are done', () => {
     const t = {profile: PROFILE, quick: {hash: '#x'}, policy: {a: {}}, ai_list: {lines: [LINE]}, pulse_calendar: '2026-10-04'};
@@ -76,7 +92,7 @@ var ProgressTestRun = (function(){
   });
   test('everything done: keep it current', () => {
     const all = {profile: PROFILE, quick: {hash: '#x'}, policy: {a: {}}, ai_list: {lines: [LINE]}, pulse_calendar: '2026-10-04',
-      done: ['1', '2', '3', '4', '5', '6', '7', '8', '9'], risk: {snapshots: [{}]}, record: {generations: [{}]}};
+      done: ['1', '2', '3', '4', '5', '6', '7', '8', '9'], answers: answered([1, 2, 3, 4, 5, 6, 7, 8, 9]), risk: {snapshots: [{}]}, record: {generations: [{}]}};
     const S = PG.status(all);
     eq([S.track, S.next.id, S.next.href], ['done', 'all_done', 'quick_pulse.html'], 'all done');
   });

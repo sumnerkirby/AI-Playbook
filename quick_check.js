@@ -457,7 +457,7 @@
       </ul>
 
       <h3 class="subhead">Next</h3>
-      ${nextSteps(t, A)}
+      ${nextSteps(t, A, autoSaved)}
 
       <h3 class="subhead">Keep this</h3>
       <div class="actions">
@@ -474,7 +474,7 @@
 
   /* ---------- next: a short plan in order (site critique U1): fix what is
      urgent, write the policy, then check the most-used tool ---------- */
-  function nextSteps(t, A){
+  function nextSteps(t, A, saved){
     const policyHref = `quick_policy.html#${E.encode(state)}`;
     const aStops = A.hits.filter(h => h.outcome === 'stop').length;
     const fixes = aStops + t.stop, opens = (A.hits.length - aStops) + t.check;
@@ -488,8 +488,8 @@
       p: `About twelve questions, some already answered by this check. The result is a one-page policy to share with staff, and a list of what must never go into an AI tool.`,
       act: `<a class="start-btn" href="${policyHref}">Start my AI policy</a>`});
     steps.push({time: '5 to 15 minutes a tool', c: 'var(--part2)', h: `Check the tool you use most`,
-      p: `Your AI list shows what this check found, most serious first. Checking a tool there gives it a to-do list and adds it to your record. This saves the result in this browser.`,
-      act: `<button class="start-btn" type="button" data-act="save-go">Save and open my AI list</button>`});
+      p: `Your AI list shows what this check found, most serious first. Checking a tool there gives it a to-do list and adds it to your record.${saved ? '' : ' This saves the result in this browser.'}`,
+      act: `<button class="start-btn" type="button" data-act="save-go">${saved ? 'Open my AI list' : 'Save and open my AI list'}</button>`});
     const later = [
       `<a href="quick_pulse.html">Keep it current</a><span>1 minute a month, with a calendar reminder</span>`,
       `<a href="playbook.html#step-2">List all the AI tools in use</a><span>Playbook step 2, which covers what this check cannot</span>`,

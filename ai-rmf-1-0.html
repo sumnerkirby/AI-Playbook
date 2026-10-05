@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-f35ZSyRkYQlrrZZNJ5DucAOm0DeXQDoqpI88nwY6zbw='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-u2SEAaDY91b4kUE+re6RkiPJV7ZedNqOu/u7gHsNZFc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -273,6 +273,28 @@ footer a{color:var(--ink2)}
 .backlink:hover{background:#26343F}
 @media (max-width:640px){.backlink{left:16px;bottom:16px;max-width:calc(100% - 32px)}}
 @media print{.sitebar,.backlink{display:none !important}}
+/* the tools row, as in site.css (sitebar.js sets .more and starts it at the current tool) */
+.toolrow{
+  display:flex;gap:4px 18px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);
+  overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity
+}
+.toolrow > *{scroll-snap-align:start}
+.toolrow.more{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent)}
+.toolrow .k{flex:0 0 auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.toolrow a{flex:0 0 auto;font-size:14.5px;color:var(--ink2);text-decoration:none;border-bottom:1.5px solid transparent;padding:4px 0}
+.toolrow a:hover{color:var(--ink);border-bottom-color:var(--ink3)}
+.toolrow a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
+.toolrow a.featured{
+  font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.02em;
+  background:var(--ink);color:#fff;border:0;border-radius:3px;padding:5px 12px;margin-right:6px
+}
+.toolrow a.featured:hover{background:var(--focus);color:#fff}
+@media (max-width:640px),(pointer:coarse){
+  .toolrow a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box}
+  .toolrow a:not(.featured){min-width:44px;justify-content:center}
+  .toolrow{padding:2px 0}
+}
+@media print{.toolrow{display:none !important}}
 /* ---------- skip link: first stop for the Tab key ---------- */
 .skip-link{position:absolute;left:16px;top:-80px;z-index:100;padding:10px 16px;background:#111A22;color:#fff;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:2px}
 .skip-link:focus{top:10px;outline:2px solid #fff;outline-offset:-5px}
@@ -320,7 +342,7 @@ main[tabindex="-1"]:focus{outline:none}
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
         <input type="search" id="q" placeholder="Search the framework" aria-label="Search AI RMF 1.0" autocomplete="off">
       </div>
-      <button class="btn" id="toggle" type="button">Collapse all</button>
+      <button class="btn" id="toggle" type="button">Expand all</button>
     </div>
     <div class="chips" id="chips" role="group" aria-label="Filter by part"></div>
   </div>
@@ -1160,17 +1182,17 @@ GROUPS.forEach(g => {
 
   mine.forEach(d => {
     const el = document.createElement('article');
-    el.className = 'item open'; el.style.setProperty('--c', g.color);
+    el.className = 'item'; el.style.setProperty('--c', g.color);
     el.id = 's-' + d.id.replace(/[ .]/g, '-');
     el.dataset.id = d.id;
     el.dataset.group = d.group;
     el.innerHTML =
-      '<h3 style="margin:0;font-weight:400"><button class="item-btn" type="button" aria-expanded="true">' +
+      '<h3 style="margin:0;font-weight:400"><button class="item-btn" type="button" aria-expanded="false">' +
         '<span class="tag">' + esc(d.id) + '</span>' +
         '<span class="title">' + esc(d.title) + '</span>' +
         '<svg class="caret" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 2l4 4-4 4"/></svg>' +
       '</button></h3>' +
-      '<div class="panel"><div class="prose">' + render(d.body) +
+      '<div class="panel" hidden><div class="prose">' + render(d.body) +
         (d.core ? renderCore(d.core) : '') +
       '</div></div>';
     list.appendChild(el);
@@ -1187,11 +1209,17 @@ tally.className = 'tally';
 chips.appendChild(tally);
 
 /* ---- interaction ---- */
+/* Expand all until every section shown is open, as on the playbook */
+function syncToggle(){
+  const shown = [...list.querySelectorAll('.item:not([hidden])')];
+  toggle.textContent = shown.length && shown.every(i => i.classList.contains('open')) ? 'Collapse all' : 'Expand all';
+}
 function setOpen(item, on){
   item.classList.toggle('open', on);
   item.querySelector('.item-btn').setAttribute('aria-expanded', on ? 'true' : 'false');
   item.querySelector('.panel').hidden = !on;
   syncAtlas();
+  syncToggle();
 }
 
 list.addEventListener('click', e => {
@@ -1220,9 +1248,9 @@ function setFilter(f){
 }
 
 toggle.addEventListener('click', () => {
-  const anyOpen = !!list.querySelector('.item.open:not([hidden])');
-  list.querySelectorAll('.item:not([hidden])').forEach(i => setOpen(i, !anyOpen));
-  toggle.textContent = anyOpen ? 'Expand all' : 'Collapse all';
+  const open = [...list.querySelectorAll('.item:not([hidden])')].some(i => !i.classList.contains('open'));
+  list.querySelectorAll('.item:not([hidden])').forEach(i => setOpen(i, open));
+  syncToggle();
 });
 
 let timer;

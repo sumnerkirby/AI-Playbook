@@ -61,15 +61,50 @@
     }
   });
 
+  /* Mark step done turns on once every question in the step is answered,
+     the same rule the record and Your progress use (Sumner, Oct 5, 2026).
+     Read from the fields on the page, so it changes as the owner types. */
+  function gate(art){
+    const m = $('.mark', art), foot = $('.stepfoot', art);
+    if (!m || !foot) return;
+    const qs = $$('.sec-document .content li', art).filter(li => $('[data-key]', li));
+    const open = qs.filter(li => !$$('[data-key]', li).every(f => f.value.trim())).length;
+    const on = m.getAttribute('aria-pressed') === 'true';
+    let hint = $('.dw-gate', foot);
+    if (!hint){
+      hint = document.createElement('p');
+      hint.className = 'dw-gate';
+      hint.id = 'dw-gate-' + art.dataset.step;
+      foot.appendChild(hint);
+    }
+    const q = n => n === 1 ? '1 question' : n + ' questions';
+    hint.textContent = !open ? ''
+      : on ? `Marked done, with ${q(open)} still to answer. The step counts on Your progress and in the record once every question is answered.`
+      : `Answer ${open === qs.length ? 'the questions above' : open === 1 ? 'the remaining question above' : `the ${open} remaining questions above`} to mark this step done.`;
+    hint.hidden = !open;
+    m.disabled = !on && open > 0;
+    if (open) m.setAttribute('aria-describedby', hint.id); else m.removeAttribute('aria-describedby');
+  }
+  const gateAll = () => $$('.item[data-step]').forEach(gate);
+  gateAll();
+  /* after site.js has marked or unmarked a step, or cleared them all */
+  document.addEventListener('click', e => { if (e.target.closest('.mark, #reset')) setTimeout(gateAll, 0); });
+
   /* save as the owner types; a date is kept for when each answer last changed */
   let timer = null;
   document.addEventListener('input', e => {
     const t = e.target;
     if (!t.dataset || (!t.dataset.key && !t.dataset.evidence)) return;
+    if (t.dataset.key) gate(t.closest('.item[data-step]'));
     clearTimeout(timer);
     timer = setTimeout(() => commit(t), 350);
   });
-  document.addEventListener('change', e => { if (e.target.dataset && (e.target.dataset.key || e.target.dataset.evidence)) commit(e.target); });
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (!t.dataset || (!t.dataset.key && !t.dataset.evidence)) return;
+    if (t.dataset.key) gate(t.closest('.item[data-step]'));
+    commit(t);
+  });
 
   function commit(t){
     const today = UI.today();
@@ -82,6 +117,6 @@
     const note = $(`.item[data-step="${step}"] .dw-note`);
     if (note) note.innerHTML = saves
       ? `Saved in this browser only. Your answers go into your <a href="record.html">AI use and risk record</a>.`
-      : `This browser isn&rsquo;t saving, so these answers will be lost when you close the page.`;
+      : `This browser is not saving, so these answers will be lost when you close the page.`;
   }
 })();

@@ -16,7 +16,7 @@ var DONE_WHEN = {
   steps: [
     {step: '1', control: `One person is in charge of AI`, questions: [
       {id: 's1.decides', record: 'responsibility', role: 'decides', text: `Who decides whether a new AI tool can be used?`, placeholder: `Name or role`},
-      {id: 's1.ask', record: 'responsibility', role: 'ask', text: `If someone isn’t sure whether something is allowed, who do they ask?`, placeholder: `Name or role, and how to reach them`},
+      {id: 's1.ask', record: 'responsibility', role: 'ask', text: `If someone is not sure whether something is allowed, whom do they ask?`, placeholder: `Name or role, and how to reach them`},
       {id: 's1.saturday', record: 'responsibility', role: 'out_of_hours', text: `Who would you call if an AI tool caused a problem on a Saturday?`, placeholder: `Name and phone`},
     ]},
     {step: '2', control: `We know what AI we use`, from: {href: 'tool_check.html', text: `Your AI list answers much of this.`}, questions: [
@@ -30,7 +30,7 @@ var DONE_WHEN = {
       {id: 's3.updated', record: 'rules', kind: 'date', text: `When was it last updated?`},
     ]},
     {step: '4', control: `Sensitive information stays out`, questions: [
-      {id: 's4.training', record: 'suppliers', text: `For each tool that receives customer information, do you know whether it’s used for training, and where the terms say so?`},
+      {id: 's4.training', record: 'suppliers', text: `For each tool that receives customer information, do you know whether it is used for training, and where the terms say so?`},
       {id: 's4.never', record: 'rules', text: `Does everyone know what must never be pasted into an AI tool?`},
       {id: 's4.mfa', record: 'controls', text: `Does every AI account that holds business information ask for a second sign-in step?`},
       {id: 's4.leaver', record: 'rules', text: `If someone left tomorrow, who would remove their AI accounts, and would their conversations about customers leave with them?`},
@@ -46,9 +46,9 @@ var DONE_WHEN = {
     ]},
     {step: '7', control: `What AI can do is limited`, from: {href: 'tool_check.html', text: `Your AI list shows which tools can act.`}, questions: [
       {id: 's7.acts', record: 'controls', text: `Which AI tools can act on your behalf rather than just answer, and what can each one reach?`},
-      {id: 's7.limit', record: 'controls', text: `What’s the most an AI tool could spend, or send, without a person approving it?`},
+      {id: 's7.limit', record: 'controls', text: `What is the most an AI tool could spend, or send, without a person approving it?`},
     ]},
-    {step: '8', control: `We’re ready when it goes wrong`, questions: [
+    {step: '8', control: `We are ready when something goes wrong`, questions: [
       {id: 's8.pasted', record: 'incidents', text: `If someone pasted customer data into the wrong tool this afternoon, what would they do next?`},
       {id: 's8.off', record: 'controls', text: `Who can switch off each important tool, and do they know how?`},
       {id: 's8.notify', record: 'incidents', text: `Who would you have to notify, and by when?`},

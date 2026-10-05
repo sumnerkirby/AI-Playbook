@@ -37,7 +37,7 @@
           <div class="zero-opts${q.multi ? ' multi' : ''}">${q.options.map(o =>
             `<button type="button" class="zero-opt" data-q="${id}" data-v="${o.id}" aria-pressed="${chosen.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div></fieldset>`;
       }).join('') +
-      `<p class="zero-note" role="status">${!saves ? 'This browser isn&rsquo;t saving, so these answers will be lost when you close the page.'
+      `<p class="zero-note" role="status">${!saves ? 'This browser is not saving, so these answers will be lost when you close the page.'
         : done ? `Saved in this browser. The steps below now include the notes for your business. <a href="#step-1">Go to step 1</a> &middot; <a href="profile.html">See every change these answers make</a>`
         : 'Kept in this browser only.'}</p>`;
     head();

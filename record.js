@@ -175,7 +175,7 @@
       <p class="rec-kicker">${esc(m.title)}</p>
       <h1>${esc(m.business)}</h1>
       <p class="rec-meta">Valid as of ${d(m.today)} &middot; Re-check by ${d(m.recheck_by)} &middot; Record version ${version}</p>`;
-    if (m.draft) h += `<div class="rec-draft"><p><strong>Draft.</strong> This record isn&rsquo;t complete yet. Still needed:</p>
+    if (m.draft) h += `<div class="rec-draft"><p><strong>Draft.</strong> This record is not complete yet. Still needed:</p>
       <ul>${m.missing.map(x => `<li>Section ${x.n}, ${esc(x.title)} <a class="no-print" href="${x.fix}">Go there</a></li>`).join('')}</ul></div>`;
     if (m.changes) h += `<div class="rec-changes"><h3>What changed since version ${m.last_copy.n} (${d(m.last_copy.date)})</h3>
       ${m.changes.length ? `<ul>${m.changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : '<p>Nothing that the record tracks.</p>'}</div>`;

@@ -2,14 +2,25 @@
    no DOM, so the progress page, the home page card and the tests run the
    same code. Reads only; saves nothing.
    Needs, loaded first: data/profile_options.js, data/profile_effects.js,
-   profile_engine.js, data/progress.js.
+   profile_engine.js, data/done_when.js, answers_engine.js, data/progress.js.
 
    The saved data, one value per storage key (null if not saved):
-     {profile, quick, policy, policy_draft, ai_list, pulse, pulse_calendar, done, risk, record} */
+     {profile, quick, policy, policy_draft, ai_list, pulse, pulse_calendar, done, answers, risk, record} */
 
 var ProgressEngine = (function(){
   const G = PROGRESS;
   const arr = x => Array.isArray(x) ? x : [];
+
+  /* a playbook step counts when it is marked done and every question is
+     answered: the same rule as the record's controls (Sumner, Oct 5, 2026) */
+  function answeredSteps(s){
+    const marked = arr(s.done).map(String);
+    const A = AnswersEngine, store = A.clean(s.answers);
+    return new Set(marked.filter(n => {
+      try { const c = A.control(store, n, marked, '1970-01-01'); return c.answered === c.total; }
+      catch (e) { return false; }
+    }));
+  }
 
   /* the facts each stage is judged on */
   function facts(s){
@@ -24,7 +35,7 @@ var ProgressEngine = (function(){
       lines: lines.length,
       checkins: arr(s.pulse && s.pulse.checkins).length,
       calendar: !!s.pulse_calendar,
-      steps: new Set(arr(s.done).map(String)),
+      steps: answeredSteps(s),
       snapshots: arr(s.risk && s.risk.snapshots).length,
       copies: arr(s.record && s.record.generations).length,
     };
@@ -73,7 +84,7 @@ var ProgressEngine = (function(){
   /* the saved data, from the browser's storage (or stand-ins in the tests) */
   const KEYS = {profile: 'sb-ai-playbook:profile', quick: 'sb-ai-playbook:quick', policy: 'sb-ai-playbook:policy',
     ai_list: 'sb-ai-playbook:ai-list', pulse: 'sb-ai-playbook:pulse', pulse_calendar: 'sb-ai-playbook:pulse-calendar',
-    done: 'sb-ai-playbook:done', risk: 'sb-ai-playbook:risk', record: 'sb-ai-playbook:record'};
+    done: 'sb-ai-playbook:done', answers: 'sb-ai-playbook:answers', risk: 'sb-ai-playbook:risk', record: 'sb-ai-playbook:record'};
   function readSaved(local, session){
     /* most keys hold JSON; the calendar date is plain text */
     const get = (area, k) => {

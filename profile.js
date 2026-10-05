@@ -132,7 +132,7 @@
 
       <h3 class="subhead">Start here</h3>
       <div class="cards">
-        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">10 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and the tasks you use AI for. Begins with your industry.</span></a>
+        <a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">10 minutes</span><span class="t">Quick AI check</span><span class="d">Red flags, and the tasks you use AI for.</span></a>
         <a class="card" href="playbook.html" style="--c:var(--part1)"><span class="k">The playbook</span><span class="t">Nine steps, with notes for your business</span><span class="d">Steps with a note for your business are marked.</span></a>
         <a class="card" href="tool_check.html" style="--c:var(--part2)"><span class="k">5 to 15 minutes a tool</span><span class="t">Your AI list</span><span class="d">Check each use of each tool, with the checks for your size and industry.</span></a>
         <a class="card" href="quick_policy.html" style="--c:var(--part2)"><span class="k">8 to 10 minutes</span><span class="t">${p.team_size === 'solo' ? 'Your AI rules and settings' : 'Your AI policy'}</span><span class="d">Built from your answers, in the form that fits your size.</span></a>

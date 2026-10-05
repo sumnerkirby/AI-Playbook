@@ -149,7 +149,7 @@ var PulseTestRun = (function(){
     eq(c.connections, [], 'unknown approval dropped');
     eq(c.sweep.found, ['A'], 'only real names kept');
     eq(c.unreadable, 5, 'the check-in says entries were left out');
-    ok(PU.summary(c).includes("5 entries couldn't be restored"), 'and its summary says so');
+    ok(PU.summary(c).includes("5 entries could not be restored"), 'and its summary says so');
     eq(PU.reminderStart('2027-01-31'), '2027-01-28', 'reminder day');
     eq(PU.restore(JSON.parse(JSON.stringify(r.log))).log.checkins[0].unreadable, 5, 'the note survives a second backup and restore');
     eq(r.dropped, 6, 'dropped count: bad date, unknown card, empty incident, unknown approval, two bad names');

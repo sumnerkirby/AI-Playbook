@@ -214,7 +214,7 @@
     main.innerHTML = `<section class="screen">
       <p class="step-label"><b>Your AI policy</b><span>Ready</span></p>
       <h2>Your ${a.team === 'solo' ? 'AI rules and settings are' : 'AI policy is'} ready</h2>
-      ${blanks ? `<div class="callout blanks-note"><p><b>${blanks} blank${blanks > 1 ? 's' : ''} still to fill,</b> highlighted in yellow. <button class="btn quiet" type="button" data-act="fill-blanks">Fill them in now</button> or after you download it.</p></div>` : ''}
+      ${blanks ? `<div class="callout blanks-note"><p><b>${blanks} blank${blanks > 1 ? 's' : ''} still to fill,</b> highlighted in yellow. <button class="btn quiet" type="button" data-act="fill-blanks">Fill ${blanks > 1 ? 'them' : 'it'} in now</button> or after you download it.</p></div>` : ''}
       <div class="done-grid">
         <div class="template" id="t-policy">
           <div class="template-head"><span>Your ${noun} &middot; one page</span><span class="acts">
@@ -248,8 +248,8 @@
             <h3 class="subhead">Next</h3>
             <div class="cards" style="grid-template-columns:1fr">
               ${a.team === 'solo' ? '' : '<a class="card" href="guide-ai-policy.html#rollout" style="--c:var(--part1)"><span class="k">Guide</span><span class="t">Introducing it to the team</span><span class="d">Go through it together, and keep a note of who has read it.</span></a>'}
-              <a class="card" href="quick_pulse.html" style="--c:var(--part3)"><span class="k">1 minute a month</span><span class="t">Monthly AI check-in</span><span class="d">Three questions a month keep this ${noun} and your AI list current.</span></a>
-              <a class="card" href="playbook.html#step-3" style="--c:var(--part1)"><span class="k">Playbook step 3</span><span class="t">Write an AI policy</span><span class="d">What ${a.team === 'solo' ? 'these rules cover' : 'this policy covers'}, and when to update it.</span></a>
+              <a class="card" href="quick_pulse.html" style="--c:var(--part3)"><span class="k">1 minute a month</span><span class="t">Monthly AI check-in</span><span class="d">Three to five questions a month keep ${a.team === 'solo' ? 'these rules' : 'this policy'} and your AI list current.</span></a>
+              <a class="card" href="playbook.html#step-3" style="--c:var(--part1)"><span class="k">Playbook step 3</span><span class="t">Write an AI policy</span><span class="d">${a.team === 'solo' ? 'What these rules cover, and when to update them' : 'What this policy covers, and when to update it'}.</span></a>
               ${quick ? '' : '<a class="card" href="quick_check.html" style="--c:var(--part3)"><span class="k">10 minutes</span><span class="t">Run the quick check</span><span class="d">Red flags, and what you use AI for. Its answers fill in parts of this.</span></a>'}
             </div>
           </div>

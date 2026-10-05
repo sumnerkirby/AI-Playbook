@@ -11,7 +11,7 @@ var STORAGE_KEYS = {
   keys: [
     {key: 'profile',        area: 'local',   tool: 'Step 0, the quick check, Your business', what: 'Your answers about your business: size, how you use AI, industry'},
     {key: 'done',           area: 'local',   tool: 'The playbook', what: 'Which steps you marked done'},
-    {key: 'answers',        area: 'local',   tool: 'The playbook', what: 'What you wrote under You’re done when you can answer'},
+    {key: 'answers',        area: 'local',   tool: 'The playbook', what: 'What you wrote under Done when you can answer'},
     {key: 'view',           area: 'session', tool: 'The playbook', what: 'Which steps were open, so a reload keeps your place'},
     {key: 'quick',          area: 'local',   tool: 'Quick check', what: 'Your quick check result, saved when you finish it'},
     {key: 'quick-other',    area: 'session', tool: 'Quick check', what: 'What you typed under Something else'},

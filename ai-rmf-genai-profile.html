@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-TfUfXwyL2Ax4IdUJBg6mqxtneRJGQFfMyOmYeWHkzv4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-2C7neIP6RZogFr20G90L5SPGxHHO17L/jUmA53m1V94='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -255,6 +255,28 @@ footer{
 .backlink:hover{background:#26343F}
 @media (max-width:640px){.backlink{left:16px;bottom:16px;max-width:calc(100% - 32px)}}
 @media print{.sitebar,.backlink{display:none !important}}
+/* the tools row, as in site.css (sitebar.js sets .more and starts it at the current tool) */
+.toolrow{
+  display:flex;gap:4px 18px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);
+  overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity
+}
+.toolrow > *{scroll-snap-align:start}
+.toolrow.more{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent)}
+.toolrow .k{flex:0 0 auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.toolrow a{flex:0 0 auto;font-size:14.5px;color:var(--ink2);text-decoration:none;border-bottom:1.5px solid transparent;padding:4px 0}
+.toolrow a:hover{color:var(--ink);border-bottom-color:var(--ink3)}
+.toolrow a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
+.toolrow a.featured{
+  font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.02em;
+  background:var(--ink);color:#fff;border:0;border-radius:3px;padding:5px 12px;margin-right:6px
+}
+.toolrow a.featured:hover{background:var(--focus);color:#fff}
+@media (max-width:640px),(pointer:coarse){
+  .toolrow a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box}
+  .toolrow a:not(.featured){min-width:44px;justify-content:center}
+  .toolrow{padding:2px 0}
+}
+@media print{.toolrow{display:none !important}}
 /* ---------- skip link: first stop for the Tab key ---------- */
 .skip-link{position:absolute;left:16px;top:-80px;z-index:100;padding:10px 16px;background:#111A22;color:#fff;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:2px}
 .skip-link:focus{top:10px;outline:2px solid #fff;outline-offset:-5px}
@@ -290,7 +312,7 @@ main[tabindex="-1"]:focus{outline:none}
   <header class="mast">
     <p class="eyebrow">NIST AI 600-1 &middot; July 2024</p>
     <h1>Generative AI Profile<span>AI RMF, condensed</span></h1>
-    <p class="lede">A cross-sectoral profile of the AI Risk Management Framework for generative AI: twelve risks unique to or exacerbated by GAI, and 212 suggested actions organised by AI RMF subcategory. Wording is reproduced verbatim. The narrative opens on load; the suggested actions and the appendix stay closed until you need them.</p>
+    <p class="lede">A cross-sectoral profile of the AI Risk Management Framework for generative AI: twelve risks unique to or exacerbated by GAI, and 212 suggested actions organised by AI RMF subcategory. Wording is reproduced verbatim. Every section starts closed: open the ones you need, or use Expand all.</p>
   </header>
 
   <section class="atlas" id="atlas" aria-label="Jump to a section"></section>
@@ -352,7 +374,6 @@ const DOC = [
   id: '1',
   title: `Introduction`,
   group: 'INTRO',
-  open: true,
   body: [
     `This document is a cross-sectoral profile of and companion resource for the AI Risk Management Framework (AI RMF 1.0) for Generative AI, 1 pursuant to President Biden’s Executive Order (EO) 14110 on Safe, Secure, and Trustworthy Artificial Intelligence.2 The AI RMF was released in January 2023, and is intended for voluntary use and to improve the ability of organizations to incorporate trustworthiness considerations into the design, development, use, and evaluation of AI products, services, and systems.`,
     `A profile is an implementation of the AI RMF functions, categories, and subcategories for a specific setting, application, or technology – in this case, Generative AI (GAI) – based on the requirements, risk tolerance, and resources of the Framework user. AI RMF profiles assist organizations in deciding how to best manage AI risks in a manner that is well-aligned with their goals, considers legal/regulatory requirements and best practices, and reflects risk management priorities. Consistent with other AI RMF profiles, this profile offers insights into how risk can be managed across various stages of the AI lifecycle and for GAI as a technology.`,
@@ -376,7 +397,6 @@ const DOC = [
   id: '2',
   title: `Overview of Risks Unique to or Exacerbated by GAI`,
   group: 'RISKS',
-  open: true,
   body: [
     `In the context of the AI RMF, risk refers to the composite measure of an event’s probability (or likelihood) of occurring and the magnitude or degree of the consequences of the corresponding event. Some risks can be assessed as likely to materialize in a given context, particularly those that have been empirically demonstrated in similar contexts. Other risks may be unlikely to materialize in a given context, or may be more speculative and therefore uncertain.`,
     `AI risks can differ from or intensify traditional software risks. Likewise, GAI can exacerbate existing AI risks, and creates unique risks. GAI risks can vary along many dimensions:`,
@@ -415,7 +435,6 @@ const DOC = [
   id: '2.1',
   title: `CBRN Information or Capabilities`,
   group: 'RISKS',
-  open: true,
   body: [
     `In the future, GAI may enable malicious actors to more easily access CBRN weapons and/or relevant knowledge, information, materials, tools, or technologies that could be misused to assist in the design, development, production, or use of CBRN weapons or other dangerous materials or agents. While relevant biological and chemical threat knowledge and information is often publicly accessible, LLMs could facilitate its analysis or synthesis, particularly by individuals without formal scientific training or expertise.`,
     `Recent research on this topic found that LLM outputs regarding biological threat creation and attack planning provided minimal assistance beyond traditional search engine queries, suggesting that state-of-the-art LLMs at the time these studies were conducted do not substantially increase the operational likelihood of such an attack. The physical synthesis development, production, and use of chemical or biological agents will continue to require both applicable expertise and supporting materials and infrastructure. The impact of GAI on chemical or biological agent misuse will depend on what the key barriers for malicious actors are (e.g., whether information access is one such barrier), and how well GAI can help actors address those barriers.`,
@@ -429,7 +448,6 @@ const DOC = [
   id: '2.2',
   title: `Confabulation`,
   group: 'RISKS',
-  open: true,
   body: [
     `“Confabulation” refers to a phenomenon in which GAI systems generate and confidently present erroneous or false content in response to prompts. Confabulations also include generated outputs that diverge from the prompts or other input or that contradict previously generated statements in the same context. These phenomena are colloquially also referred to as “hallucinations” or “fabrications.”`,
     `Confabulations can occur across GAI outputs and contexts. 9,10 Confabulations are a natural result of the way generative models are designed: they generate outputs that approximate the statistical distribution of their training data; for example, LLMs predict the next token or word in a sentence or phrase. While such statistical prediction can produce factually accurate and consistent outputs, it can also produce outputs that are factually inaccurate or internally inconsistent. This dynamic is particularly relevant when it comes to open-ended prompts for long-form responses and in domains which require highly contextual and/or domain expertise.`,
@@ -444,7 +462,6 @@ const DOC = [
   id: '2.3',
   title: `Dangerous, Violent, or Hateful Content`,
   group: 'RISKS',
-  open: true,
   body: [
     `GAI systems can produce content that is inciting, radicalizing, or threatening, or that glorifies violence, with greater ease and scale than other technologies. LLMs have been reported to generate dangerous or violent recommendations, and some models have generated actionable instructions for dangerous or unethical behavior. Text-to-image models also make it easy to create images that could be used to promote dangerous or violent messages. Similar concerns are present for other GAI media, including video and audio. GAI may also produce content that recommends self-harm or criminal/illegal activities.`,
     `Many current systems restrict model outputs to limit certain content or in response to certain prompts, but this approach may still produce harmful recommendations in response to other less-explicit, novel prompts (also relevant to CBRN Information or Capabilities, Data Privacy, Information Security, and Obscene, Degrading and/or Abusive Content). Crafting such prompts deliberately is known as “jailbreaking,” or, manipulating prompts to circumvent output controls. Limitations of GAI systems can be harmful or dangerous in certain contexts. Studies have observed that users may disclose mental health issues in conversations with chatbots – and that users exhibit negative reactions to unhelpful responses from these chatbots during situations of distress.`,
@@ -461,7 +478,6 @@ const DOC = [
   id: '2.4',
   title: `Data Privacy`,
   group: 'RISKS',
-  open: true,
   body: [
     `GAI systems raise several risks to privacy. GAI system training requires large volumes of data, which in some cases may include personal data. The use of personal data for GAI training raises risks to widely accepted privacy principles, including to transparency, individual participation (including consent), and purpose specification. For example, most model developers do not disclose specific data sources on which models were trained, limiting user awareness of whether personally identifiably information (PII) was trained on and, if so, how it was collected.`,
     `Models may leak, generate, or correctly infer sensitive information about individuals. For example, during adversarial attacks, LLMs have revealed sensitive information (from the public domain) that was included in their training data. This problem has been referred to as data memorization, and may pose exacerbated privacy risks even for data present only in a small number of training samples.`,
@@ -475,7 +491,6 @@ const DOC = [
   id: '2.5',
   title: `Environmental Impacts`,
   group: 'RISKS',
-  open: true,
   body: [
     `Training, maintaining, and operating (running inference on) GAI systems are resource-intensive activities, with potentially large energy and environmental footprints. Energy and carbon emissions vary based on what is being done with the GAI model (i.e., pre-training, fine-tuning, inference), the modality of the content, hardware used, and type of task or application.`,
     `Current estimates suggest that training a single transformer LLM can emit as much carbon as 300 round-trip flights between San Francisco and New York. In a study comparing energy consumption and carbon emissions for LLM inference, generative tasks (e.g., text summarization) were found to be more energy-and carbon-intensive than discriminative or non-generative tasks (e.g., text classification).`,
@@ -488,7 +503,6 @@ const DOC = [
   id: '2.6',
   title: `Harmful Bias and Homogenization`,
   group: 'RISKS',
-  open: true,
   body: [
     `Bias exists in many forms and can become ingrained in automated systems. AI systems, including GAI systems, can increase the speed and scale at which harmful biases manifest and are acted upon, potentially perpetuating and amplifying harms to individuals, groups, communities, organizations, and society. For example, when prompted to generate images of CEOs, doctors, lawyers, and judges, current text-to-image models underrepresent women and/or racial minorities, and people with disabilities. Image generator models have also produced biased or stereotyped output for various demographic groups and have difficulty producing non-stereotyped content even when the prompt specifically requests image features that are inconsistent with the stereotypes. Harmful bias in GAI models, which may stem from their training data, can also cause representational harms or perpetuate or exacerbate bias based on race, gender, disability, or other protected classes.`,
     `Harmful bias in GAI systems can also lead to harms via disparities between how a model performs for different subgroups or languages (e.g., an LLM may perform less well for non-English languages or certain dialects). Such disparities can contribute to discriminatory decision-making or amplification of existing societal biases. In addition, GAI systems may be inappropriately trusted to perform similarly across all subgroups, which could leave the groups facing underperformance with worse outcomes than if no GAI system were used. Disparate or reduced performance for lower-resource languages also presents challenges to model adoption, inclusion, and accessibility, and may make preservation of endangered languages more difficult if GAI systems become embedded in everyday processes that would otherwise have been opportunities to use these languages.`,
@@ -502,7 +516,6 @@ const DOC = [
   id: '2.7',
   title: `Human-AI Configuration`,
   group: 'RISKS',
-  open: true,
   body: [
     `GAI system use can involve varying risks of misconfigurations and poor interactions between a system and a human who is interacting with it. Humans bring their unique perspectives, experiences, or domain-specific expertise to interactions with AI systems but may not have detailed knowledge of AI systems and how they work. As a result, human experts may be unnecessarily “averse” to GAI systems, and thus deprive themselves or others of GAI’s beneficial uses.`,
     `Conversely, due to the complexity and increasing reliability of GAI technology, over time, humans may over-rely on GAI systems or may unjustifiably perceive GAI content to be of higher quality than that produced by other sources. This phenomenon is an example of automation bias, or excessive deference to automated systems. Automation bias can exacerbate other risks of GAI, such as risks of confabulation or risks of bias or homogenization.`,
@@ -515,7 +528,6 @@ const DOC = [
   id: '2.8',
   title: `Information Integrity`,
   group: 'RISKS',
-  open: true,
   body: [
     `Information integrity describes the “spectrum of information and associated patterns of its creation, exchange, and consumption in society.” High-integrity information can be trusted; “distinguishes fact from fiction, opinion, and inference; acknowledges uncertainties; and is transparent about its level of vetting. This information can be linked to the original source(s) with appropriate evidence. High-integrity information is also accurate and reliable, can be verified and authenticated, has a clear chain of custody, and creates reasonable expectations about when its validity may expire.”11`,
     `GAI systems can ease the unintentional production or dissemination of false, inaccurate, or misleading content (misinformation) at scale, particularly if the content stems from confabulations.`,
@@ -533,7 +545,6 @@ const DOC = [
   id: '2.9',
   title: `Information Security`,
   group: 'RISKS',
-  open: true,
   body: [
     `Information security for computer systems and data is a mature field with widely accepted and standardized practices for offensive and defensive cyber capabilities. GAI-based systems present two primary information security risks: GAI could potentially discover or enable new cybersecurity risks by lowering the barriers for or easing automated exercise of offensive capabilities; simultaneously, it expands the available attack surface, as GAI itself is vulnerable to attacks like prompt injection or data poisoning.`,
     `Offensive cyber capabilities advanced by GAI systems may augment cybersecurity attacks such as hacking, malware, and phishing. Reports have indicated that LLMs are already able to discover some vulnerabilities in systems (hardware, software, data) and write code to exploit them. Sophisticated threat actors might further these risks by developing GAI-powered security co-pilots for use in several parts of the attack chain, including informing attackers on how to proactively evade threat detection and escalate privileges after gaining system access.`,
@@ -551,7 +562,6 @@ const DOC = [
   id: '2.10',
   title: `Intellectual Property`,
   group: 'RISKS',
-  open: true,
   body: [
     `Intellectual property risks from GAI systems may arise where the use of copyrighted works is not a fair use under the fair use doctrine. If a GAI system’s training data included copyrighted material, GAI outputs displaying instances of training data memorization (see Data Privacy above) could infringe on copyright.`,
     `How GAI relates to copyright, including the status of generated content that is similar to but does not strictly copy work protected by copyright, is currently being debated in legal fora. Similar discussions are taking place regarding the use or emulation of personal identity, likeness, or voice without permission.`,
@@ -563,7 +573,6 @@ const DOC = [
   id: '2.11',
   title: `Obscene, Degrading, and/or Abusive Content`,
   group: 'RISKS',
-  open: true,
   body: [
     `GAI can ease the production of and access to illegal non-consensual intimate imagery (NCII) of adults, and/or child sexual abuse material (CSAM). GAI-generated obscene, abusive or degrading content can create privacy, psychological and emotional, and even physical harms, and in some cases may be illegal.`,
     `Generated explicit or obscene AI content may include highly realistic “deepfakes” of real individuals, including children. The spread of this kind of material can have downstream negative consequences: in the context of CSAM, even if the generated images do not resemble specific individuals, the prevalence of such images can divert time and resources from efforts to find real-world victims. Outside of CSAM, the creation and spread of NCII disproportionately impacts women and sexual minorities, and can have subsequent negative consequences including decline in overall mental health, substance abuse, and even suicidal thoughts.`,
@@ -576,7 +585,6 @@ const DOC = [
   id: '2.12',
   title: `Value Chain and Component Integration`,
   group: 'RISKS',
-  open: true,
   body: [
     `GAI value chains involve many third-party components such as procured datasets, pre-trained models, and software libraries. These components might be improperly obtained or not properly vetted, leading to diminished transparency or accountability for downstream users. While this is a risk for traditional AI systems and some other digital technologies, the risk is exacerbated for GAI due to the scale of the training data, which may be too large for humans to vet; the difficulty of training foundation models, which leads to extensive reuse of limited numbers of models; and the extent to which GAI may be integrated into other devices and services. As GAI systems often involve many distinct third-party components and data sources, it may be difficult to attribute issues in a system’s behavior to any one of these sources.`,
     `Errors in third-party GAI components can also have downstream impacts on accuracy and robustness. For example, test datasets commonly used to benchmark or validate models can contain label errors. Inaccuracies in these labels can impact the “stability” or robustness of these benchmarks, which many GAI practitioners consider during the model selection process.`,
@@ -2054,11 +2062,17 @@ tally.className = 'tally';
 chips.appendChild(tally);
 
 /* ---- interaction ---- */
+/* Expand all until every section shown is open, as on the playbook */
+function syncToggle(){
+  const shown = [...list.querySelectorAll('.item:not([hidden])')];
+  toggle.textContent = shown.length && shown.every(i => i.classList.contains('open')) ? 'Collapse all' : 'Expand all';
+}
 function setOpen(item, on){
   item.classList.toggle('open', on);
   item.querySelector('.item-btn').setAttribute('aria-expanded', on ? 'true' : 'false');
   item.querySelector('.panel').hidden = !on;
   syncAtlas();
+  syncToggle();
 }
 
 list.addEventListener('click', e => {
@@ -2086,9 +2100,9 @@ function setFilter(f){
 }
 
 toggle.addEventListener('click', () => {
-  const anyOpen = !!list.querySelector('.item.open:not([hidden])');
-  list.querySelectorAll('.item:not([hidden])').forEach(i => setOpen(i, !anyOpen));
-  toggle.textContent = anyOpen ? 'Expand all' : 'Collapse all';
+  const open = [...list.querySelectorAll('.item:not([hidden])')].some(i => !i.classList.contains('open'));
+  list.querySelectorAll('.item:not([hidden])').forEach(i => setOpen(i, open));
+  syncToggle();
 });
 
 let timer;
@@ -2118,8 +2132,7 @@ function apply(){
   tally.textContent = shown === DATA.length
     ? DATA.length + ' sections'
     : shown + ' of ' + DATA.length + ' shown';
-  const anyOpen = !!list.querySelector('.item.open:not([hidden])');
-  toggle.textContent = anyOpen ? 'Collapse all' : 'Expand all';
+  syncToggle();
   syncAtlas();
 }
 

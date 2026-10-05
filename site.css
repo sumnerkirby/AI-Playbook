@@ -288,6 +288,7 @@ section[id]{scroll-margin-top:80px}
 .guidelink b{font-family:var(--display);font-weight:600;font-size:15.5px;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
 .guidelink:hover b{text-decoration-color:var(--ink)}
 .mark[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
+.dw-gate{margin:0;font-size:15px;color:var(--ink2);flex-basis:100%}
 
 /* ---------- done-when answers (done_when.js) ---------- */
 .sec-document li{margin-bottom:12px}

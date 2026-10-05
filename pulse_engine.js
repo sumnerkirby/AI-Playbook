@@ -89,7 +89,7 @@ var PulseEngine = (function(){
     parts.push(c.incidents.length ? `${c.incidents.length} thing${c.incidents.length > 1 ? 's' : ''} went wrong` : 'nothing went wrong');
     parts.push(c.connections.length ? `${c.connections.length} new connection${c.connections.length > 1 ? 's' : ''}` : 'no new connections');
     if (c.people && c.people.answer === 'yes') parts.push(c.people.accounts === 'yes' ? 'someone joined or left, accounts updated' : 'someone joined or left, accounts to update');
-    if (c.unreadable) parts.push(`${c.unreadable} ${c.unreadable === 1 ? 'entry' : 'entries'} couldn't be restored from a backup`);
+    if (c.unreadable) parts.push(`${c.unreadable} ${c.unreadable === 1 ? 'entry' : 'entries'} could not be restored from a backup`);
     if (c.sweep) parts.push(c.sweep.answer === 'yes' ? `${c.sweep.found.length} found on the statement` : c.sweep.answer === 'no' ? 'statement checked' : 'statement not checked yet');
     return parts.join(', ');
   }

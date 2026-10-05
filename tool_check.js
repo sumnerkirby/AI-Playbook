@@ -241,7 +241,7 @@
   function resultHTML(r, a, opts){
     const light = r.light;
     const sub = light === 'red' ? (a.mode === 'discovered' ? 'A red line is crossed. Pause this use now; what is still allowed is below.' : 'A red line is crossed. Do not start this use until it changes.')
-      : light === 'amber' ? `${r.todos.filter(t => !t.done).length} to-do${r.todos.filter(t => !t.done).length === 1 ? '' : 's'} open. It turns green when they are done.` : 'No open to-dos.';
+      : light === 'amber' ? `${r.todos.filter(t => !t.done).length} to-do${r.todos.filter(t => !t.done).length === 1 ? '' : 's'} open. It turns green when ${r.todos.filter(t => !t.done).length === 1 ? 'it is' : 'they are'} done.` : 'No open to-dos.';
     const allowed = T.allowedText(r);
     const notes = r.allowed_notes;
     const conf = r.confidence;
@@ -252,7 +252,7 @@
         ${light !== 'green' && (allowed || notes.length) ? `<p class="allowed"><b>Allowed right now</b>${esc([allowed].concat(notes).filter(Boolean).join(' '))}</p>` : ''}
       </div>
       ${PR.adviceHTML(P.industry, esc)}
-      ${r.stops.length ? `<h3 class="subhead">Why it&rsquo;s red</h3>${r.stops.map(s => `<div class="finding stop">${U.light('red', 'Stop')}
+      ${r.stops.length ? `<h3 class="subhead">Why it is red</h3>${r.stops.map(s => `<div class="finding stop">${U.light('red', 'Stop')}
         <p>${esc(s.reason)}</p><p class="fix"><b>What would change it:</b> ${esc(s.fix)}<span class="who">${esc(s.owner)}</span></p>
         ${s.flag ? `<p class="advice"><b>Get advice</b>${esc(s.flag_text || '')}</p>` : ''}
         <p><a href="${esc(s.how.href)}">${esc(s.how.label)}</a></p></div>`).join('')}` : ''}
@@ -264,7 +264,7 @@
             <p class="why" id="tw-${esc(t.id)}">${esc(t.reason)}</p>
             ${t.flag ? `<p class="advice"><b>Get advice</b>${esc(t.flag_text || '')}</p>` : ''}
             ${t.where_to_look ? `<details><summary>Where to look</summary>${lookHelp(a, t.where_to_look)}</details>` : ''}
-            ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}">I&rsquo;ve found out: change my answer</button></p>` : ''}
+            ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}">I have found out: change my answer</button></p>` : ''}
             ${t.standing && !t.done ? `<p class="small-note">Once done, this becomes a standing rule.</p>` : ''}
             <p><a href="${esc(t.how.href)}">${esc(t.how.label)}</a></p>
           </div></li>`).join('')}</ul>` : ''}
@@ -287,7 +287,7 @@
       ${resultHTML(r, a, {})}
       <div class="go-row" style="margin-top:20px">
         <button class="btn primary" type="button" data-act="save">${d.lineId ? 'Save the re-check' : (d.pending || []).length ? `Save, then check ${esc(T.useLabel(d.pending[0]).toLowerCase())}` : 'Save to your AI list'}</button>
-        <button class="btn quiet" type="button" data-act="cancel">Don&rsquo;t save</button>
+        <button class="btn quiet" type="button" data-act="cancel">Do not save</button>
       </div>
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button></div>
     </section>`;

@@ -54,7 +54,7 @@
     ROWS.forEach(imp => { const [, y] = cellXY(imp, 'low'); s += `<text x="${X0 - 10}" y="${y + CH / 2}" text-anchor="end" style="font:600 13px var(--display);fill:#111A22">${L(imp)}</text>`; });
     COLS.forEach(lik => { const [x] = cellXY('low', lik); s += `<text x="${x + CW / 2}" y="${Y0 + 3 * CH + 16}" text-anchor="middle" style="font:600 13px var(--display);fill:#111A22">${L(lik)}</text>`; });
     s += `<text x="16" y="${Y0 + 1.5 * CH}" text-anchor="middle" transform="rotate(-90 16 ${Y0 + 1.5 * CH})" style="font:10.5px var(--mono);letter-spacing:.1em;fill:#4C5A68">HOW BAD IF IT GOES WRONG</text>
-      <text x="${X0 + 1.5 * CW}" y="${Y0 + 3 * CH + 40}" text-anchor="middle" style="font:10.5px var(--mono);letter-spacing:.1em;fill:#4C5A68">HOW LIKELY, AS IT&#8217;S USED TODAY</text>`;
+      <text x="${X0 + 1.5 * CW}" y="${Y0 + 3 * CH + 40}" text-anchor="middle" style="font:10.5px var(--mono);letter-spacing:.1em;fill:#4C5A68">HOW LIKELY, AS IT IS USED TODAY</text>`;
 
     /* before markers and arrows first, so the "now" markers sit on top */
     const nowPos = items.map(i => slot(i.impact, i.now));
@@ -232,10 +232,18 @@
       return;
     }
     if (f.id === 'addrisk'){
+      const v = {title: fd.get('title'), type: fd.get('type'), impact: fd.get('impact'), likelihood: fd.get('likelihood'), control: fd.get('control')};
       try {
-        K.addCustom(store, {title: fd.get('title'), type: fd.get('type'), impact: fd.get('impact'), likelihood: fd.get('likelihood'), control: fd.get('control')}, today);
+        K.addCustom(store, v, today);
         delete errors.add; save(); render(); $('#announce').textContent = 'Risk added to the matrix.';
-      } catch (err) { errors.add = err.message; render('#ar-title'); }
+      } catch (err) {
+        /* keep what was typed or picked, and focus the first thing missing */
+        errors.add = err.message; render();
+        $('#ar-title').value = v.title || ''; $('#ar-type').value = v.type; $('#ar-control').value = v.control || '';
+        ['impact', 'likelihood'].forEach(n => { const r = v[n] && $(`#addrisk input[name=${n}][value="${v[n]}"]`, main); if (r) r.checked = true; });
+        const missing = !String(v.title || '').trim() ? '#ar-title' : !v.impact ? '#addrisk input[name=impact]' : !v.likelihood ? '#addrisk input[name=likelihood]' : '#ar-title';
+        $(missing, main).focus();
+      }
     }
   });
   main.addEventListener('click', e => {
