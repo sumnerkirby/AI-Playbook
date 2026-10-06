@@ -127,6 +127,26 @@ var PolicyEngine = (function(){
     }
     return a;
   }
+  /* The tools on the AI list, offered on the tools
+     question so their names are not typed again: one per name, ignoring
+     case, leaving out retired uses. The account follows the plan: a personal
+     plan is Not yet, a business, enterprise, built-in or own one is a
+     business account, Not sure is left for the owner. */
+  const PLAN_ACCOUNT = {free_personal: 'not_yet', paid_personal: 'not_yet', business: 'business', enterprise: 'business', built_in: 'business', own: 'business'};
+  function toolsFromList(raw){
+    const out = [];
+    ((raw && Array.isArray(raw.lines)) ? raw.lines : []).forEach(l => {
+      if (!l || l.retired_on || !l.answers || typeof l.answers.tool !== 'string') return;
+      const name = l.answers.tool.replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 120);
+      if (!name) return;
+      const account = PLAN_ACCOUNT[l.answers.plan] || null;
+      const seen = out.find(t => t.name.toLowerCase() === name.toLowerCase());
+      /* any use on a personal plan makes the tool Not yet */
+      if (seen){ if (account === 'not_yet' || !seen.account) seen.account = account || seen.account; return; }
+      out.push({name, account});
+    });
+    return out;
+  }
   /* what the quick check said, to jog memory on the tools question */
   function quickHints(q){
     if (!q) return {activities: [], personal: false};
@@ -310,6 +330,6 @@ var PolicyEngine = (function(){
   return {
     fmtDate, addMonths, addDays, joinList, fill, text,
     initial, setIndustry, neverDefaults, neverOptions, visibleQuestions,
-    fromQuick, quickHints, build, toHTML, neverHTML, plain, carryOver,
+    fromQuick, quickHints, toolsFromList, build, toHTML, neverHTML, plain, carryOver,
   };
 })();

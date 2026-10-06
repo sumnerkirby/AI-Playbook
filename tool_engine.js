@@ -333,7 +333,7 @@ var ToolEngine = (function(){
     ((q && q.finds) || []).forEach(f => items.push({
       key: 'quick:' + f.use, name: null, label: cardLabel(f.use), use: CARD_USE[f.use] || null, source: 'Quick check',
       light: f.quick_light, account: f.tags && f.tags.account, customer_info: f.tags && f.tags.customer_info, can_act: f.tags && f.tags.can_act,
-      extension: f.use === 'extensions',
+      sensitive: f.tags && f.tags.sensitive, person_decides: f.tags && f.tags.person_decides, extension: f.use === 'extensions',
     }));
     const pol = saved.policy && saved.policy.a;
     ((pol && pol.tools) || []).forEach(t => items.push({
@@ -383,6 +383,31 @@ var ToolEngine = (function(){
     const L = {stop: 6, red: 6, check: 3, amber: 3, go: 1, green: 1};
     return (L[i.light] || 2) + (i.account === 'personal' ? 3 : 0) + (i.customer_info === 'yes' ? 2 : 0)
       + (i.can_act && i.can_act !== 'no' ? 3 : 0) + (i.extension ? 1 : 0);
+  }
+  /* What a to-check item already says about its use, selected in advance on
+     the uses screen: what goes in, whether it can act, and, for a decision
+     about a person, whether a person decides. "Nothing personal" in the
+     quick check could be public or internal, so it is left to the owner. */
+  function queueUseAnswers(i){
+    const a = {};
+    if (i.sensitive === 'yes') a.data = ['sensitive'];
+    else if (i.customer_info === 'yes') a.data = ['personal'];
+    else if (i.customer_info === 'dont_know') a.data = ['dont_know'];
+    if (i.can_act === 'no') a.acts = ['produces_only'];
+    else if (['yes', 'after_approval', 'without_asking'].includes(i.can_act)) a.acts = ['acts'];
+    if (i.person_decides === 'yes' || i.person_decides === 'no') a.person_decides = i.person_decides;
+    return a;
+  }
+  /* The uses a check started from a to-check item can take answers from:
+     the item itself, and the other items for the same tool (for the quick
+     check, which names no tool, the other quick-check tasks). First, the
+     likely most serious, wins for each use. */
+  function queueUses(item, items){
+    const out = {};
+    items.filter(i => i.use && (i === item || (item.name ? i.name && sameTool(i.name, item.name) : !i.name && i.key.startsWith('quick:') && item.key.startsWith('quick:'))))
+      .forEach(i => { if (!out[i.use]) out[i.use] = {answers: queueUseAnswers(i), from: i.key, label: i.label}; });
+    if (item.use) out[item.use] = {answers: queueUseAnswers(item), from: item.key, label: item.label};
+    return out;
   }
   function fromQueue(i){
     const a = {mode: 'discovered'};
@@ -450,7 +475,7 @@ var ToolEngine = (function(){
     addDays, addMonths, facts, matches, questionText, visible, upgrade, prune, nextQuestion, complete,
     evaluate, recheckBy, allowedText, ownerLabel,
     makeLine, refresh, state, name, useLabel, logEvent, reopenAnswers, recheck, retire, anotherUse,
-    SHARED, GRID, splitUses, useAnswers, nextMulti, otherUses, tickShared,
+    SHARED, GRID, splitUses, useAnswers, nextMulti, otherUses, tickShared, queueUseAnswers, queueUses,
     queue, fromQueue, csv, restore, vendorHelp, CLASSES,
   };
 })();

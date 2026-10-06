@@ -190,6 +190,12 @@ var IndustryTestRun = (function(){
     ok(src.includes('business === RC.business_fallback ? business.charAt(0).toLowerCase()'), 'statement uses this business');
   });
 
+  test('the policy fills in the saved quick check when opened without its link (log item 134)', () => {
+    const quick = JSON.stringify({hash: '#v=1&i=pr&a=1n2n3n4ydy5n6n&b=wr-dn.hi-pyly'});
+    ok(runPage('quick_policy.js', {local: {'sb-ai-playbook:quick': quick}}).includes('Carried over from your quick check'), 'from the saved quick check');
+    ok(!runPage('quick_policy.js', {}).includes('Carried over from your quick check'), 'nothing saved: nothing carried over');
+  });
+
   const failed = results.filter(r => r.fails.length);
   return {results, failed, summary: `${results.length - failed.length} of ${results.length} industry tests passed`};
 })();

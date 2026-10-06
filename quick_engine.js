@@ -76,6 +76,16 @@ var QuickEngine = (function(){
   function cardComplete(cardId, answers){
     return cardQuestions(cardId, answers).every(q => answers[q.id] !== undefined);
   }
+  /* A task question that part 1 has already answered takes that answer, and
+     follows part 1 if it changes (from_screener in data/questions.js). */
+  function fromScreener(state){
+    const s = state.screener || {};
+    (state.cards || []).forEach(cd => card(cd.id).questions.forEach(id => {
+      const hit = (CARD_QUESTIONS[id].from_screener || []).find(r => r.in.includes(s[r.q]));
+      if (hit) cd.answers[id] = hit.answer;
+    }));
+    return state;
+  }
   function evaluateCard(cardId, answers, ctx){
     return evaluate('card', Object.assign(pruneCard(cardId, answers), {_card: cardId}), ctx);
   }
@@ -150,7 +160,7 @@ var QuickEngine = (function(){
         state.cards.push({id: def.id, answers: pruneCard(def.id, answers)});
       });
     }
-    return state;
+    return fromScreener(state);
   }
 
   /* ---------- carry-over into the full tools ----------
@@ -199,7 +209,7 @@ var QuickEngine = (function(){
   return {
     matches, applies, evaluate,
     screenerQuestions, pruneScreener, screenerComplete, evaluateScreener,
-    cardsFor, card, cardQuestions, pruneCard, cardComplete, evaluateCard, tally,
+    cardsFor, card, cardQuestions, pruneCard, cardComplete, fromScreener, evaluateCard, tally,
     encode, decode, carryOver,
   };
 })();

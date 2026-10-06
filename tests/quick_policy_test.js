@@ -181,6 +181,15 @@ var PolicyTestRun = (function(){
   });
 
   /* ---------- two-step sign-in (FIXES 1.2) ---------- */
+  test('tools on the AI list are offered with their kind of account (log item 136)', () => {
+    const line = (tool, plan, extra) => Object.assign({answers: {tool, plan}}, extra || {});
+    eq(PE.toolsFromList({lines: [line('ChatGPT', 'business'), line('chatgpt ', 'free_personal'), line('Copilot', 'built_in'),
+      line('Otter', 'dont_know'), line('Old tool', 'business', {retired_on: '2026-09-01'}), line('  ', 'business'), {answers: {}}]}),
+      [{name: 'ChatGPT', account: 'not_yet'}, {name: 'Copilot', account: 'business'}, {name: 'Otter', account: null}],
+      'one per name; any personal plan makes it Not yet; retired and blank left out');
+    eq(PE.toolsFromList(null), [], 'no list');
+    eq(PE.toolsFromList({lines: 'junk'}), [], 'junk');
+  });
   test('the policy requires two-step sign-in, and a team policy removes accounts when someone leaves', () => {
     const team = Object.assign(dana(), {team: 'team', decider: 'Dana'});
     ok(secText(PE.build(team), 'tools').includes('Every AI account used for work has two-step sign-in turned on, and accounts are removed when someone leaves.'), 'team');

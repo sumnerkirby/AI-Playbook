@@ -93,7 +93,10 @@ var CARD_QUESTIONS = {
       {id: 'without_asking', code: 'w', label: `It acts without asking`,  detail: `It sends, pays, books or deletes by itself`},
       {id: 'not_sure',       code: 'u', label: `Not sure`},
     ]},
+  /* from_screener: part 1 has already answered this question, so the task
+     takes that answer instead of asking again (the first match wins) */
   person_decides: {code: 'p', short: `A person decides`,
+    from_screener: [{q: 'q4b', in: ['yes'], answer: 'yes'}, {q: 'q4b', in: ['no'], answer: 'no'}, {q: 'q4', in: ['no'], answer: 'yes'}],
     text: `Does a person make the final decision?`,
     answers: YES_NO_NOT_SURE},
   nyc_co: {code: 'l', short: `Hires in NYC or Colorado`,
@@ -101,6 +104,7 @@ var CARD_QUESTIONS = {
     hint: `Both have their own rules for AI used in hiring.`,
     answers: YES_NO_NOT_SURE},
   told: {code: 't', short: `People told`,
+    from_screener: [{q: 'q6', in: ['no'], answer: 'yes'}],
     text: `Are people told that it is happening?`,
     hint: `Told at the start, with a way to decline.`,
     answers: YES_NO_NOT_SURE},

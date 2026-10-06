@@ -330,6 +330,18 @@ var TestRun = (function(){
 
   /* ================= carry-over ================= */
 
+  test('a task question part 1 already answered is not asked again (log item 135)', () => {
+    const st = (screener, ids) => E.fromScreener({industry: null, screener, cards: ids.map(id => ({id, answers: {}}))});
+    let s = st({q4: 'yes', q4b: 'yes', q6: 'no'}, ['hiring', 'meetings']);
+    eq([s.cards[0].answers.person_decides, s.cards[1].answers.told], ['yes', 'yes'], 'final decision and people told come from part 1');
+    eq(E.cardQuestions('hiring', s.cards[0].answers).find(q => s.cards[0].answers[q.id] === undefined).id, 'nyc_co', 'the hiring task asks only about NYC or Colorado');
+    eq(st({q4: 'yes', q4b: 'no'}, ['hiring']).cards[0].answers.person_decides, 'no', 'no in part 1 stays no');
+    eq(st({q4: 'no'}, ['hiring']).cards[0].answers.person_decides, 'yes', 'AI does not decide: a person does');
+    eq(st({q4: 'yes', q4b: 'not_sure', q6: 'not_sure'}, ['hiring', 'phone']).cards.map(c => c.answers), [{}, {}], 'not sure in part 1: the task still asks');
+    eq(st({q6: 'yes'}, ['meetings']).cards[0].answers, {}, 'something records without telling: the task asks which');
+    const d = E.decode('#v=1&a=1n2n3n4ydy5n6n&b=hi');
+    eq(d.cards[0].answers.person_decides, 'yes', 'a link fills it in too');
+  });
   test('carry-over: tapped cards become discovery finds with quick tags', () => {
     const out = E.carryOver({
       industry: 'finance',

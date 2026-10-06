@@ -28,8 +28,13 @@
   $('#policy-reviewed').textContent = PE.fmtDate(P.last_reviewed);
 
   /* ---------- state ---------- */
-  const quick = QuickEngine.decode(location.hash);
+  /* the quick check's answers: from the address when the quick check links
+     here, otherwise from the quick check saved in this browser, so the tools
+     row and Your progress fill in the same answers */
+  const savedQuick = () => { try { const s = JSON.parse(sget('localStorage', 'sb-ai-playbook:quick') || 'null'); return s && s.hash ? QuickEngine.decode(s.hash) : null; } catch (e) { return null; } };
+  const quick = QuickEngine.decode(location.hash) || savedQuick();
   const hints = PE.quickHints(quick);
+  const listTools = (() => { try { return PE.toolsFromList(JSON.parse(sget('localStorage', 'sb-ai-playbook:ai-list') || 'null')); } catch (e) { return []; } })();
   let a, step;
   function fresh(){
     const a = PE.fromQuick(quick, PE.initial(today()));
@@ -145,7 +150,10 @@
         ${hints.activities.length || hints.personal ? `<div class="callout reminder"><span class="k">From your quick check</span>
           ${hints.activities.length ? `<p>You said AI helps with:</p><ul>${hints.activities.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p>Which tools do those tasks?</p>` : ''}
           ${hints.personal ? `<p><b>Some work happens on personal or free accounts.</b> Add those tools too, and mark them Not yet.</p>` : ''}</div>` : ''}
-        <div class="chiprow tools">${P.common_tools.map(t => `<button type="button" class="chip" data-tool="${esc(t)}" aria-pressed="${names.includes(t.toLowerCase())}">${esc(t)}</button>`).join('')}</div>
+        ${listTools.length ? `<p class="example" style="margin:16px 0 0">On your AI list</p>
+        <div class="chiprow tools" style="margin-top:6px">${listTools.map((t, i) => `<button type="button" class="chip" data-listtool="${i}" aria-pressed="${names.includes(t.name.toLowerCase())}">${esc(t.name)}</button>`).join('')}</div>
+        <p class="example" style="margin:16px 0 0">Common tools</p>` : ''}
+        <div class="chiprow tools"${listTools.length ? ' style="margin-top:6px"' : ''}>${P.common_tools.filter(t => !listTools.some(x => x.name.toLowerCase() === t.toLowerCase())).map(t => `<button type="button" class="chip" data-tool="${esc(t)}" aria-pressed="${names.includes(t.toLowerCase())}">${esc(t)}</button>`).join('')}</div>
         ${a.tools.length ? `<ul class="approved-tools">${a.tools.map((t, i) => `<li class="approved-tool"><span class="name">${esc(t.name)}</span>
           <span class="seg" role="group" aria-label="Account for ${esc(t.name)}">${P.account_options.map(o => `<button type="button" class="${o.id === 'not_yet' ? 'notyet' : ''}" data-acct="${i}" data-val="${o.id}" aria-pressed="${t.account === o.id}">${esc(o.label)}</button>`).join('')}</span>
           <button type="button" class="x" data-rmtool="${i}" aria-label="Remove ${esc(t.name)}">&times;</button></li>`).join('')}</ul>` : ''}
@@ -312,6 +320,13 @@
       const i = a.tools.findIndex(x => x.name.toLowerCase() === d.tool.toLowerCase());
       if (i >= 0) a.tools.splice(i, 1); else a.tools.push({name: d.tool, account: null});
       return redraw(`[data-tool="${CSS.escape(d.tool)}"]`);
+    }
+    /* a tool from the AI list comes with its kind of account */
+    if (d.listtool !== undefined){
+      const t = listTools[+d.listtool];
+      const i = a.tools.findIndex(x => x.name.toLowerCase() === t.name.toLowerCase());
+      if (i >= 0) a.tools.splice(i, 1); else a.tools.push({name: t.name, account: t.account});
+      return redraw(`[data-listtool="${d.listtool}"]`);
     }
     if (d.acct !== undefined){
       a.tools[+d.acct].account = d.val;

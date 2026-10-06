@@ -83,6 +83,7 @@
     const z = !state && zeroHere();
     root.classList.toggle('started', !!state || !!z);
     if (!state) return z ? showZero(z.zero, z.then) : showIntro();
+    E.fromScreener(state);
     const c = ctx();
     if (!E.screenerComplete(c, state.screener)) return showScreenerQuestion();
     if (extra.s === 'tap') return showTap();

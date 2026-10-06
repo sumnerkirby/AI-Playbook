@@ -311,6 +311,25 @@ var ToolTestRun = (function(){
     T.tickShared(lines, a, 't.mfa.no', false, p, TODAY);
     ok(!b.done.includes('t.mfa.no'), 'unticking clears it too');
   });
+  test('a check from the To check list: its task and the other waiting tasks come with their quick answers (log item 137)', () => {
+    eq(T.queueUseAnswers({customer_info: 'yes', can_act: 'no'}), {data: ['personal'], acts: ['produces_only']}, 'customer details, only suggests');
+    eq(T.queueUseAnswers({customer_info: 'yes', sensitive: 'yes', can_act: 'without_asking', person_decides: 'no'}), {data: ['sensitive'], acts: ['acts'], person_decides: 'no'}, 'sensitive, acts, decides');
+    eq(T.queueUseAnswers({customer_info: 'no', can_act: 'dont_know'}), {}, 'nothing personal could be public or internal: left to the owner');
+    const saved = {quick: {finds: [
+      {use: 'writing', quick_light: 'stop', tags: {account: 'personal', customer_info: 'yes'}},
+      {use: 'summarizing', quick_light: 'check', tags: {customer_info: 'dont_know'}},
+      {use: 'marketing', quick_light: 'go', tags: {customer_info: 'no'}},
+    ]}, pulse: {checkins: [{date: TODAY, new_tools: [{name: 'Otter', card: 'meetings', answers: {}}]}]}};
+    const items = T.queue(saved, [], []);
+    const w = items.find(i => i.key === 'quick:writing');
+    const u = T.queueUses(w, items);
+    eq(Object.keys(u).sort(), ['marketing', 'summarizing', 'writing'], 'the other quick-check tasks, not a named tool');
+    eq([u.writing.answers.data, u.writing.from, u.summarizing.answers.data], [['personal'], 'quick:writing', ['dont_know']], 'answers and keys');
+    eq(Object.keys(T.queueUses(items.find(i => i.name === 'Otter'), items)), ['meetings'], 'a named tool: its own items only');
+    /* a line saved with its from key takes the item off the list */
+    const l = T.makeLine(Object.assign({}, CLEAN, {use: 'summarizing', data: ['internal'], training: 'no_checked', deletion: 'yes', published: 'yes', location: 'same', mfa: 'yes'}), prof(), TODAY, {from: 'quick:summarizing'});
+    ok(!T.queue(saved, [l], []).some(i => i.key === 'quick:summarizing'), 'checked: off the To check list');
+  });
   test('rules changing flags every line for a re-check', () => {
     const l = T.makeLine(CLEAN, prof(), TODAY);
     l.rules_version = '2026.08.0-tool';

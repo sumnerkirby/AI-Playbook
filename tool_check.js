@@ -174,8 +174,10 @@
     let body = '';
     if (q.id === 'use' && !d.lineId){
       /* a new check can cover several uses: they are checked one after another */
-      const sel = pickedUses(d);
-      body = `<div class="answers multi" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer" data-usepick="${o.id}" aria-pressed="${sel.includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
+      const sel = pickedUses(d), qd = d.queued || {};
+      const waiting = Object.keys(qd).length;
+      body = `${waiting > 1 ? `<p class="hint">Tasks on your To check list are marked. Select each one this tool is used for, and it is checked with the others.</p>` : ''}
+        <div class="answers multi" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer" data-usepick="${o.id}" aria-pressed="${sel.includes(o.id)}">${esc(o.label)}${qd[o.id] ? `<small>On your To check list: ${esc(qd[o.id].label)}</small>` : o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="use-next"${sel.length ? '' : ' disabled'}>Next</button></div>`;
     } else if (q.kind === 'text'){
       body = `<div class="field" style="margin:18px 0 0;max-width:560px"><input class="textin" id="t-in" type="text" maxlength="120" autocomplete="off" placeholder="${esc(q.placeholder || '')}" value="${esc(v || '')}" aria-label="${esc(q.text)}"></div>
@@ -481,9 +483,14 @@
       return goto({name: 'ask', draft: dr});
     }
     if (d.queue){
-      const item = T.queue(savedQuick(), list.lines, list.skipped).find(i => i.key === d.queue);
-      if (item) return startCheck(T.fromQueue(item), {from: item.key});
-      return;
+      /* the use picker opens with this task selected, and marks the other
+         tasks waiting for the same tool, each with its quick answers */
+      const items = T.queue(savedQuick(), list.lines, list.skipped);
+      const item = items.find(i => i.key === d.queue);
+      if (!item) return;
+      const a = T.fromQueue(item);
+      delete a.use;
+      return startCheck(a, {from: item.use ? null : item.key, queued: T.queueUses(item, items), sel: item.use ? [item.use] : undefined});
     }
     if (d.skip){ list.skipped.push(d.skip); saveList(); return render(); }
     if (d.line) return goto({name: 'line', lineId: d.line});
@@ -510,7 +517,8 @@
         const dr = view.draft, sel = pickedUses(dr);
         if (!sel.length) return;
         const old = dr.uses || [];
-        dr.uses = sel.map(u => old.find(x => x.use === u) || {use: u, answers: {}, done: []});
+        const qd = dr.queued || {};
+        dr.uses = sel.map(u => old.find(x => x.use === u) || {use: u, answers: clone((qd[u] || {}).answers || {}), done: [], from: (qd[u] || {}).from || null});
         delete dr.sel;
         delete dr.answers.use;
         return answerAndGo('use');
@@ -521,7 +529,7 @@
         if (already) return goto(lineById(already) ? {name: 'line', lineId: already} : {name: 'list'}, false);
         if (dr.uses){
           const lines = dr.uses.map((u, i) => {
-            const l = T.makeLine(T.useAnswers(dr, i), P, today, {from: i === 0 && dr.from || null});
+            const l = T.makeLine(T.useAnswers(dr, i), P, today, {from: u.from || (i === 0 && dr.from) || null});
             l.done = (u.done || []).slice();
             T.refresh(l, P, today, true);
             list.lines.push(l);
