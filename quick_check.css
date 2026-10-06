@@ -265,6 +265,9 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
 .also a:hover,.also .linkish:hover{text-decoration-color:var(--ink)}
 .also span{color:var(--ink3);font-size:14.5px}
 
+/* tap target of at least 24px (WCAG 2.2, 2.5.8) without moving the layout */
+.head-row .linkish{padding-top:5px;padding-bottom:5px;margin-top:-5px;margin-bottom:-5px}
+
 /* Phones: monospace labels at 13px or more (FIXES 1.6). Written by
    scripts/mono_labels.py from the rules above; run it again after adding one. */
 @media (max-width:640px){
@@ -286,6 +289,3 @@ fieldset.chips .why{margin:0 0 10px;color:var(--ink2);font-size:15px}
   .finding .top .btn.quiet,
   .status{font-size:13px}
 }
-
-/* tap target of at least 24px (WCAG 2.2, 2.5.8) without moving the layout */
-.head-row .linkish{padding-top:5px;padding-bottom:5px;margin-top:-5px;margin-bottom:-5px}

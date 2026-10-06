@@ -36,12 +36,10 @@ Copyright 2026 The AI Playbook Project, University of Oklahoma Cybersecurity Cli
 | Writing: the playbook, guides and other text on the site | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): reuse and adapt it, with credit to the AI Playbook Project |
 | Templates: the policy templates (`policy-*.html`), the starter acceptable use policy in the AI policy guide, and the policy text the AI policy tool writes | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): copy them into your own documents with no credit needed |
 | Passages from the OWASP Top 10 for LLM Applications 2026, including the condensed page `owasp-llm-top-10-2026.html` | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), from the OWASP Foundation, as credited on each page |
-| Passages from NIST publications, including the condensed NIST pages | US government works, not covered by the licenses above |
+| Passages from NIST publications, including the NIST library pages | US government works, not covered by the licenses above |
 | Fonts | SIL Open Font License (see `fonts/`) |
 
 Documents you make with the site's tools, such as your policy or your record, are yours.
-
-Check with the Clinic and an advisor that these terms fit the University of Oklahoma's policies (flag last reviewed September 30, 2026).
 
 ## Contact
 
