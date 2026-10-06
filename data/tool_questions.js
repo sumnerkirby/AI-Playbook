@@ -6,7 +6,13 @@
    only appear when earlier answers make them relevant (show_if). Conditions
    can also read the profile: _industry, _team, _path, and _mode (new or
    discovered). A condition on a list answer is true if any item matches;
-   {not: ...} negates. */
+   {not: ...} negates.
+   One check can cover several uses of a tool. A question marked shared is
+   about the tool, the account or the supplier: it is asked once and holds
+   for every use, and it carries over to another use checked later. The
+   rest are asked for each use. The three marked grid (what goes in, where
+   the output goes, what it can do) are asked for all the uses on one
+   screen. */
 
 var TOOL_QUESTIONS = {
   version: '2026.10.1-tool',
@@ -24,15 +30,15 @@ var TOOL_QUESTIONS = {
 
   questions: [
     /* ---------- 1. what is it ---------- */
-    {id: 'mode', step: 0, kind: 'one',
+    {id: 'mode', shared: true, step: 0, kind: 'one',
      text: `Is this a tool you want to start using, or one that is already in use?`,
      options: [
        {id: 'new',        label: `We want to start using it`, detail: `Check it before anyone starts`},
        {id: 'discovered', label: `We found it already in use`, detail: `No blame. The aim is to make it safe to keep using`},
      ]},
-    {id: 'tool', step: 0, kind: 'text', text: `What is the tool called?`,
+    {id: 'tool', shared: true, step: 0, kind: 'text', text: `What is the tool called?`,
      placeholder: `For example: ChatGPT, or the AI notes in our booking software`},
-    {id: 'plan', step: 0, kind: 'one', text: `Which plan or account is it on?`,
+    {id: 'plan', shared: true, step: 0, kind: 'one', text: `Which plan or account is it on?`,
      hint: `The type of plan matters, not who pays for it. A personal plan paid for by the business is still a personal plan.`,
      options: [
        {id: 'free_personal', label: `A free personal account`},
@@ -44,7 +50,7 @@ var TOOL_QUESTIONS = {
         show_if: {q: '_path', in: ['configure']}},
        {id: 'dont_know',     label: `Not sure`},
      ]},
-    {id: 'access', step: 0, kind: 'many', text: `How is it used?`, hint: `Select everything that applies.`, exclusive: ['dont_know'],
+    {id: 'access', shared: true, step: 0, kind: 'many', text: `How is it used?`, hint: `Select everything that applies.`, exclusive: ['dont_know'],
      options: [
        {id: 'website',   label: `In a web browser`, detail: `A website you sign in to`},
        {id: 'desktop',   label: `A desktop app`, detail: `Installed on a computer`},
@@ -54,7 +60,7 @@ var TOOL_QUESTIONS = {
        {id: 'dont_know', label: `Not sure`},
      ]},
     {id: 'use', step: 0, kind: 'one', text: `What is it used for?`,
-     hint: `Select every task it is used for. Each use is checked separately, one after the other, because the answers can differ.`,
+     hint: `Select every task it is used for. Questions about the tool and the supplier are asked once. Each use gets its own result, because the answers can differ.`,
      options: [
        {id: 'writing',     label: `Writing and editing`},
        {id: 'research',    label: `Research and searching`},
@@ -78,7 +84,7 @@ var TOOL_QUESTIONS = {
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 2. what goes in ---------- */
-    {id: 'data', step: 1, kind: 'many', text: `What goes into it?`, hint: `Check everything that goes in, even occasionally.`,
+    {id: 'data', grid: true, step: 1, kind: 'many', text: `What goes into it?`, hint: `Check everything that goes in, even occasionally.`,
      exclusive: ['dont_know'],
      options: [
        {id: 'public',    label: `Public information, or nothing sensitive`},
@@ -103,7 +109,7 @@ var TOOL_QUESTIONS = {
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 3. the supplier ---------- */
-    {id: 'training', step: 2, kind: 'one', evidence: true,
+    {id: 'training', shared: true, step: 2, kind: 'one', evidence: true,
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Does your plan use what you put in to train its AI?`,
      options: [
@@ -111,20 +117,20 @@ var TOOL_QUESTIONS = {
        {id: 'yes',        label: `Yes`},
        {id: 'dont_know',  label: `Not sure`},
      ]},
-    {id: 'deletion', step: 2, kind: 'one', evidence: true,
+    {id: 'deletion', shared: true, step: 2, kind: 'one', evidence: true,
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Can you delete what you have put in?`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
-    {id: 'agreement', step: 2, kind: 'one', evidence: true,
+    {id: 'agreement', shared: true, step: 2, kind: 'one', evidence: true,
      show_if: {any: [{q: 'data', in: ['personal', 'sensitive', 'regulated']}, {q: 'special', in: ['yes']}]},
      text: `Is there a data agreement with the supplier that covers this?`,
      hint: `A contract that limits what the supplier may do with your information, often called a data processing addendum (DPA).`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
-    {id: 'published', step: 2, kind: 'one', evidence: true,
+    {id: 'published', shared: true, step: 2, kind: 'one', evidence: true,
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Does the supplier publish how it handles your data?`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
-    {id: 'location', step: 2, kind: 'one',
+    {id: 'location', shared: true, step: 2, kind: 'one',
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Do you know which country this tool stores your data in?`,
      hint: `Look in the supplier's privacy policy or trust page. Where a supplier is based, and where it stores data, decide which country's law applies.`,
@@ -133,14 +139,14 @@ var TOOL_QUESTIONS = {
        {id: 'abroad',    label: `Yes, in another country`},
        {id: 'dont_know', label: `Not sure`},
      ]},
-    {id: 'mfa', step: 2, kind: 'one',
+    {id: 'mfa', shared: true, step: 2, kind: 'one',
      show_if: {q: 'data', in: ['internal', 'personal', 'sensitive', 'regulated', 'secrets', 'dont_know']},
      text: `Is two-step sign-in turned on for this account?`,
      hint: `Also called multi-factor authentication or 2-step verification: signing in needs a code from an app or a text message, or a passkey, as well as the password.`,
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 4. where the output goes ---------- */
-    {id: 'output', step: 3, kind: 'many', text: `Where does what it produces go?`,
+    {id: 'output', grid: true, step: 3, kind: 'many', text: `Where does what it produces go?`,
      options: [
        {id: 'internal',  label: `Only us, inside the business`},
        {id: 'customers', label: `Customers or the public`},
@@ -149,7 +155,7 @@ var TOOL_QUESTIONS = {
     {id: 'person_decides', step: 3, kind: 'one', text: `Does a person make the final decision, every time?`,
      show_if: {any: [{q: 'output', in: ['person']}, {q: 'use', in: ['hiring']}]},
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
-    {id: 'nyc_co', step: 3, kind: 'one', text: `Do you hire in New York City or Colorado?`,
+    {id: 'nyc_co', shared: true, step: 3, kind: 'one', text: `Do you hire in New York City or Colorado?`,
      hint: `Both have their own rules for AI used in hiring and other decisions about people.`,
      show_if: {any: [{q: 'output', in: ['person']}, {q: 'use', in: ['hiring']}]},
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
@@ -162,7 +168,7 @@ var TOOL_QUESTIONS = {
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}, {id: 'dont_know', label: `Not sure`}]},
 
     /* ---------- 5. what it can do ---------- */
-    {id: 'acts', step: 4, kind: 'many', text: `What can it do on its own?`, exclusive: ['produces_only'],
+    {id: 'acts', grid: true, step: 4, kind: 'many', text: `What can it do on its own?`, exclusive: ['produces_only'],
      options: [
        {id: 'produces_only', label: `Only produces text or images for us to use`},
        {id: 'reads',         label: `It can read our email, files, calendar or other accounts`},
@@ -178,25 +184,25 @@ var TOOL_QUESTIONS = {
      ]},
 
     /* ---------- 6. things you set up yourself ---------- */
-    {id: 'own_access', step: 5, kind: 'one', text: `Who can use it?`, show_if: {q: 'plan', in: ['own']},
+    {id: 'own_access', shared: true, step: 5, kind: 'one', text: `Who can use it?`, show_if: {q: 'plan', in: ['own']},
      options: [
        {id: 'me',     label: `Only me`},
        {id: 'team',   label: `Our team`},
        {id: 'public', label: `Anyone with the link, or the public`},
      ]},
-    {id: 'own_docs', step: 5, kind: 'one', text: `What did you give it to read?`, show_if: {q: 'plan', in: ['own']},
+    {id: 'own_docs', shared: true, step: 5, kind: 'one', text: `What did you give it to read?`, show_if: {q: 'plan', in: ['own']},
      options: [
        {id: 'none',         label: `Nothing`},
        {id: 'internal',     label: `Public or internal documents`},
        {id: 'confidential', label: `Documents with personal or confidential information`},
      ]},
-    {id: 'own_tested', step: 5, kind: 'one', text: `Did you test it for misuse before sharing it?`,
+    {id: 'own_tested', shared: true, step: 5, kind: 'one', text: `Did you test it for misuse before sharing it?`,
      hint: `For example, by asking it to reveal its instructions, ignore its rules, or show other people's information.`,
      show_if: {q: 'plan', in: ['own']},
      options: [{id: 'yes', label: `Yes`}, {id: 'no', label: `No`}]},
 
     /* ---------- 7. discovered tools only ---------- */
-    {id: 'already_in', step: 6, kind: 'many', text: `What has already gone into it?`, exclusive: ['nothing_sensitive', 'dont_know'],
+    {id: 'already_in', shared: true, step: 6, kind: 'many', text: `What has already gone into it?`, exclusive: ['nothing_sensitive', 'dont_know'],
      show_if: {q: '_mode', in: ['discovered']},
      options: [
        {id: 'nothing_sensitive', label: `Nothing sensitive`},

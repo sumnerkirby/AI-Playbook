@@ -258,6 +258,59 @@ var ToolTestRun = (function(){
     eq([a.tool, a.plan, a.training, a.published, a.use, a.data], ['Gemini', 'business', 'no_checked', 'yes', undefined, undefined], 'kept and cleared');
     eq(a._evidence.training.note, 'Admin console', 'evidence kept');
   });
+  test('another use also keeps the account answers: country and two-step sign-in', () => {
+    const l = T.makeLine(Object.assign({}, CLEAN, {data: ['internal'], training: 'no_checked', deletion: 'yes', published: 'yes', location: 'same', mfa: 'yes'}), prof(), TODAY);
+    const a = T.anotherUse(l);
+    eq([a.location, a.mfa, a.output, a.acts], ['same', 'yes', undefined, undefined], 'account kept, use answers cleared');
+  });
+  test('several uses in one check: shared questions once, the grid for each use', () => {
+    const p = prof();
+    eq(T.GRID, ['data', 'output', 'acts'], 'the three grid questions');
+    ok(Q.questions.filter(q => q.grid).every(q => q.kind === 'many' && !q.show_if), 'grid questions take several answers and always show');
+    ok(!T.SHARED.includes('use') && T.SHARED.every(id => !T.GRID.includes(id)), 'use and the grid are per use');
+    const d = T.splitUses({mode: 'new', tool: 'ChatGPT', plan: 'free_personal', access: ['website'], _evidence: {}}, ['writing', 'customers']);
+    eq(d.uses.map(u => u.use), ['writing', 'customers'], 'one entry per use');
+    /* customers asks whether people talk to it directly, for that use only */
+    let n = T.nextMulti(d, p);
+    eq([n.q.id, n.i], ['direct', 1], 'a per-use follow-up goes to its use');
+    d.uses[1].answers.direct = 'no';
+    n = T.nextMulti(d, p);
+    eq([n.q.id, n.i], ['data', 0], 'then the grid');
+    d.uses[0].answers = {data: ['internal'], output: ['internal'], acts: ['produces_only']};
+    d.uses[1].answers = Object.assign(d.uses[1].answers, {data: ['public'], output: ['customers'], acts: ['produces_only']});
+    n = T.nextMulti(d, p);
+    eq([n.q.id, n.i, n.at], ['training', -1, 0], 'a supplier question is shared, found through the use that needs it');
+    ['training', 'deletion', 'published', 'location', 'mfa'].forEach(k => { d.answers[k] = k === 'training' ? 'no_checked' : k === 'location' ? 'same' : 'yes'; });
+    eq(T.nextMulti(d, p), null, 'complete');
+    const a0 = T.useAnswers(d, 0), a1 = T.useAnswers(d, 1);
+    eq([a0.use, a0.mfa, a1.use, a1.mfa, a1.data], ['writing', 'yes', 'customers', 'yes', ['public']], 'each use sees the shared answers and its own');
+    ok(T.complete(a0, p) && T.complete(a1, p), 'each use is a complete check');
+    /* public data only: the supplier questions do not apply to that use */
+    eq(T.makeLine(a1, p, TODAY).answers.training, undefined, 'a shared answer the use does not need is dropped from its line');
+    eq(T.makeLine(a0, p, TODAY).answers.training, 'no_checked', 'and kept where it applies');
+    const q = T.splitUses({mode: 'discovered', tool: 'X', use: 'writing', data: ['personal'], _evidence: {}}, ['writing']);
+    eq([q.answers.use, q.answers.data, q.uses[0].answers.data], [undefined, undefined, ['personal']], 'per-use answers move to the use');
+  });
+  test('a shared to-do ticked on one use is ticked on every use of the same tool and plan', () => {
+    ok(R.rules.filter(r => r.shared).every(r => r.outcome === 'condition' && !r.answer), 'only tickable to-dos are shared');
+    ok(!['t.training.yes', 't.agreement.none', 't.agreement.personal', 't.deletion.no', 't.output.customers', 't.reads'].some(id => R.rules.find(r => r.id === id).shared),
+      'to-dos that can be met per use (keep the data out of this use) stay per use');
+    const p = prof();
+    const base = Object.assign({}, CLEAN, {data: ['internal'], training: 'no_checked', deletion: 'yes', published: 'yes', location: 'same', mfa: 'no'});
+    const a = T.makeLine(base, p, TODAY);
+    const b = T.makeLine(Object.assign({}, base, {use: 'writing', tool: ' gemini ', output: ['customers']}), p, TODAY);
+    const other = T.makeLine(Object.assign({}, base, {plan: 'enterprise'}), p, TODAY);
+    const lines = [a, b, other];
+    eq(T.otherUses(lines, a), [b], 'same tool and plan, name ignoring case and spaces');
+    ok(ev(Object.assign({}, a.answers), p).todos.find(t => t.id === 't.mfa.no').shared, 'two-step sign-in is shared');
+    a.done = ['t.mfa.no'];
+    eq(T.tickShared(lines, a, 't.mfa.no', true, p, TODAY).length, 1, 'one other use ticked');
+    ok(b.done.includes('t.mfa.no') && !other.done.includes('t.mfa.no'), 'not on another plan');
+    eq(T.tickShared(lines, a, 't.output.customers', true, p, TODAY).length, 0, 'a per-use to-do is not shared');
+    a.done = [];
+    T.tickShared(lines, a, 't.mfa.no', false, p, TODAY);
+    ok(!b.done.includes('t.mfa.no'), 'unticking clears it too');
+  });
   test('rules changing flags every line for a re-check', () => {
     const l = T.makeLine(CLEAN, prof(), TODAY);
     l.rules_version = '2026.08.0-tool';

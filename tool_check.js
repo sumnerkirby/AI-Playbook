@@ -159,14 +159,16 @@
 
   /* ================= a question ================= */
   function renderAsk(){
-    const d = view.draft, a = d.answers;
+    const d = view.draft;
+    const cur = currentQ();
+    if (!cur){ view = {name: 'result', draft: Object.assign(d, {focus: null})}; put(view); return renderResult(); }
+    if (cur.grid) return renderGrid();
+    const q = cur.q, a = answersAt(d, cur);
     const vis = T.visible(a, P);
-    const q = currentQ();
-    if (!q){ view = {name: 'result', draft: Object.assign(d, {focus: null})}; put(view); return renderResult(); }
     /* progress by section (fixed at seven), moving a little within a section,
        so an answer that opens more questions never sends the bar back */
     const inStep = vis.filter(x => x.step === q.step);
-    const frac = (q.step + inStep.findIndex(x => x.id === q.id) / inStep.length) / Q.steps.length;
+    const frac = (q.step + Math.max(0, inStep.findIndex(x => x.id === q.id)) / inStep.length) / Q.steps.length;
     const v = a[q.id];
     const ev = (a._evidence || {})[q.id];
     let body = '';
@@ -182,36 +184,82 @@
       body = `<div class="answers multi" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-many="${o.id}" aria-pressed="${(v || []).includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
         <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="many-next"${(v || []).length ? '' : ' disabled'}>Next</button></div>`;
     } else {
-      body = `<div class="answers" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-one="${o.id}" aria-pressed="${v === o.id}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>`;
-      /* supplier answers: say how you know, or where to look */
-      if (q.evidence && v){
-        body += v === 'dont_know'
-          ? `<div class="callout lookhelp"><span class="k">Where to look</span>${lookHelp(a)}<p class="small-note">This stays a to-do until you find out and change your answer.</p></div>`
-          : `<div class="evidence"><label for="ev-in">How do you know? (optional)</label><input id="ev-in" type="text" maxlength="200" autocomplete="off" placeholder="A link to the terms, or: checked the setting in the admin console" value="${esc(ev ? ev.note : '')}"></div>`;
-        body += `<div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="ev-next">Next</button></div>`;
-      }
+      /* supplier answers: an optional note on how you know goes first, so
+         one select answers the question; where to look sits below */
+      const evBox = q.evidence ? `<div class="evidence"><label for="ev-in">How do you know? (optional)</label><input id="ev-in" type="text" maxlength="200" autocomplete="off" placeholder="A link to the terms, or: checked the setting in the admin console" value="${esc(ev ? ev.note : '')}"><p class="small-note">Type the note first. Selecting an answer moves on.</p></div>` : '';
+      body = `${evBox}<div class="answers" role="group" aria-labelledby="q-h">${q.options.map(o => `<button type="button" class="answer${o.id === 'dont_know' ? ' unsure' : ''}" data-one="${o.id}" aria-pressed="${v === o.id}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>`;
+      if (q.evidence) body += `<details class="lookhelp"><summary>Where to look</summary>${lookHelp(a)}<p class="small-note">If you are not sure, select Not sure. It stays a to-do until you find out and change your answer.</p></details>`;
     }
     main.innerHTML = `<section class="screen">
       ${progressBar({left: `<b>Section ${q.step + 1} of ${Q.steps.length}</b> &middot; ${esc(Q.steps[q.step])}${a.mode ? ` &middot; ${a.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, frac})}
-      ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${a.use && q.id !== 'use' ? ' &middot; ' + esc(T.useLabel(a.use)) + passText(d) : ''}</p>` : ''}
+      ${a.tool && q.id !== 'tool' ? `<p class="about">${esc(a.tool)}${q.id === 'use' ? '' : aboutUse(d, cur, a)}</p>` : ''}
       <h2 id="q-h">${esc(q.text)}</h2>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
       ${body}
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button><button class="btn quiet" type="button" data-act="cancel">Cancel</button></div>
     </section>`;
   }
-  /* Several uses in one check: the first is answers.use; the rest wait in
-     draft.pending and are checked after each save, with the tool, plan, how
-     it is used and the supplier answers carried over. */
-  const pickedUses = d => d.sel || [d.answers.use].filter(Boolean).concat(d.pending || []);
-  const passText = d => {
-    const more = (d.pending || []).length;
-    return more || (d.pass || 1) > 1 ? ` &middot; use ${d.pass || 1} of ${(d.pass || 1) + more}` : '';
-  };
-  /* the question on screen: one being changed or walked through, else the next unanswered */
+  /* Several uses in one check (draft.uses, see ToolEngine.splitUses): the
+     tool, account and supplier questions are asked once, the grid asks what
+     goes in, where it goes and what it can do for every use on one screen,
+     and any follow-up is asked for the use that needs it. A re-check of a
+     saved line keeps the one-use draft: draft.answers only. */
+  const pickedUses = d => d.sel || (d.uses ? d.uses.map(u => u.use) : [d.answers.use].filter(Boolean));
+  /* the question on screen, as {q, i, at}: i is the use the answer belongs to
+     (-1 for shared, undefined for a one-use draft), at is the use shown */
   function currentQ(){
     const d = view.draft;
-    return (d.focus && T.visible(d.answers, P).find(x => x.id === d.focus)) || T.nextQuestion(d.answers, P);
+    if (!d.uses){
+      const q = (d.focus && T.visible(d.answers, P).find(x => x.id === d.focus)) || T.nextQuestion(d.answers, P);
+      return q && {q};
+    }
+    if (d.focus === 'grid') return {grid: true};
+    if (d.focus === 'use') return {q: qById('use'), i: -1, at: 0};
+    if (d.focus){
+      const fi = d.fi || 0;
+      const order = d.uses.map((_, k) => k).sort((x, y) => (x !== fi) - (y !== fi));
+      for (const at of order){
+        const q = T.visible(T.useAnswers(d, at), P).find(x => x.id === d.focus);
+        if (q) return {q, i: q.shared ? -1 : at, at};
+      }
+    }
+    const n = T.nextMulti(d, P);
+    return n && (n.q.grid ? {grid: true} : n);
   }
+  const answersAt = (d, cur) => d.uses ? T.useAnswers(d, cur.at) : d.answers;
+  function setAnswer(cur, v){
+    const d = view.draft;
+    if (d.uses && cur.i >= 0) d.uses[cur.i].answers[cur.q.id] = v;
+    else d.answers[cur.q.id] = v;
+  }
+  /* the tag under the question: which use, or that it holds for them all */
+  function aboutUse(d, cur, a){
+    if (!d.uses) return a.use ? ' &middot; ' + esc(T.useLabel(a.use)) : '';
+    if (d.uses.length === 1) return ' &middot; ' + esc(T.useLabel(d.uses[0].use));
+    return cur.i < 0 ? ` &middot; all ${d.uses.length} uses` : ` &middot; ${esc(T.useLabel(d.uses[cur.i].use))} (use ${cur.i + 1} of ${d.uses.length})`;
+  }
+
+  /* ================= the uses grid ================= */
+  function renderGrid(){
+    const d = view.draft;
+    const qs = T.GRID.map(qById);
+    const filled = d.uses.every(u => qs.every(q => (u.answers[q.id] || []).length));
+    main.innerHTML = `<section class="screen">
+      ${progressBar({left: `<b>Section 2 of ${Q.steps.length}</b> &middot; Each use${d.answers.mode ? ` &middot; ${d.answers.mode === 'discovered' ? 'Already in use' : 'New tool'}` : ''}`, frac: 1 / Q.steps.length})}
+      <p class="about">${esc(d.answers.tool || 'This tool')}</p>
+      <h2 id="q-h">${d.uses.length > 1 ? `For each of the ${d.uses.length} uses: what goes in, where it goes, and what it can do` : 'What goes in, where it goes, and what it can do'}</h2>
+      <p class="hint">Select everything that applies, even if it happens only occasionally.</p>
+      ${d.uses.map((u, i) => `<div class="usegrid">
+        ${d.uses.length > 1 ? `<h3>${esc(T.useLabel(u.use))}</h3>` : ''}
+        ${qs.map(q => `<fieldset class="chips"><legend>${esc(q.text)}${d.uses.length > 1 ? `<span class="visually-hidden"> (${esc(T.useLabel(u.use))})</span>` : ''}</legend>
+          <div class="chiprow">${q.options.map(o => `<button type="button" class="chip${o.id === 'dont_know' ? ' unsure' : ''}" data-grid="${q.id}" data-use="${i}" data-opt="${o.id}" aria-pressed="${(u.answers[q.id] || []).includes(o.id)}">${esc(o.label)}${o.detail ? `<small>${esc(o.detail)}</small>` : ''}</button>`).join('')}</div>
+        </fieldset>`).join('')}
+      </div>`).join('')}
+      <div class="go-row" style="margin-top:16px"><button class="btn primary" type="button" data-act="grid-next"${filled ? '' : ' disabled'}>Next</button>
+        ${filled ? '' : `<span class="small-note">Next turns on when each question has an answer${d.uses.length > 1 ? ' for every use' : ''}.</span>`}</div>
+      <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button><button class="btn quiet" type="button" data-act="cancel">Cancel</button></div>
+    </section>`;
+  }
+
   /* after an answer: a re-check walks on through every question with the
      previous answers filled in; otherwise go to the next unanswered one */
   function answerAndGo(qid){
@@ -238,8 +286,12 @@
   }
 
   /* ================= results ================= */
+  /* opts.idx: the use's place on the combined results page, which keeps the
+     ids apart and tells a to-do or a Change which use it belongs to */
   function resultHTML(r, a, opts){
     const light = r.light;
+    const ix = opts.idx === undefined ? '' : `u${opts.idx}-`;
+    const du = opts.idx === undefined ? '' : ` data-use="${opts.idx}"`;
     const sub = light === 'red' ? (a.mode === 'discovered' ? 'A red line is crossed. Pause this use now; what is still allowed is below.' : 'A red line is crossed. Do not start this use until it changes.')
       : light === 'amber' ? `${r.todos.filter(t => !t.done).length} to-do${r.todos.filter(t => !t.done).length === 1 ? '' : 's'} open. It turns green when ${r.todos.filter(t => !t.done).length === 1 ? 'it is' : 'they are'} done.` : 'No open to-dos.';
     const allowed = T.allowedText(r);
@@ -251,42 +303,64 @@
         <p class="sub">${esc(sub)}</p>
         ${light !== 'green' && (allowed || notes.length) ? `<p class="allowed"><b>Allowed right now</b>${esc([allowed].concat(notes).filter(Boolean).join(' '))}</p>` : ''}
       </div>
-      ${PR.adviceHTML(P.industry, esc)}
+      ${opts.idx === undefined ? PR.adviceHTML(P.industry, esc) : ''}
       ${r.stops.length ? `<h3 class="subhead">Why it is red</h3>${r.stops.map(s => `<div class="finding stop">${U.light('red', 'Stop')}
         <p>${esc(s.reason)}</p><p class="fix"><b>What would change it:</b> ${esc(s.fix)}<span class="who">${esc(s.owner)}</span></p>
         ${s.flag ? `<p class="advice"><b>Get advice</b>${esc(s.flag_text || '')}</p>` : ''}
         <p><a href="${esc(s.how.href)}">${esc(s.how.label)}</a></p></div>`).join('')}` : ''}
       ${r.todos.length ? `<h3 class="subhead">To do</h3><ul class="todos-list">${r.todos.map(t => `<li class="todo${t.done ? ' done' : ''}">
           ${t.answer ? '<span aria-hidden="true" style="width:20px;flex:0 0 auto;color:var(--check);font-weight:700;text-align:center">?</span>'
-            : `<input type="checkbox" id="td-${esc(t.id)}" data-todo="${esc(t.id)}"${t.done ? ' checked' : ''} aria-describedby="tw-${esc(t.id)}">`}
+            : `<input type="checkbox" id="td-${ix}${esc(t.id)}" data-todo="${esc(t.id)}"${du}${t.done ? ' checked' : ''} aria-describedby="tw-${ix}${esc(t.id)}">`}
           <div class="body">
-            <p><label class="task" for="td-${esc(t.id)}">${t.cleanup ? '<b>Clean-up:</b> ' : ''}${esc(t.text)}</label> <span class="who">${esc(t.owner)}</span></p>
-            <p class="why" id="tw-${esc(t.id)}">${esc(t.reason)}</p>
+            <p><label class="task" for="td-${ix}${esc(t.id)}">${t.cleanup ? '<b>Clean-up:</b> ' : ''}${esc(t.text)}</label> <span class="who">${esc(t.owner)}</span></p>
+            <p class="why" id="tw-${ix}${esc(t.id)}">${esc(t.reason)}</p>
             ${t.flag ? `<p class="advice"><b>Get advice</b>${esc(t.flag_text || '')}</p>` : ''}
             ${t.where_to_look ? `<details><summary>Where to look</summary>${lookHelp(a, t.where_to_look)}</details>` : ''}
-            ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}">I have found out: change my answer</button></p>` : ''}
+            ${t.answer ? `<p><button class="btn quiet find" type="button" data-focus="${esc(t.answer)}"${du}>I have found out: change my answer</button></p>` : ''}
+            ${t.shared && opts.uses > 1 ? `<p class="small-note">Done once for the tool: ticking it here ticks it on ${opts.uses === 2 ? 'both uses' : `all ${opts.uses} uses`}.</p>` : ''}
             ${t.standing && !t.done ? `<p class="small-note">Once done, this becomes a standing rule.</p>` : ''}
             <p><a href="${esc(t.how.href)}">${esc(t.how.label)}</a></p>
           </div></li>`).join('')}</ul>` : ''}
       ${r.standing.length ? `<h3 class="subhead">Standing rules</h3><ul class="standing">${r.standing.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
       <p class="small-note" style="margin-top:16px">Based on ${conf.answers} answers${conf.dont_know ? `, ${conf.dont_know} of them not sure` : ''}.${conf.dont_know ? ' Resolving those could change this result.' : ''}${conf.unsourced ? ` ${conf.unsourced} supplier answer${conf.unsourced > 1 ? 's have' : ' has'} no source noted.` : ''}
         ${opts.recheck !== undefined ? ` Re-check ${opts.recheck ? 'by ' + esc(U.fmtDate(opts.recheck)) : 'after the change'}.` : ''}</p>
-      ${answersHTML(a)}`;
+      ${answersHTML(a, du)}`;
   }
-  function answersHTML(a){
+  function answersHTML(a, du){
     const vis = T.visible(a, P).filter(q => a[q.id] !== undefined && q.id !== 'mode');
     return `<details style="margin-top:14px;max-width:78ch"><summary>Your answers</summary><ul class="events">${vis.map(q =>
-      `<li>${esc(q.text)} <b>${esc(answerText(q, a[q.id]))}</b>${(a._evidence || {})[q.id] ? ` <span class="small-note">(${esc(a._evidence[q.id].note)})</span>` : ''} <button class="btn quiet" type="button" data-focus="${q.id}" style="padding:2px 6px">Change</button></li>`).join('')}</ul></details>`;
+      `<li>${esc(q.text)} <b>${esc(answerText(q, a[q.id]))}</b>${(a._evidence || {})[q.id] ? ` <span class="small-note">(${esc(a._evidence[q.id].note)})</span>` : ''} <button class="btn quiet" type="button" data-focus="${q.id}"${du || ''} style="padding:2px 6px">Change</button></li>`).join('')}</ul></details>`;
   }
 
   function renderResult(){
     const d = view.draft, a = d.answers;
+    if (d.uses) return renderResults();
     const r = T.evaluate(a, P, d.done || []);
     main.innerHTML = `<section class="screen">
       <p class="step-label"><b>Tool check</b><span>Result</span>${d.lineId ? '<span>Re-check</span>' : ''}</p>
       ${resultHTML(r, a, {})}
       <div class="go-row" style="margin-top:20px">
-        <button class="btn primary" type="button" data-act="save">${d.lineId ? 'Save the re-check' : (d.pending || []).length ? `Save, then check ${esc(T.useLabel(d.pending[0]).toLowerCase())}` : 'Save to your AI list'}</button>
+        <button class="btn primary" type="button" data-act="save">${d.lineId ? 'Save the re-check' : 'Save to your AI list'}</button>
+        <button class="btn quiet" type="button" data-act="cancel">Do not save</button>
+      </div>
+      <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button></div>
+    </section>`;
+  }
+
+  /* A new check: one page with a result for each use, saved together. */
+  function renderResults(){
+    const d = view.draft, n = d.uses.length;
+    const res = d.uses.map((u, i) => { const a = T.useAnswers(d, i); return {a, r: T.evaluate(a, P, u.done || [])}; });
+    const one = ({a, r}, i) => resultHTML(r, a, {idx: i, uses: n});
+    main.innerHTML = `<section class="screen">
+      <p class="step-label"><b>Tool check</b><span>${n > 1 ? `Results for ${n} uses` : 'Result'}</span></p>
+      ${n > 1 ? `<h2>${esc(d.answers.tool || 'This tool')}: ${n} uses</h2>
+        <ul class="use-sum">${res.map(({r}, i) => `<li>${U.light(r.light, shortLight(r))} <button class="linkish" type="button" data-jump="${i}">${esc(T.useLabel(d.uses[i].use))}</button></li>`).join('')}</ul>
+        <p class="small-note">Each use has its own light, because the same tool can be acceptable for one task and not for another. The tool and supplier answers are shared by all ${n}.</p>` : ''}
+      ${PR.adviceHTML(P.industry, esc)}
+      ${res.map((x, i) => `<div class="use-result" id="use-${i}">${one(x, i)}</div>`).join('')}
+      <div class="go-row" style="margin-top:20px">
+        <button class="btn primary" type="button" data-act="save">${n > 1 ? `Save all ${n} to your AI list` : 'Save to your AI list'}</button>
         <button class="btn quiet" type="button" data-act="cancel">Do not save</button>
       </div>
       <div class="backrow"><button class="btn quiet" type="button" data-act="back">&larr; Back</button></div>
@@ -308,7 +382,7 @@
       ${st.due && st.state !== 'retired' ? `<div class="callout whybox" style="--c:var(--check)"><span class="k">Time to re-check</span><ul>${st.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
         <p><button class="btn primary" type="button" data-act="recheck">Re-check now (your answers are filled in)</button></p></div>` : ''}
       ${st.waiting ? `<div class="callout whybox" style="--c:#2D5F8B"><span class="k">Waiting on the supplier</span><p>Follow up by ${esc(U.fmtDate(st.waiting.until))}${st.waiting.note ? `: ${esc(st.waiting.note)}` : ''}.${today > st.waiting.until ? ' <b>That date has passed.</b>' : ''}</p></div>` : ''}
-      ${resultHTML(r, a, {recheck: l.recheck_by})}
+      ${resultHTML(r, a, {recheck: l.recheck_by, uses: T.otherUses(list.lines, l).length + 1})}
 
       <div class="go-row" style="margin-top:20px">
         <button class="btn" type="button" data-act="another">+ Another use of this tool</button>
@@ -338,9 +412,20 @@
     </section>`;
   }
 
+  /* select or clear one answer of a question that takes several */
+  function toggle(q, cur, id){
+    cur = cur || [];
+    const excl = q.exclusive || [];
+    return cur.includes(id) ? cur.filter(x => x !== id)
+      : excl.includes(id) ? [id] : cur.filter(x => !excl.includes(x)).concat(id);
+  }
+
   /* ---------- starting a check ---------- */
   function startCheck(answers, extra){
-    goto({name: 'ask', draft: Object.assign({answers: Object.assign({_evidence: {}}, answers), done: [], key: newKey()}, extra || {})});
+    const dr = Object.assign({answers: Object.assign({_evidence: {}}, answers), done: [], key: newKey()}, extra || {});
+    /* a new check with its use already known (from the to-check list) */
+    if (!dr.lineId && dr.answers.use) Object.assign(dr, T.splitUses(dr.answers, [dr.answers.use]));
+    goto({name: 'ask', draft: dr});
   }
 
   /* ================= events ================= */
@@ -350,10 +435,15 @@
     const d = b.dataset;
 
     if (d.one){
-      const q = currentQ();
-      view.draft.answers[q.id] = d.one;
-      /* supplier answers stay on screen for "How do you know?" */
-      if (q.evidence){ view.draft.focus = q.id; put(view); return render(d.one === 'dont_know' ? '[data-act="ev-next"]' : '#ev-in'); }
+      const c = currentQ(), q = c.q;
+      setAnswer(c, d.one);
+      /* supplier answers: keep the note typed above the answers */
+      if (q.evidence){
+        const inp = $('#ev-in');
+        const ev = view.draft.answers._evidence || (view.draft.answers._evidence = {});
+        if (inp && inp.value.trim()) ev[q.id] = {note: inp.value.trim().slice(0, 200), date: U.today()};
+        else delete ev[q.id];
+      }
       return answerAndGo(q.id);
     }
     if (d.usepick){
@@ -365,22 +455,30 @@
       return render(`[data-usepick="${d.usepick}"]`);
     }
     if (d.many){
-      const q = currentQ();
-      const cur = view.draft.answers[q.id] || [];
-      const excl = q.exclusive || [];
-      view.draft.answers[q.id] = cur.includes(d.many) ? cur.filter(x => x !== d.many)
-        : excl.includes(d.many) ? [d.many] : cur.filter(x => !excl.includes(x)).concat(d.many);
+      const c = currentQ(), q = c.q;
+      setAnswer(c, toggle(q, answersAt(view.draft, c)[q.id], d.many));
       view.draft.focus = q.id;   // stay here until Next
+      if (view.draft.uses) view.draft.fi = c.at;
       put(view);
       return render(`[data-many="${d.many}"]`);
     }
+    if (d.grid){
+      const u = view.draft.uses[+d.use];
+      u.answers[d.grid] = toggle(qById(d.grid), u.answers[d.grid], d.opt);
+      view.draft.focus = 'grid';   // stay here until Next
+      put(view);
+      return render(`[data-grid="${d.grid}"][data-use="${d.use}"][data-opt="${d.opt}"]`);
+    }
+    if (d.jump){ const el = $('#use-' + d.jump); if (el){ el.scrollIntoView(); const h = $('h2', el); h.tabIndex = -1; h.focus({preventScroll: true}); } return; }
     if (d.focus){
       if (view.name === 'line'){
         const l = lineById(view.lineId);
         return startCheck(T.reopenAnswers(l), {lineId: l.id, done: l.done.slice(), focus: d.focus});
       }
-      view.draft.focus = d.focus;
-      return goto({name: 'ask', draft: view.draft});
+      const dr = view.draft;
+      dr.focus = dr.uses && qById(d.focus).grid ? 'grid' : d.focus;
+      if (dr.uses) dr.fi = +(d.use || 0);
+      return goto({name: 'ask', draft: dr});
     }
     if (d.queue){
       const item = T.queue(savedQuick(), list.lines, list.skipped).find(i => i.key === d.queue);
@@ -405,27 +503,37 @@
         put(snap);
         return answerAndGo('tool');
       }
-      case 'many-next': return answerAndGo(currentQ().id);
+      case 'many-next': return answerAndGo(currentQ().q.id);
+      case 'grid-next': return answerAndGo('grid');
       case 'use-next': {
+        /* uses picked again keep their answers */
         const dr = view.draft, sel = pickedUses(dr);
         if (!sel.length) return;
-        dr.answers.use = sel[0];
-        dr.pending = sel.slice(1);
+        const old = dr.uses || [];
+        dr.uses = sel.map(u => old.find(x => x.use === u) || {use: u, answers: {}, done: []});
         delete dr.sel;
+        delete dr.answers.use;
         return answerAndGo('use');
-      }
-      case 'ev-next': {
-        const q = currentQ();
-        const inp = $('#ev-in');
-        const ev = view.draft.answers._evidence || (view.draft.answers._evidence = {});
-        if (inp && inp.value.trim()) ev[q.id] = {note: inp.value.trim().slice(0, 200), date: U.today()};
-        else delete ev[q.id];
-        return answerAndGo(q.id);
       }
       case 'save': {
         const dr = view.draft, today = U.today();
         const already = dr.key && savedChecks()[dr.key];
         if (already) return goto(lineById(already) ? {name: 'line', lineId: already} : {name: 'list'}, false);
+        if (dr.uses){
+          const lines = dr.uses.map((u, i) => {
+            const l = T.makeLine(T.useAnswers(dr, i), P, today, {from: i === 0 && dr.from || null});
+            l.done = (u.done || []).slice();
+            T.refresh(l, P, today, true);
+            list.lines.push(l);
+            return l;
+          });
+          if (!saveList()) announce('This browser is blocking storage, so the list lasts only while this page is open.');
+          const many = lines.length > 1;
+          if (dr.key) U.store.set(SAVED_KEY, Object.assign(savedChecks(), {[dr.key]: many ? 'list' : lines[0].id}), 'sessionStorage');
+          if (!many) return goto({name: 'line', lineId: lines[0].id}, false);
+          goto({name: 'list'}, false);
+          return say(`Saved ${lines.length} uses of ${T.name(lines[0])} to your AI list.`);
+        }
         let line;
         if (dr.lineId){
           line = lineById(dr.lineId);
@@ -439,11 +547,6 @@
         }
         if (!saveList()) announce('This browser is blocking storage, so the list lasts only while this page is open.');
         if (dr.key) U.store.set(SAVED_KEY, Object.assign(savedChecks(), {[dr.key]: line.id}), 'sessionStorage');
-        if (!dr.lineId && (dr.pending || []).length){
-          const a = T.anotherUse(line);
-          a.use = dr.pending[0];
-          return goto({name: 'ask', draft: {answers: Object.assign({_evidence: {}}, a), done: [], pending: dr.pending.slice(1), pass: (dr.pass || 1) + 1, key: newKey()}}, false);
-        }
         return goto({name: 'line', lineId: line.id}, false);
       }
       case 'recheck': {
@@ -492,21 +595,34 @@
     const el = e.target;
     if (el.dataset.todo){
       const id = el.dataset.todo;
-      const target = view.name === 'line' ? lineById(view.lineId) : view.draft;
-      target.done = el.checked ? (target.done || []).concat(id) : (target.done || []).filter(x => x !== id);
-      let r;
+      const ui = el.dataset.use;
+      const target = view.name === 'line' ? lineById(view.lineId) : ui !== undefined && view.draft.uses ? view.draft.uses[+ui] : view.draft;
+      const tick = t => t.done = el.checked ? (t.done || []).filter(x => x !== id).concat(id) : (t.done || []).filter(x => x !== id);
+      tick(target);
+      let r, also = 0;
       if (view.name === 'line'){
         const before = target.light;
         T.refresh(target, P, U.today(), false);
         r = evalLine(target);
         if (r.light !== before) target.recheck_by = T.recheckBy(r, U.today());
+        /* a shared to-do is done once for the tool: tick it on its other uses */
+        if ((r.todos.find(t => t.id === id) || {}).shared) also = T.tickShared(list.lines, target, id, el.checked, P, U.today()).length;
         saveList();
+      } else if (ui !== undefined && view.draft.uses){
+        const d = view.draft;
+        r = T.evaluate(T.useAnswers(d, +ui), P, target.done);
+        if ((r.todos.find(t => t.id === id) || {}).shared) d.uses.forEach((u, i) => {
+          if (i === +ui) return;
+          const t = T.evaluate(T.useAnswers(d, i), P, u.done).todos.find(x => x.id === id);
+          if (t && !t.answer && t.done !== el.checked){ tick(u); also++; }
+        });
+        put(view);
       } else {
         put(view);
         r = T.evaluate(view.draft.answers, P, view.draft.done);
       }
-      render(`[data-todo="${CSS.escape(id)}"]`);
-      announce(`Now: ${r.label}.`);
+      render(`[data-todo="${CSS.escape(id)}"]${ui !== undefined ? `[data-use="${ui}"]` : ''}`);
+      announce(`Now: ${r.label}.${also ? ` Also ${el.checked ? 'ticked' : 'unticked'} on ${also} other use${also > 1 ? 's' : ''} of this tool.` : ''}`);
     }
     if (el.dataset.retire !== undefined){
       const l = lineById(view.lineId);
@@ -533,8 +649,9 @@
   });
   main.addEventListener('keydown', e => {
     if (e.key !== 'Enter' || e.target.tagName !== 'INPUT' || e.target.type === 'checkbox') return;
-    const next = $('[data-act="text-next"], [data-act="ev-next"]', main);
-    if (next){ e.preventDefault(); next.click(); }
+    const next = $('[data-act="text-next"]', main);
+    if (next || e.target.id === 'ev-in') e.preventDefault();
+    if (next) next.click();
   });
   window.addEventListener('afterprint', () => {
     document.body.classList.remove('printing');

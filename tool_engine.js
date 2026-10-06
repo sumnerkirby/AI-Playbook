@@ -146,7 +146,7 @@ var ToolEngine = (function(){
       reasons: stops.concat(conds).map(r => r.id),
       stops: stops.map(r => ({id: r.id, reason: r.reason, fix: r.fix, flag: r.flag, flag_text: r.flag_text, how: r.how, owner: ownerLabel(r.owner, profile)})),
       todos: conds.map(r => ({id: r.id, reason: r.reason, text: r.fix, owner: ownerLabel(r.owner, profile), done: isDone(r), answer: r.answer || null,
-        cleanup: !!r.cleanup, flag: r.flag, flag_text: r.flag_text, how: r.how, standing: r.standing || null, where_to_look: r.where_to_look || false, supplier: r.owner === 'supplier'})),
+        cleanup: !!r.cleanup, flag: r.flag, flag_text: r.flag_text, how: r.how, standing: r.standing || null, where_to_look: r.where_to_look || false, supplier: r.owner === 'supplier', shared: !!r.shared})),
       standing: conds.filter(r => r.standing && isDone(r)).map(r => r.standing),
       allowed: allowed === null ? null : CLASSES.filter(c => allowed.includes(c)),
       allowed_notes: stops.concat(open).map(r => r.allowed_note).filter(Boolean),
@@ -257,15 +257,69 @@ var ToolEngine = (function(){
     line.retired_on = line.retire.every(Boolean) ? today : null;
     return line;
   }
-  /* walkthrough gap 3: another use keeps the tool, plan and supplier answers */
-  const CARRY = ['mode', 'tool', 'plan', 'access', 'training', 'deletion', 'agreement', 'published'];
+  /* walkthrough gap 3: another use keeps the shared answers (the tool, the
+     account and the supplier) and their sources */
+  const SHARED = Q.questions.filter(q => q.shared).map(q => q.id);
+  const GRID = Q.questions.filter(q => q.grid).map(q => q.id);
   function anotherUse(line){
     const a = {};
     const saved = upgrade(line.answers);
-    CARRY.forEach(k => { if (saved[k] !== undefined) a[k] = saved[k]; });
+    SHARED.forEach(k => { if (saved[k] !== undefined) a[k] = saved[k]; });
     a._evidence = {};
-    ['training', 'deletion', 'agreement', 'published'].forEach(k => { if (line.evidence[k]) a._evidence[k] = line.evidence[k]; });
+    SHARED.forEach(k => { if (line.evidence[k]) a._evidence[k] = line.evidence[k]; });
     return a;
+  }
+
+  /* A shared to-do is done once for the whole tool. The other uses of a
+     line's tool: same name, ignoring case and spaces at the ends, and same
+     plan, not retired. */
+  const toolKey = l => (l.answers.tool || '').trim().toLowerCase() + '|' + (l.answers.plan || '');
+  function otherUses(lines, line){ return lines.filter(l => l !== line && !l.retired_on && toolKey(l) === toolKey(line)); }
+  /* tick or untick a shared to-do on every other use that has it; returns
+     the lines changed */
+  function tickShared(lines, line, id, value, profile, today){
+    const changed = [];
+    otherUses(lines, line).forEach(l => {
+      const r = evaluate(Object.assign({}, l.answers, {_evidence: l.evidence}), profile, l.done);
+      const t = r.todos.find(x => x.id === id);
+      if (!t || !t.shared || t.answer || t.done === value) return;
+      l.done = value ? l.done.concat(id) : l.done.filter(x => x !== id);
+      const before = l.light;
+      refresh(l, profile, today, false);
+      if (l.light !== before) l.recheck_by = recheckBy(evaluate(Object.assign({}, l.answers, {_evidence: l.evidence}), profile, l.done), today);
+      changed.push(l);
+    });
+    return changed;
+  }
+
+  /* ---------- several uses in one check ----------
+     A draft: {answers: the shared answers with _evidence, uses: [{use,
+     answers, done}]}. Shared questions are asked once; the rest once for
+     each use that shows them. */
+  function splitUses(answers, uses){
+    const shared = {_evidence: Object.assign({}, answers._evidence)}, own = {};
+    Object.keys(answers).forEach(k => {
+      if (k === '_evidence' || k === 'use') return;
+      (SHARED.includes(k) ? shared : own)[k] = answers[k];
+    });
+    return {answers: shared, uses: uses.map(u => ({use: u, answers: Object.assign({}, own), done: []}))};
+  }
+  function useAnswers(draft, i){
+    const u = draft.uses[i];
+    return Object.assign({}, draft.answers, u.answers, {use: u.use, _evidence: draft.answers._evidence || {}});
+  }
+  /* The next question across all the uses: the earliest in question order,
+     for the first use that still needs it. i is -1 for a shared question
+     (its answer goes in draft.answers) and at is the use it was found for. */
+  function nextMulti(draft, profile){
+    let best = null;
+    draft.uses.forEach((u, at) => {
+      const q = nextQuestion(useAnswers(draft, at), profile);
+      if (!q) return;
+      const k = Q.questions.findIndex(x => x.id === q.id);
+      if (!best || k < best.k) best = {q, i: q.shared ? -1 : at, at, k};
+    });
+    return best && {q: best.q, i: best.i, at: best.at};
   }
 
   /* ---------- the "to check" queue, from the quick tools ---------- */
@@ -396,6 +450,7 @@ var ToolEngine = (function(){
     addDays, addMonths, facts, matches, questionText, visible, upgrade, prune, nextQuestion, complete,
     evaluate, recheckBy, allowedText, ownerLabel,
     makeLine, refresh, state, name, useLabel, logEvent, reopenAnswers, recheck, retire, anotherUse,
+    SHARED, GRID, splitUses, useAnswers, nextMulti, otherUses, tickShared,
     queue, fromQueue, csv, restore, vendorHelp, CLASSES,
   };
 })();

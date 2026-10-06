@@ -66,6 +66,24 @@
 .multi .answer{position:relative;padding-right:44px}
 .multi .answer[aria-pressed=true]{padding-right:43px}
 .multi .answer[aria-pressed=true]::after{content:"\2713";position:absolute;right:16px;top:14px;font-size:16px}
+.evidence .small-note{margin:6px 0 0}
+details.lookhelp summary{cursor:pointer;font-size:15px}
+
+/* several uses in one check: the grid and the combined results */
+.usegrid{max-width:760px;margin:16px 0 0;padding:14px 16px 0;background:var(--card);border:1px solid var(--rule2);border-radius:3px}
+.usegrid h3{margin:0 0 12px;font-family:var(--display);font-weight:700;font-size:19px}
+.usegrid fieldset.chips{margin-bottom:16px}
+.usegrid fieldset.chips legend{font-size:16px;margin-bottom:8px}
+.usegrid .chip{text-align:left;min-height:44px;border-radius:16px}
+.usegrid .chip small{display:block;font-size:13px;opacity:.8}
+.chip.unsure{border-style:dashed;background:transparent}
+.chip.unsure[aria-pressed=true]{background:var(--ink)}
+.use-sum{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.use-sum li{display:flex;gap:10px;align-items:center}
+.linkish{background:none;border:0;padding:0;cursor:pointer;font:inherit;font-size:16px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px}
+.linkish:hover{text-decoration-color:var(--ink)}
+.use-result{margin-top:22px}
+.use-result + .use-result{margin-top:30px;padding-top:24px;border-top:2px solid var(--rule)}
 
 .life{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px 28px;align-items:start}
 .life .panelbox{background:var(--card);border:1px solid var(--rule2);border-radius:3px;padding:12px 15px 14px}
